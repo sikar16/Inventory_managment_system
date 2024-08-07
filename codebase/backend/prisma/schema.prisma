@@ -1,0 +1,144 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// -----------enum part ------------------//
+enum CompanyRole {
+  Employee
+  DepartmentHead
+  LogesticSuperviser
+  Finance
+  GeneralManager
+  StoreKeeper
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum ActiveStatus {
+  Active
+  Inactive
+  Block
+}
+
+// -----x------enum part ----------x--------//
+
+// -----------model part ------------------//
+
+model Department {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  users     Users[]
+}
+
+model Users {
+  id           Int          @id @default(autoincrement())
+  email        String       @unique
+  activeStatus ActiveStatus
+  role         CompanyRole
+  createdAt    DateTime     @default(now())
+  departmentId Int
+  password     Password?
+  profile      Profile?
+
+  departmentHeadedMaterialRequests   MaterialRequest[] @relation("departmentHeadedMaterialRequests")
+  logisticSupervisedMaterialRequests MaterialRequest[] @relation("logisticSupervisedMaterialRequests")
+  employedMaterialRequests           MaterialRequest[] @relation("employedMaterialRequests")
+  //reference
+  department                         Department        @relation(fields: [departmentId], references: [id])
+}
+
+model Password {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  password  String
+  createdAt DateTime @default(now())
+  //references
+  user      Users    @relation(fields: [userId], references: [id])
+}
+
+model Profile {
+  id         Int     @id @default(autoincrement())
+  userId     Int     @unique
+  firstName  String
+  lastName   String
+  middleName String
+  gender     Gender
+  phone      String
+  imgUrl     String?
+  //references
+  user       Users   @relation(fields: [userId], references: [id])
+}
+
+model Store {
+  id        Int      @id @default(autoincrement())
+  name      String
+  country   String
+  city      String
+  subcity   String
+  createdAt DateTime @default(now())
+}
+
+model SupplierCategory {
+  id       Int         @id @default(autoincrement())
+  name     String
+  supplier Suppliers[]
+}
+
+model Suppliers {
+  id         Int      @id @default(autoincrement())
+  fullName   String
+  country    String
+  city       String
+  subcity    String
+  categoryId Int
+  createdAt  DateTime @default(now())
+
+  //references
+  category SupplierCategory @relation(fields: [categoryId], references: [id])
+}
+
+model MaterialRequest {
+  id                   Int             @id @default(autoincrement())
+  requesterId          Int
+  departmentHeadId     Int
+  logisticSuperViserId Int
+  items                RequestedItem[]
+  createdAt            DateTime        @default(now())
+
+  //refernces
+  employee           Users @relation(fields: [requesterId], references: [id], name: "employedMaterialRequests")
+  departmentHead     Users @relation(fields: [departmentHeadId], references: [id], name: "departmentHeadedMaterialRequests")
+  logisticSupervisor Users @relation(fields: [logisticSuperViserId], references: [id], name: "logisticSupervisedMaterialRequests")
+}
+
+model RequestedItem {
+  id                    Int     @id @default(autoincrement())
+  materialRequestId     Int
+  name                  String
+  partNo                Int
+  unitOfMeasurment      String
+  quantityRequested     Decimal
+  quantityInStock       Decimal
+  quantityToBePurchased Decimal
+  remark                String
+
+  //reference
+  materialRequest MaterialRequest @relation(fields: [materialRequestId], references: [id])
+}
+
+// ------x-----model part ---------x---------//
