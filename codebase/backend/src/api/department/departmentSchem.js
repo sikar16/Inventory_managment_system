@@ -1,11 +1,11 @@
 import z from "zod";
 
 const departmentSchema = {
-  create: z.object({
+  createDepartment: z.object({
     name: z.string().min(3),
   }),
 
-  update: z.object({
+  updateDepartment: z.object({
     name: z.string().min(3),
   }),
 };

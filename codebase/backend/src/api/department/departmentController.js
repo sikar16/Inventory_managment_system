@@ -65,7 +65,29 @@ const departmentController = {
 
   createDepartment: async (req, res, next) => {
     try {
-      const data = departmentSchema.create.parse(req.body);
+      const requiredField=["name"]
+      for(const field of requiredField){
+        if(!req.body[field]){
+          return res.status(403).json({
+             success:false,
+             message:`${field} is required`
+          })
+        }
+      }
+
+
+      const data = departmentSchema.createDepartment.parse(req.body);
+      const isdepartmentExist=await prisma.department.findFirst({
+      where:{
+      name:data.name
+      }
+   })
+      if(!isdepartmentExist){
+        return res.status(400).json({
+          success:false,
+          message:"department is already exist "
+      })
+      }
 
       const newDepartment = await prisma.department.create({
         data: {
@@ -97,7 +119,7 @@ const departmentController = {
         });
       }
 
-      const data = departmentSchema.update.parse(req.body);
+      const data = departmentSchema.updateDepartment.parse(req.body);
 
       const updatedDepartment = await prisma.department.update({
         where: {
@@ -139,7 +161,7 @@ const departmentController = {
         });
       }
 
-      await prisma.department.delete({
+    const deleteDepartment=  await prisma.department.delete({
         where: {
           id: departmentId,
         },
@@ -148,6 +170,7 @@ const departmentController = {
       return res.status(200).json({
         success: true,
         message: "Department deleted successfully",
+        data:deleteDepartment
       });
     } catch (error) {
       if (error.code === "P2025") {
