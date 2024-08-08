@@ -4,7 +4,7 @@ import prisma from "../../config/prisma.js"
 
 const userController = {
   getSingleUser: async (req, res, next) => {
-    try {
+     try {
       const userId = parseInt(req.params.id, 10);
       if (isNaN(userId)) {
         return res.status(400).json({
@@ -199,7 +199,7 @@ const userController = {
           message: "invalid user id",
         });
       }
-      await prisma.users.delete({
+    const deleteUser=  await prisma.users.delete({
         where: {
           id: userId,
         },
@@ -207,6 +207,7 @@ const userController = {
       return res.status(200).json({
         success: true,
         message: "user deleted successfully",
+        data:deleteUser
       });
     } catch (error) {
       if (error.code === "P2025") {

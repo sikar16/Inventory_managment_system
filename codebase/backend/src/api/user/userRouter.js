@@ -9,4 +9,4 @@ userRouter.post("/login",userController.login)
 userRouter.put("/:id",userController.updateUser)
 userRouter.delete("/:id",userController.deleteUser)
 
-export default userRouter;
+export default userRouter; 
