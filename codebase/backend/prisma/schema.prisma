@@ -78,7 +78,7 @@ model Profile {
   lastName   String
   middleName String
   gender     Gender
-  phone      String
+  phone      String  @unique
   imgUrl     String?
   //references
   user       Users   @relation(fields: [userId], references: [id])
@@ -102,6 +102,8 @@ model SupplierCategory {
 model Suppliers {
   id         Int      @id @default(autoincrement())
   fullName   String
+  phone      String   @unique
+  email      String   @unique
   country    String
   city       String
   subcity    String

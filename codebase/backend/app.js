@@ -13,6 +13,12 @@ app.use(cors({
     credentials:true
 }))
 
+
+
+//application route
+import appRouter from './src/route/index.js'
+app.use("/api",appRouter) 
+
 // test route
 app.get("/",(req,res,next)=>{
     return res.status(200).json({
@@ -20,11 +26,6 @@ app.get("/",(req,res,next)=>{
         message:"test"
     })
 })
-
-//application route
-import appRouter from './src/route/index.js'
-appRouter.use("/api",appRouter) 
-
 
 // listening server
 

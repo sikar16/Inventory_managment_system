@@ -1,0 +1,169 @@
+import prisma from "../../config/prisma.js";
+import departmentSchema from "./departmentSchem.js";
+
+const departmentController = {
+  getSingleDepartment: async (req, res, next) => {
+    try {
+      const departmentId = parseInt(req.params.id, 10);
+      if (isNaN(departmentId)) {
+        return res.status(400).json({
+          success: false,
+          message: "invalid department id",
+        });
+      }
+
+      const department = await prisma.department.findUnique({
+        where: {
+          id: departmentId,
+        },
+        include: {
+          users: true, 
+        },
+      });
+
+      if (!department) {
+        return res.status(404).json({
+          success: false,
+          message: "department not found",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: department,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: "error while fetching single department",
+      });
+    }
+  },
+
+  getAllDepartments: async (req, res, next) => {
+    try {
+      const departments = await prisma.department.findMany({
+        include: {
+          users: true,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "fetching all departments",
+        data: departments,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        success: false,
+        message: "error while fetching departments",
+      });
+    }
+  },
+
+  createDepartment: async (req, res, next) => {
+    try {
+      const data = departmentSchema.create.parse(req.body);
+
+      const newDepartment = await prisma.department.create({
+        data: {
+          name: data.name,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "department created successfully",
+        data: newDepartment,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        success: false,
+        message: "error while creating department",
+      });
+    }
+  },
+
+  updateDepartment: async (req, res, next) => {
+    try {
+      const departmentId = parseInt(req.params.id, 10);
+      if (isNaN(departmentId)) {
+        return res.status(400).json({
+          success: false,
+          message: "invalid department id",
+        });
+      }
+
+      const data = departmentSchema.update.parse(req.body);
+
+      const updatedDepartment = await prisma.department.update({
+        where: {
+          id: departmentId,
+        },
+        data: {
+          name: data.name,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "department updated successfully",
+        data: updatedDepartment,
+      });
+    } catch (error) {
+      if (error.code === "P2025") {
+        return res.status(404).json({
+          success: false,
+          message: "department not found",
+        });
+      }
+
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: "error while updating department",
+      });
+    }
+  },
+
+  deleteDepartment: async (req, res, next) => {
+    try {
+      const departmentId = parseInt(req.params.id, 10);
+      if (isNaN(departmentId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid department id",
+        });
+      }
+
+      await prisma.department.delete({
+        where: {
+          id: departmentId,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Department deleted successfully",
+      });
+    } catch (error) {
+      if (error.code === "P2025") {
+        return res.status(404).json({
+          success: false,
+          message: "Department not found",
+        });
+      }
+
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: "error while deleting department",
+      });
+    }
+  },
+};
+
+export default departmentController;
