@@ -66,7 +66,7 @@ const storeController={
       
             const data = storeSchem.registor.parse(req.body);
       
-            const isstoreExist = await prisma.stores.findFirst({
+            const isstoreExist = await prisma.store.findFirst({
               where: {
                 name: data.name,
               },
@@ -96,7 +96,7 @@ const storeController={
             console.log(error);
             return res.status(500).json({
               success: false,
-              message: "error while creating store",
+              message: `error : ${error}`,
             });
           }
     },
@@ -144,7 +144,7 @@ const storeController={
                 message: "invalid store id",
               });
             }
-          const deletestore = await prisma.stores.delete({
+          const deletestore = await prisma.store.delete({
               where: {
                 id: storeId,
               },

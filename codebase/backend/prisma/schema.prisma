@@ -89,7 +89,7 @@ model Store {
   name      String
   country   String
   city      String
-  subcity   String
+  subCity   String
   createdAt DateTime @default(now())
 }
 
@@ -106,7 +106,7 @@ model Suppliers {
   email      String   @unique
   country    String
   city       String
-  subcity    String
+  subCity    String
   categoryId Int
   createdAt  DateTime @default(now())
 

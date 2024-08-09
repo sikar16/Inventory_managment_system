@@ -67,7 +67,7 @@ const supplierCategoryController = {
                 }
             }
 
-            const data = supplierCategorySchem.createsupplierCategory.parse(req.body);
+            const data = supplierCategorySchem.create.parse(req.body);
 
             const issupplierCategoryExist = await prisma.supplierCategory.findFirst({
                 where: {
@@ -94,10 +94,9 @@ const supplierCategoryController = {
                 data: newsupplierCategory,
             });
         } catch (error) {
-            console.log(error);
             return res.status(500).json({
                 success: false,
-                message: "Error while creating supplier category",
+                message: `error ${error}`,
             });
         }
     },
@@ -149,12 +148,12 @@ const supplierCategoryController = {
                 },
             });
 
-            if (issupplierCategoryExist) {
-                return res.status(400).json({
-                    success: false,
-                    message: "This category name is already registered",
-                });
-            }
+            // if (issupplierCategoryExist) {
+            //     return res.status(400).json({
+            //         success: false,
+            //         message: "This category name is already registered",
+            //     });
+            // }
 
             const deletecategory = await prisma.supplierCategory.delete({
                 where: {

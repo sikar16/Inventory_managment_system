@@ -33,12 +33,12 @@ const supplierController={
                 message: "invalid user id",
             });
             }
-            const supplier=await prisma.suppliers.findUnique({
+            const supplier=await prisma.suppliers.findFirst({
                 where:{
                     id:+supplierId
                 },
                 include:{
-                    supplierCategory:true,
+                    category:true,
                 }
             })
 
@@ -56,7 +56,7 @@ const supplierController={
             console.log(error)
         return res.status(500).json({
             success:false,
-            message:"error while feteching supplier"
+            message:`error ${error}`
         })
         }
     },
@@ -191,7 +191,7 @@ const supplierController={
             console.error(error);
             return res.status(500).json({
               success: false,
-              message: "error while updating supplier",
+              message: `erroe: ${error}`,
             });
           }
       
