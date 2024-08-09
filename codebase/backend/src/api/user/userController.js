@@ -110,7 +110,7 @@ const userController = {
           role:data.role,
           password:{
             create:{
-              password:data.password
+              password:hashedPassword
             }
           },
          departmentId:data.departmentId,
@@ -147,41 +147,111 @@ const userController = {
     }
   },
 
+
   updateUser: async (req, res, next) => {
     try {
       const userId = parseInt(req.params.id, 10);
       if (isNaN(userId)) {
         return res.status(400).json({
           success: false,
-          message: "invalid user id",
+          message: "Invalid user ID",
         });
       }
+  
+      const {
+        departmentId,
+        password,
+        firstName,
+        lastName,
+        middleName,
+        gender,
+        phone,
+        ...userData
+      } = req.body;
+  
+      const userUpdateData = {
+        ...userData,
+        department: departmentId ? { connect: { id: departmentId } } : undefined,
+      };
+  
+      const profileUpdateData = {
+        firstName,
+        lastName,
+        middleName,
+        gender,
+        phone,
+      };
+  
       const updatedUser = await prisma.users.update({
         where: {
           id: userId,
         },
-        data: req.body,
+        data: userUpdateData,
+        include: {
+          profile: true, 
+        },
       });
+  
+      // Update profile if any profile data is provided
+      if (firstName || lastName || middleName || gender || phone) {
+        await prisma.profile.update({
+          where: {
+            userId: userId,
+          },
+          data: profileUpdateData,
+        });
+      }
+  
       return res.status(200).json({
         success: true,
-        message: "user updated successfully",
+        message: "User updated successfully",
         data: updatedUser,
       });
     } catch (error) {
-      if (error.code === "P2025") {
-        return res.status(404).json({
-          success: false,
-          message: "user not found",
-        });
-      }
-
       console.error(error);
       return res.status(500).json({
         success: false,
-        message: "error while updating user",
+        message: "Error while updating user",
       });
     }
   },
+  
+  
+  // updateUser: async (req, res, next) => {
+  //   try {
+  //     const userId = parseInt(req.params.id, 10);
+  //     if (isNaN(userId)) {
+  //       return res.status(400).json({
+  //         success: false,
+  //         message: "invalid user id",
+  //       });
+  //     }
+  //     const updatedUser = await prisma.users.update({
+  //       where: {
+  //         id: userId,
+  //       },
+  //       data: req.body,
+  //     });
+  //     return res.status(200).json({
+  //       success: true,
+  //       message: "user updated successfully",
+  //       data: updatedUser,
+  //     });
+  //   } catch (error) {
+  //     if (error.code === "P2025") {
+  //       return res.status(404).json({
+  //         success: false,
+  //         message: "user not found",
+  //       });
+  //     }
+
+  //     console.error(error);
+  //     return res.status(500).json({
+  //       success: false,
+  //       message: "error while updating user",
+  //     });
+  //   }
+  // },
 
   login: async (req, res, next) => {
     try {
@@ -192,7 +262,6 @@ const userController = {
         },
         include:{
           profile:true,
-          role:true
         }
       });
       if (!user) {
@@ -201,7 +270,7 @@ const userController = {
           message: "no account in this email address",
         });
       }
-      if (user.activeStatus !== "ACTIVE") {
+      if (user.activeStatus !== "Active") {
         return res.status(404).json({
           success: false,
           message: `Your account is ${user.activeStatus}`,
@@ -220,7 +289,7 @@ const userController = {
       }
       const payload={
         userid:user.id,
-        role:user.role.name,
+        role:user.role,
         firstName:user.profile.firstName
         
       }
@@ -240,6 +309,8 @@ const userController = {
     }
   },
 
+
+  
   deleteUser: async (req, res, next) => {
     try {
       const userId = parseInt(req.params.id, 10);
@@ -274,6 +345,7 @@ const userController = {
       });
     }
   },
+  
 };
 
 export default userController;
