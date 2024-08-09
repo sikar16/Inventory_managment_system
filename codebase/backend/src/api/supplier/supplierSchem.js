@@ -8,14 +8,15 @@ const supplierSchem={
         country:z.string().min(5),
         city:z.string().min(5),
         subCity:z.string().min(5),
+        categoryId:z.number()
     }),
     updateSupplier:z.object({
         fullname:z.string().min(3),
-        email:z.string().email(),
         phone:z.string().min(10),
         country:z.string().min(5),
         city:z.string().min(5),
         subCity:z.string().min(5),
+        categoryId:z.number()
     })
 }
 

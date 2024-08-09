@@ -6,6 +6,10 @@ const userSchem={
         firstName:z.string().min(3),
         middleName:z.string().min(3),
         lastName:z.string().min(3),
+        gender:z.enum(["MALE","FEMALE"]),
+        phone:z.string().min(10).max(14),
+        role:z.enum([ "Employee","DepartmentHead","LogesticSuperviser","Finance","GeneralManager","StoreKeeper"]),
+        departmentId:z.number()
     }),
 
     login:z.object({
@@ -13,18 +17,25 @@ const userSchem={
         email:z.string().email()
     }),
 
-    update:z.object({
-        email:z.string().email(),
-        password:z.string().min(6),
+    updateProfile:z.object({
         firstName:z.string().min(3),
         middleName:z.string().min(3),
         lastName:z.string().min(3),
+        gender:z.enum(["MALE","FEMALE"]),
+        
+    }),
+
+    changePhone:z.object({
+        phone:z.string().min(10).max(14),
+    }),
+    changeEmail:z.object({
+        email:z.string().email(),
     }),
 
     changePassword: z.object({
         oldPassword: z.string().min(6),
         newPassword: z.string().min(6),
-        id: z.number().min(1),
+        confirmPassword: z.string().min(6),
       }),
 }
 

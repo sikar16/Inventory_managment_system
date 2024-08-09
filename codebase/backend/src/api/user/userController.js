@@ -1,11 +1,13 @@
 import userSchema from "./userSchem.js";
 import bcrypt from "bcrypt";
 import prisma from "../../config/prisma.js"
-
+import jwt from "jsonwebtoken"
+import {SECRET} from '../../config/secret.js'
 const userController = {
   getSingleUser: async (req, res, next) => {
      try {
       const userId = parseInt(req.params.id, 10);
+
       if (isNaN(userId)) {
         return res.status(400).json({
           success: false,
@@ -17,7 +19,8 @@ const userController = {
           id: userId,
         },
         include:{
-            profile:true
+            profile:true,
+            department:true,
         }
       });
 
@@ -43,7 +46,11 @@ const userController = {
 
   getAllUsers: async (req, res, next) => {
     try {
+      const take=req.query.take || 10
+      const skip=req.query.skip || 0
       const users = await prisma.users.findMany({
+        take:+take,
+        skip:+skip,
         include:{
             profile:true
         }
@@ -57,28 +64,21 @@ const userController = {
       console.log(error);
       return res.status(500).json({
         success: false,
-        message: "error while fetching users",
+        message: `${error}`,
       });
     }
   },
 
   createUser: async (req, res, next) => {
     try {
-      const requiredFields = ["email", "firstName", "lastName", "role"];
-      for (const field of requiredFields) {
-        if (!req.body[field]) {
-          return res.status(403).json({
-            success: false,
-            message: `${field} is required`,
-          });
-        }
-      }
+     
 
       const data = userSchema.register.parse(req.body);
 
       const isUserExist = await prisma.users.findFirst({
         where: {
           email: data.email,
+          
         },
       });
 
@@ -88,28 +88,61 @@ const userController = {
           message: "this email is already registered",
         });
       }
-
-      const hashedPassword = await bcrypt.hash(data.password, 10);
-      const newUser = await prisma.users.create({
-        data: {
-          email: data.email,
-          password: hashedPassword,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          middleName: data.middleName,
-          gender: data.gender,
+      const isPhoneExist = await prisma.profile.findFirst({
+        where: {
+          phone: data.phone,
+          
         },
       });
+
+      if (isPhoneExist) {
+        return res.status(400).json({
+          success: false,
+          message: "this phone is already registered",
+        });
+      }
+
+      const hashedPassword = await bcrypt.hashSync(data.password, 10);
+      const newUser = await prisma.users.create({
+        data: {
+          activeStatus:"Active",
+          email:data.email,
+          role:data.role,
+          password:{
+            create:{
+              password:data.password
+            }
+          },
+         departmentId:data.departmentId,
+         profile:{
+          create:{
+            firstName:data.firstName,
+            lastName:data.lastName,
+            middleName:data.middleName,
+            gender:data.gender,
+            phone:data.phone,
+          }
+         }
+        },
+      });
+      const registeredUser=await prisma.users.findFirst({
+        where:{
+          id:newUser.id
+        },
+        include:{
+          profile:true,
+          department:true,
+        }
+      })
       return res.status(200).json({
         success: true,
         message: "user created successfully",
-        data: newUser,
+        data: registeredUser,
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({
         success: false,
-        message: "error while creating user",
+        message: `${error}`,
       });
     }
   },
@@ -157,29 +190,46 @@ const userController = {
         where: {
           email: data.email,
         },
+        include:{
+          profile:true,
+          role:true
+        }
       });
       if (!user) {
         return res.status(404).json({
           success: false,
-          message: "user not found",
+          message: "no account in this email address",
         });
       }
       if (user.activeStatus !== "ACTIVE") {
         return res.status(404).json({
           success: false,
-          message: "Your account is inactive",
+          message: `Your account is ${user.activeStatus}`,
         });
       }
-      if (!bcrypt.compareSync(data.password, user.password)) {
+      const userPassword=await prisma.password.findFirst({
+        where:{
+          userId:+user.id
+        }
+      })
+      if (!bcrypt.compareSync(data.password, userPassword.password)) {
         return res.status(404).json({
           success: false,
           message: "password is incorrect",
         });
       }
+      const payload={
+        userid:user.id,
+        role:user.role.name,
+        firstName:user.profile.firstName
+        
+      }
+      const token=jwt.sign(payload,SECRET)
+
       return res.status(200).json({
         success: true,
         message: "user logged in successfully",
-        data: user,
+        data: token,
       });
     } catch (error) {
       console.error("error occurred:", error);

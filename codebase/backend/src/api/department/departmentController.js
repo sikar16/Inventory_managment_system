@@ -12,12 +12,9 @@ const departmentController = {
         });
       }
 
-      const department = await prisma.department.findUnique({
+      const department = await prisma.department.findFirst({
         where: {
           id: departmentId,
-        },
-        include: {
-          users: true, 
         },
       });
 
@@ -43,11 +40,7 @@ const departmentController = {
 
   getAllDepartments: async (req, res, next) => {
     try {
-      const departments = await prisma.department.findMany({
-        include: {
-          users: true,
-        },
-      });
+      const departments = await prisma.department.findMany({});
 
       return res.status(200).json({
         success: true,
@@ -82,7 +75,7 @@ const departmentController = {
       name:data.name
       }
    })
-      if(!isdepartmentExist){
+      if(isdepartmentExist){
         return res.status(400).json({
           success:false,
           message:"department is already exist "
@@ -101,10 +94,9 @@ const departmentController = {
         data: newDepartment,
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({
         success: false,
-        message: "error while creating department",
+        message:`creating error ${error}`,
       });
     }
   },
@@ -136,13 +128,6 @@ const departmentController = {
         data: updatedDepartment,
       });
     } catch (error) {
-      if (error.code === "P2025") {
-        return res.status(404).json({
-          success: false,
-          message: "department not found",
-        });
-      }
-
       console.error(error);
       return res.status(500).json({
         success: false,
@@ -161,6 +146,19 @@ const departmentController = {
         });
       }
 
+      const department = await prisma.department.findFirst({
+        where: {
+          id: departmentId,
+        },
+      });
+
+      if (!department) {
+        return res.status(404).json({
+          success: false,
+          message: "department not found",
+        });
+      }
+
     const deleteDepartment=  await prisma.department.delete({
         where: {
           id: departmentId,
@@ -173,13 +171,6 @@ const departmentController = {
         data:deleteDepartment
       });
     } catch (error) {
-      if (error.code === "P2025") {
-        return res.status(404).json({
-          success: false,
-          message: "Department not found",
-        });
-      }
-
       console.error(error);
       return res.status(500).json({
         success: false,

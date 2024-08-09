@@ -40,7 +40,7 @@ enum ActiveStatus {
 
 model Department {
   id        Int      @id @default(autoincrement())
-  name      String
+  name      String   @unique
   createdAt DateTime @default(now())
   users     Users[]
 }

@@ -12,9 +12,9 @@ const supplierCategoryController = {
                 });
             }
 
-            const supplierCategory = await prisma.supplierCategory.findUnique({
+            const supplierCategory = await prisma.supplierCategory.findFirst({
                 where: {
-                    id: categoryId,
+                    id: +categoryId,
                 },
             });
 
@@ -114,7 +114,7 @@ const supplierCategoryController = {
 
             const updatecategory = await prisma.supplierCategory.update({
                 where: {
-                    id: categoryId,
+                    id: +categoryId,
                 },
                 data: req.body,
             });
@@ -143,9 +143,22 @@ const supplierCategoryController = {
                 });
             }
 
+            const issupplierCategoryExist = await prisma.supplierCategory.findFirst({
+                where: {
+                    id: +categoryId,
+                },
+            });
+
+            if (issupplierCategoryExist) {
+                return res.status(400).json({
+                    success: false,
+                    message: "This category name is already registered",
+                });
+            }
+
             const deletecategory = await prisma.supplierCategory.delete({
                 where: {
-                    id: categoryId,
+                    id: +categoryId,
                 },
             });
 

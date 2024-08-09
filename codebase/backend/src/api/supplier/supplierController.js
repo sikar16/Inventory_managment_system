@@ -8,7 +8,6 @@ const supplierController={
         const suppliers=await prisma.suppliers.findMany({
             include:{
                 category: true,
-                
             }
         })
         res.status(200).json({
@@ -36,7 +35,7 @@ const supplierController={
             }
             const supplier=await prisma.suppliers.findUnique({
                 where:{
-                    id:supplierId
+                    id:+supplierId
                 },
                 include:{
                     supplierCategory:true,
@@ -63,7 +62,7 @@ const supplierController={
     },
     createSupplier:async (req,res,next)=>{
         try {
-            const requiredField=["email","fullName","country","city","phone"]
+            const requiredField=["email","fullName","country","city","phone","subCity","categoryId"]
             for(const field of requiredField){
                 if(!req.body[field]){
                 return res.status(403).json({
@@ -87,6 +86,18 @@ const supplierController={
                 message: "this email is already registered",
             });
             }
+            const isSupplierCategoryExist=await prisma.supplierCategory.findFirst({
+                where:{
+                    id:+data.categoryId,
+                }
+            })
+            
+            if (!isSupplierCategoryExist) {
+            return res.status(400).json({
+                success: false,
+                message: "this supplier category is not exist",
+            });
+            }
 
             const newSupplier=await prisma.suppliers.create({
                 data:{
@@ -95,7 +106,8 @@ const supplierController={
                     phone:data.phone,
                     country:data.country,
                     city:data.city,
-                    subCity:data.subCity
+                    subCity:data.subCity,
+                    categoryId:data.categoryId
                 }
             })
 
@@ -122,11 +134,46 @@ const supplierController={
                 message: "invalid supplier id",
               });
             }
+
+            const data=supplierSchem.updateSupplier.parse(req.body)
+            const isSupplierCategoryExist=await prisma.supplierCategory.findFirst({
+                where:{
+                    id:+data.categoryId,
+                }
+            })
+            
+            if (!isSupplierCategoryExist) {
+            return res.status(400).json({
+                success: false,
+                message: "this supplier category is not exist",
+            });
+            }
+
+            const isSupplierExist=await prisma.suppliers.findFirst({
+                where:{
+                    id:+supplierId,
+                }
+            })
+            
+            if (!isSupplierExist) {
+            return res.status(400).json({
+                success: false,
+                message: "this supplier is not exist",
+            });
+            }
+
+
             const updatedSupplier = await prisma.suppliers.update({
               where: {
-                id: supplierId,
+                id: +supplierId,
               },
-              data: req.body,
+              data:{
+                categoryId:+data.categoryId,
+                fullName:data.fullname,
+                country:data.country,
+                city:data.city,
+                phone:data.phone,
+              },
             });
             return res.status(200).json({
               success: true,
@@ -149,7 +196,48 @@ const supplierController={
           }
       
     },
-    deleteSupplier:(req,res,next)=>{},
+    deleteSupplier:async (req,res,next)=>{
+        try {
+            const supplierId = parseInt(req.params.id, 10);
+            if (isNaN(supplierId)) {
+              return res.status(400).json({
+                success: false,
+                message: "invalid supplier id",
+              });
+            }
+
+
+            const isSupplierExist=await prisma.suppliers.findFirst({
+                where:{
+                    id:+supplierId,
+                }
+            })
+            
+            if (!isSupplierExist) {
+            return res.status(400).json({
+                success: false,
+                message: "this supplier is not exist",
+            });
+            }
+
+
+            const deletedSupplier = await prisma.suppliers.delete({
+              where: {
+                id: +supplierId,
+              },
+            });
+            return res.status(200).json({
+              success: true,
+              message: "supplier delete successfully",
+              data: deletedSupplier,
+            });
+          } catch (error) {
+            return res.status(500).json({
+              success: false,
+              message: `error ${error}`,
+            });
+          } 
+    },
 }
 
 export default supplierController;
