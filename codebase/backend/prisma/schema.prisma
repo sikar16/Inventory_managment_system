@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,13 +8,22 @@ datasource db {
 }
 
 // -----------enum part ------------------//
+
+enum AtributeDateType {
+  STRING
+  DATE_TIME
+  DOUBLE
+  INT
+}
+
 enum CompanyRole {
-  Employee
-  DepartmentHead
-  LogesticSuperviser
-  Finance
-  GeneralManager
-  StoreKeeper
+  ADMIN
+  EMPLOYEE
+  DEPARTMENT_HEAD
+  LOGESTIC_SUPERVISER
+  FINANCE
+  GENERAL_MANAGER
+  STORE_KEEPER
 }
 
 enum Gender {
@@ -29,37 +32,138 @@ enum Gender {
 }
 
 enum ActiveStatus {
-  Active
-  Inactive
-  Block
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+enum StoreInventoryType {
+  IN
+  OUT
 }
 
 // -----x------enum part ----------x--------//
 
 // -----------model part ------------------//
 
+    // base model // 
+
 model Department {
   id        Int      @id @default(autoincrement())
   name      String   @unique
   createdAt DateTime @default(now())
+  //relation
   users     Users[]
+}
+
+model SupplierCategory {
+  id       Int         @id @default(autoincrement())
+  name     String
+  createdAt DateTime @default(now())
+  //relation
+  supplier Suppliers[]
+}
+
+model ProductCategory{
+    id  Int  @id @default(autoincrement())
+    name String
+    createdAt    DateTime     @default(now())
+    // relation
+    subCategory ProductSubCategory[]
+}
+
+model ProductSubCategory{
+    id  Int  @id @default(autoincrement())
+    categoryId Int
+    name String
+    createdAt    DateTime     @default(now())
+    // refrence
+    category ProductCategory @relation(fields: [categoryId],references: [id])
+     // relation
+    products Product[]
+}
+
+model Template{
+  id  Int  @id @default(autoincrement())
+  name        String
+  createdAt    DateTime     @default(now())
+  //  relation
+  attributes TemplateAttribute[]
+}
+
+model TemplateAttribute{
+  id  Int  @id @default(autoincrement())
+  templateId  Int
+  name        String
+  dataType    AtributeDateType //can be string also
+  // references 
+  template    Template @relation(fields: [templateId], references: [id])
+  //relation
+  productAttribute ProductAttribute[]
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  subcategoryId Int
+  name        String
+  createdAt    DateTime     @default(now())
+  // references
+  subcategory ProductSubCategory @relation(fields: [subcategoryId], references: [id])
+  // relation
+  productAttributes ProductAttribute[]
+  storeInventory StoreInventory[]
+  materialRequestItem MaterialRequestItem[]
+  purceasedRequestedItem PurceasedRequestedItem[]
+  purchasedOrderItem PurchasedOrderItem[]
+
+  OfferItem OfferItem[]
+}
+
+model ProductAttribute {
+  id          Int      @id @default(autoincrement())
+  productId   Int
+  templateAttributeId Int
+  value       String 
+  // references
+  product     Product  @relation(fields: [productId], references: [id])
+  templateAttribute TemplateAttribute @relation(fields: [templateAttributeId], references: [id])
+}
+
+model Address {
+   id          Int      @id @default(autoincrement())
+  country    String @default("Ethiopia")
+  city       String
+  subCity    String
+  createdAt    DateTime     @default(now())
+  //  relation
+  profile Profile[]
+  suppliers Suppliers[]
+  store Store[]
 }
 
 model Users {
   id           Int          @id @default(autoincrement())
   email        String       @unique
   activeStatus ActiveStatus
-  role         CompanyRole
+  role         CompanyRole @default(EMPLOYEE)
   createdAt    DateTime     @default(now())
   departmentId Int
   password     Password?
   profile      Profile?
-
+  //reference
+  department  Department     @relation(fields: [departmentId], references: [id])
   departmentHeadedMaterialRequests   MaterialRequest[] @relation("departmentHeadedMaterialRequests")
   logisticSupervisedMaterialRequests MaterialRequest[] @relation("logisticSupervisedMaterialRequests")
   employedMaterialRequests           MaterialRequest[] @relation("employedMaterialRequests")
-  //reference
-  department                         Department        @relation(fields: [departmentId], references: [id])
+  // relation
+  storeinventory StoreInventory[]
+  GRN GRN[]  
+
+  PurchasedRequest PurchasedRequest[]
+
+  PurchasedOrder PurchasedOrder[]
+
+  Winner Winner[]
 }
 
 model Password {
@@ -77,41 +181,58 @@ model Profile {
   firstName  String
   lastName   String
   middleName String
-  gender     Gender
+  gender     Gender @default(MALE)
   phone      String  @unique
   imgUrl     String?
+  addressId Int
   //references
   user       Users   @relation(fields: [userId], references: [id])
-}
-
-model Store {
-  id        Int      @id @default(autoincrement())
-  name      String
-  country   String
-  city      String
-  subCity   String
-  createdAt DateTime @default(now())
-}
-
-model SupplierCategory {
-  id       Int         @id @default(autoincrement())
-  name     String
-  supplier Suppliers[]
+  address    Address @relation(fields: [addressId],references: [id])
 }
 
 model Suppliers {
   id         Int      @id @default(autoincrement())
+  categoryId Int
   fullName   String
   phone      String   @unique
   email      String   @unique
-  country    String
-  city       String
-  subCity    String
-  categoryId Int
+  addressId   Int
   createdAt  DateTime @default(now())
-
   //references
   category SupplierCategory @relation(fields: [categoryId], references: [id])
+  address Address @relation(fields: [addressId],references: [id])
+  // relation
+  winner Winner[]
+  grn GRN[]
+
+  SupplayerOffer SupplayerOffer[]
+}
+
+// -- store model -- //
+model Store {
+  id        Int      @id @default(autoincrement())
+  name      String
+  addressId Int
+  createdAt DateTime @default(now())
+  // references
+  address Address @relation(fields: [addressId],references: [id])
+  // relation
+  storeInventory StoreInventory[]
+}
+
+model StoreInventory {
+  id        Int      @id @default(autoincrement())
+  storId Int
+  userId Int
+  productId Int
+  quantity  Int
+  currentQuantity Int
+  type      StoreInventoryType
+  createdAt DateTime @default(now())
+  //refrences
+  product   Product  @relation(fields: [productId], references: [id])
+  user Users @relation(fields: [userId],references: [id])
+  store Store @relation(fields: [storId],references: [id])
 }
 
 model MaterialRequest {
@@ -119,28 +240,133 @@ model MaterialRequest {
   requesterId          Int
   departmentHeadId     Int
   logisticSuperViserId Int
-  items                RequestedItem[]
   createdAt            DateTime        @default(now())
+  isApproviedByDH Boolean @default(false)
 
   //refernces
   employee           Users @relation(fields: [requesterId], references: [id], name: "employedMaterialRequests")
   departmentHead     Users @relation(fields: [departmentHeadId], references: [id], name: "departmentHeadedMaterialRequests")
   logisticSupervisor Users @relation(fields: [logisticSuperViserId], references: [id], name: "logisticSupervisedMaterialRequests")
+  // relation
+  items               MaterialRequestItem []
+  purceasedRequestedItem PurceasedRequestedItem[]
+  purchasedOrderItem PurchasedOrderItem[]
 }
 
-model RequestedItem {
+model MaterialRequestItem {
   id                    Int     @id @default(autoincrement())
   materialRequestId     Int
-  name                  String
-  partNo                Int
-  unitOfMeasurment      String
+  productId Int
   quantityRequested     Decimal
   quantityInStock       Decimal
   quantityToBePurchased Decimal
   remark                String
-
   //reference
   materialRequest MaterialRequest @relation(fields: [materialRequestId], references: [id])
+  products Product[]
+  
+}
+
+model PurchasedRequest{
+  id   Int     @id @default(autoincrement())
+  userId Int
+  createdAt  DateTime        @default(now())
+  isApproviedByGM Boolean @default(false)
+  isApproviedByFinance Boolean @default(false)
+  // reference
+  user Users@relation(fields: [userId],references: [id])
+
+  // relation
+  items      PurceasedRequestedItem []
+}
+
+model PurceasedRequestedItem {
+  id   Int   @id @default(autoincrement())
+  purchasedRequestId     Int
+  quantityToBePurchased Decimal
+  remark                String
+  //reference
+  purchasedRequest MaterialRequest @relation(fields: [purchasedRequestId], references: [id])
+  // relation
+  products Product[]
+  purchasedReq PurchasedRequest[]
+}
+
+model PurchasedOrder{
+  id   Int     @id @default(autoincrement())
+  userId Int
+  logesticSupperviserId Int
+
+  createdAt   DateTime   @default(now())
+  // relation
+  items          PurchasedOrderItem[]
+  winner Winner[]
+  // references
+   user Users@relation(fields: [userId],references: [id])
+
+  SupplayerOffer SupplayerOffer[]
+}
+
+model PurchasedOrderItem {
+  id                    Int     @id @default(autoincrement())
+  purchasOrderId     Int
+  productId Int
+  quantityToBePurchased Decimal
+  remark                String
+  //reference
+  purchasedRequest MaterialRequest @relation(fields: [purchasOrderId], references: [id])
+  // relation
+  products Product[]
+
+  PurchasedOrder PurchasedOrder[]
+}
+
+model SupplayerOffer{
+    id   Int     @id @default(autoincrement())
+    purchasedOrderId Int
+    supplayerId Int
+    totalPrice DateTime
+    createdAt DateTime @default(now())
+    // reference
+    purchasedOrder PurchasedOrder @relation(fields: [purchasedOrderId],references: [id])
+    supplayer Suppliers @relation(fields: [supplayerId],references: [id])
+    // relation
+    offerItem OfferItem[]
+    
+}
+model OfferItem {
+   id   Int     @id @default(autoincrement())
+   supplayerOfferId Int
+   productId Int
+   quantity Decimal
+   unitPrice Decimal
+   supplayerOffer SupplayerOffer @relation(fields: [supplayerOfferId],references: [id])
+     // relation
+   products Product[]
+}
+
+
+model Winner{
+  id   Int     @id @default(autoincrement())
+  createdAt            DateTime        @default(now())
+  supplayerId Int
+  purchasedOrderId Int
+  userId Int
+  // reference
+  purchasedOrder PurchasedOrder @relation(fields: [purchasedOrderId],references: [id])
+  supplayer Suppliers @relation(fields: [supplayerId],references: [id])
+  user Users@relation(fields: [userId],references: [id])
+}
+
+model GRN{
+  id   Int     @id @default(autoincrement())
+  createdAt            DateTime        @default(now())
+  reciverId Int
+  supplayerId Int
+  productId Int
+  quantity  Int
+  user Users @relation(fields: [reciverId],references: [id])
+  supplayer Suppliers @relation(fields: [supplayerId],references: [id])
 }
 
 // ------x-----model part ---------x---------//
