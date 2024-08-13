@@ -1,11 +1,11 @@
 import userSchema from "./userSchem.js";
 import bcrypt from "bcrypt";
-import prisma from "../../config/prisma.js"
-import jwt from "jsonwebtoken"
-import {SECRET} from '../../config/secret.js'
+import prisma from "../../config/prisma.js";
+import jwt from "jsonwebtoken";
+import { SECRET } from "../../config/secret.js";
 const userController = {
   getSingleUser: async (req, res, next) => {
-     try {
+    try {
       const userId = parseInt(req.params.id, 10);
 
       if (isNaN(userId)) {
@@ -18,13 +18,13 @@ const userController = {
         where: {
           id: userId,
         },
-        include:{
-          profile:{
-            include:{
-              address:true
-            }
+        include: {
+          profile: {
+            include: {
+              address: true,
+            },
           },
-        }
+        },
       });
 
       if (!user) {
@@ -49,21 +49,19 @@ const userController = {
 
   getAllUsers: async (req, res, next) => {
     try {
-      const take=req.query.take || 10
-      const skip=req.query.skip || 0
+      const take = req.query.take || 10;
+      const skip = req.query.skip || 0;
       const users = await prisma.users.findMany({
-        take:+take,
-        skip:+skip,
-        include:{
-            profile:{
-              include:{
-                address:true
-              }
+        take: +take,
+        skip: +skip,
+        include: {
+          profile: {
+            include: {
+              address: true,
             },
-            department:true,
-
-          
-        }
+          },
+          department: true,
+        },
       });
       return res.status(200).json({
         success: true,
@@ -97,7 +95,6 @@ const userController = {
       const isPhoneExist = await prisma.profile.findFirst({
         where: {
           phone: data.phone,
-          
         },
       });
 
@@ -111,40 +108,46 @@ const userController = {
       const hashedPassword = await bcrypt.hashSync(data.password, 10);
       const newUser = await prisma.users.create({
         data: {
-          activeStatus:"Active",
-          email:data.email,
-          role:data.role,
-          password:{
-            create:{
-              password:hashedPassword
-            }
+          activeStatus: "ACTIVE",
+          email: data.email,
+          role: data.role,
+          password: {
+            create: {
+              password: hashedPassword,
+            },
           },
-         departmentId:data.departmentId,
-         profile:{
-          create:{
-            firstName:data.firstName,
-            lastName:data.lastName,
-            middleName:data.middleName,
-            gender:data.gender,
-            phone:data.phone,
-            address:data.address
-          }
-         }
+          departmentId: data.departmentId,
+          profile: {
+            create: {
+              firstName: data.firstName,
+              lastName: data.lastName,
+              middleName: data.middleName,
+              gender: data.gender,
+              phone: data.phone,
+              address: {
+                create: {
+                  country: data.country,
+                  city: data.city,
+                  subCity: data.subcity,
+                },
+              },
+            },
+          },
         },
       });
-      const registeredUser=await prisma.users.findFirst({
-        where:{
-          id:newUser.id
+      const registeredUser = await prisma.users.findFirst({
+        where: {
+          id: newUser.id,
         },
-        include:{
-          profile:{
-            include:{
-              address:true
-            }
+        include: {
+          profile: {
+            include: {
+              address: true,
+            },
           },
-          department:true
-        }
-      })
+          department: true,
+        },
+      });
       return res.status(200).json({
         success: true,
         message: "user created successfully",
@@ -158,7 +161,6 @@ const userController = {
     }
   },
 
-
   updateUser: async (req, res, next) => {
     try {
       const userId = parseInt(req.params.id, 10);
@@ -168,7 +170,7 @@ const userController = {
           message: "Invalid user ID",
         });
       }
-  
+
       const {
         departmentId,
         password,
@@ -179,12 +181,14 @@ const userController = {
         phone,
         ...userData
       } = req.body;
-  
+
       const userUpdateData = {
         ...userData,
-        department: departmentId ? { connect: { id: departmentId } } : undefined,
+        department: departmentId
+          ? { connect: { id: departmentId } }
+          : undefined,
       };
-  
+
       const profileUpdateData = {
         firstName,
         lastName,
@@ -192,7 +196,7 @@ const userController = {
         gender,
         phone,
       };
-  
+
       const updatedUser = await prisma.users.update({
         where: {
           id: userId,
@@ -200,13 +204,13 @@ const userController = {
         data: userUpdateData,
         include: {
           profile: {
-            include:{
-              address:true
-            }
-          }, 
+            include: {
+              address: true,
+            },
+          },
         },
       });
-  
+
       // Update profile if any profile data is provided
       if (firstName || lastName || middleName || gender || phone) {
         await prisma.profile.update({
@@ -216,7 +220,7 @@ const userController = {
           data: profileUpdateData,
         });
       }
-  
+
       return res.status(200).json({
         success: true,
         message: "User updated successfully",
@@ -230,8 +234,7 @@ const userController = {
       });
     }
   },
-  
-  
+
   // updateUser: async (req, res, next) => {
   //   try {
   //     const userId = parseInt(req.params.id, 10);
@@ -275,9 +278,9 @@ const userController = {
         where: {
           email: data.email,
         },
-        include:{
-          profile:true,
-        }
+        include: {
+          profile: true,
+        },
       });
       if (!user) {
         return res.status(404).json({
@@ -291,24 +294,23 @@ const userController = {
           message: `Your account is ${user.activeStatus}`,
         });
       }
-      const userPassword=await prisma.password.findFirst({
-        where:{
-          userId:+user.id
-        }
-      })
+      const userPassword = await prisma.password.findFirst({
+        where: {
+          userId: +user.id,
+        },
+      });
       if (!bcrypt.compareSync(data.password, userPassword.password)) {
         return res.status(404).json({
           success: false,
           message: "password is incorrect",
         });
       }
-      const payload={
-        userid:user.id,
-        role:user.role,
-        firstName:user.profile.firstName
-        
-      }
-      const token=jwt.sign(payload,SECRET)
+      const payload = {
+        userid: user.id,
+        role: user.role,
+        firstName: user.profile.firstName,
+      };
+      const token = jwt.sign(payload, SECRET);
 
       return res.status(200).json({
         success: true,
@@ -324,8 +326,6 @@ const userController = {
     }
   },
 
-
-  
   deleteUser: async (req, res, next) => {
     try {
       const userId = parseInt(req.params.id, 10);
@@ -335,7 +335,7 @@ const userController = {
           message: "invalid user id",
         });
       }
-    const deleteUser=  await prisma.users.delete({
+      const deleteUser = await prisma.users.delete({
         where: {
           id: userId,
         },
@@ -343,7 +343,7 @@ const userController = {
       return res.status(200).json({
         success: true,
         message: "user deleted successfully",
-        data:deleteUser
+        data: deleteUser,
       });
     } catch (error) {
       if (error.code === "P2025") {
@@ -360,7 +360,6 @@ const userController = {
       });
     }
   },
-  
 };
 
 export default userController;
