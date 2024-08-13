@@ -19,8 +19,11 @@ const userController = {
           id: userId,
         },
         include:{
-            profile:true,
-            department:true,
+          profile:{
+            include:{
+              address:true
+            }
+          },
         }
       });
 
@@ -52,7 +55,14 @@ const userController = {
         take:+take,
         skip:+skip,
         include:{
-            profile:true
+            profile:{
+              include:{
+                address:true
+              }
+            },
+            department:true,
+
+          
         }
       });
       return res.status(200).json({
@@ -71,14 +81,10 @@ const userController = {
 
   createUser: async (req, res, next) => {
     try {
-     
-
       const data = userSchema.register.parse(req.body);
-
       const isUserExist = await prisma.users.findFirst({
         where: {
           email: data.email,
-          
         },
       });
 
@@ -121,6 +127,7 @@ const userController = {
             middleName:data.middleName,
             gender:data.gender,
             phone:data.phone,
+            address:data.address
           }
          }
         },
@@ -130,8 +137,12 @@ const userController = {
           id:newUser.id
         },
         include:{
-          profile:true,
-          department:true,
+          profile:{
+            include:{
+              address:true
+            }
+          },
+          department:true
         }
       })
       return res.status(200).json({
@@ -188,7 +199,11 @@ const userController = {
         },
         data: userUpdateData,
         include: {
-          profile: true, 
+          profile: {
+            include:{
+              address:true
+            }
+          }, 
         },
       });
   
@@ -270,7 +285,7 @@ const userController = {
           message: "no account in this email address",
         });
       }
-      if (user.activeStatus !== "Active") {
+      if (user.activeStatus !== "ACTIVE") {
         return res.status(404).json({
           success: false,
           message: `Your account is ${user.activeStatus}`,

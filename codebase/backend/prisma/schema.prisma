@@ -3,7 +3,6 @@
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -51,8 +50,6 @@ enum StoreInventoryType {
 // -----x------enum part ----------x--------//
 
 // -----------model part ------------------//
-
-// base model // 
 
 model Department {
   id        Int      @id @default(autoincrement())
@@ -148,28 +145,22 @@ model Address {
 }
 
 model Users {
-  id                                 Int               @id @default(autoincrement())
-  email                              String            @unique
+  id                                 Int                @id @default(autoincrement())
+  email                              String             @unique
   activeStatus                       ActiveStatus
-  role                               CompanyRole       @default(EMPLOYEE)
-  createdAt                          DateTime          @default(now())
+  role                               CompanyRole        @default(EMPLOYEE)
+  createdAt                          DateTime           @default(now())
   departmentId                       Int
   password                           Password?
   profile                            Profile?
-  //reference
-  department                         Department        @relation(fields: [departmentId], references: [id])
-  departmentHeadedMaterialRequests   MaterialRequest[] @relation("departmentHeadedMaterialRequests")
-  logisticSupervisedMaterialRequests MaterialRequest[] @relation("logisticSupervisedMaterialRequests")
-  employedMaterialRequests           MaterialRequest[] @relation("employedMaterialRequests")
-  // relation
+  departmentHeadedMaterialRequests   MaterialRequest[]  @relation("departmentHeadedMaterialRequests")
+  logisticSupervisedMaterialRequests MaterialRequest[]  @relation("logisticSupervisedMaterialRequests")
+  employedMaterialRequests           MaterialRequest[]  @relation("employedMaterialRequests")
   storeinventory                     StoreInventory[]
   GRN                                GRN[]
-
-  PurchasedRequest PurchasedRequest[]
-
-  PurchasedOrder PurchasedOrder[]
-
-  Winner Winner[]
+  PurchasedRequest                   PurchasedRequest[]
+  PurchasedOrder                     PurchasedOrder[]
+  Winner                             Winner[]
 }
 
 model Password {
@@ -197,20 +188,19 @@ model Profile {
 }
 
 model Suppliers {
-  id         Int              @id @default(autoincrement())
-  categoryId Int
-  fullName   String
-  phone      String           @unique
-  email      String           @unique
-  addressId  Int
-  createdAt  DateTime         @default(now())
+  id             Int              @id @default(autoincrement())
+  categoryId     Int
+  fullName       String
+  phone          String           @unique
+  email          String           @unique
+  addressId      Int
+  createdAt      DateTime         @default(now())
   //references
-  category   SupplierCategory @relation(fields: [categoryId], references: [id])
-  address    Address          @relation(fields: [addressId], references: [id])
+  category       SupplierCategory @relation(fields: [categoryId], references: [id])
+  address        Address          @relation(fields: [addressId], references: [id])
   // relation
-  winner     Winner[]
-  grn        GRN[]
-
+  winner         Winner[]
+  grn            GRN[]
   SupplayerOffer SupplayerOffer[]
 }
 
@@ -330,7 +320,7 @@ model SupplayerOffer {
   id               Int            @id @default(autoincrement())
   purchasedOrderId Int
   supplayerId      Int
-  totalPrice       DateTime
+  totalPrice       Decimal
   createdAt        DateTime       @default(now())
   // reference
   purchasedOrder   PurchasedOrder @relation(fields: [purchasedOrderId], references: [id])
