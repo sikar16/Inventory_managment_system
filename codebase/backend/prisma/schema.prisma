@@ -151,6 +151,9 @@ model Users {
   role                               CompanyRole        @default(EMPLOYEE)
   createdAt                          DateTime           @default(now())
   departmentId                       Int
+  //reference
+  department                         Department         @relation(fields: [departmentId], references: [id])
+  // relation
   password                           Password?
   profile                            Profile?
   departmentHeadedMaterialRequests   MaterialRequest[]  @relation("departmentHeadedMaterialRequests")
