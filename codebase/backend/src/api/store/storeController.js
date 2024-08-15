@@ -82,6 +82,7 @@ const storeController={
             const newStore = await prisma.store.create({
               data: {
                 name: data.name,
+                
                 country: data.country,
                 city: data.city,
                 subCity: data.subCity,

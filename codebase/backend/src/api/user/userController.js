@@ -211,7 +211,6 @@ const userController = {
         },
       });
 
-      // Update profile if any profile data is provided
       if (firstName || lastName || middleName || gender || phone) {
         await prisma.profile.update({
           where: {
@@ -306,7 +305,7 @@ const userController = {
         });
       }
       const payload = {
-        userid: user.id,
+        userId: user.id,
         role: user.role,
         firstName: user.profile.firstName,
       };

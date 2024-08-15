@@ -78,7 +78,7 @@ const departmentController = {
       if(isdepartmentExist){
         return res.status(400).json({
           success:false,
-          message:"department is already exist "
+          message:"this department is already exist "
       })
       }
 

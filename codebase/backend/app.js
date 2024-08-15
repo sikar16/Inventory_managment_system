@@ -17,7 +17,10 @@ app.use(cors({
 
 //application route
 import appRouter from './src/route/index.js'
-app.use("/api",appRouter) 
+import userController from "./src/api/user/userController.js"
+import { isAuth } from "./src/middleware/auth.js"
+app.post("/api/user/login",userController.login)
+app.use("/api",[isAuth],appRouter) //[isAuth]
 
 // test route
 app.get("/",(req,res,next)=>{

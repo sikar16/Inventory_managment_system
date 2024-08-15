@@ -1,51 +1,21 @@
-/*
-  Warnings:
+-- CreateTable
+CREATE TABLE `Department` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-  - You are about to drop the column `city` on the `store` table. All the data in the column will be lost.
-  - You are about to drop the column `country` on the `store` table. All the data in the column will be lost.
-  - You are about to drop the column `subCity` on the `store` table. All the data in the column will be lost.
-  - You are about to drop the column `city` on the `suppliers` table. All the data in the column will be lost.
-  - You are about to drop the column `country` on the `suppliers` table. All the data in the column will be lost.
-  - You are about to drop the column `subCity` on the `suppliers` table. All the data in the column will be lost.
-  - The values [Active,Inactive,Block] on the enum `Users_activeStatus` will be removed. If these variants are still used in the database, this will fail.
-  - You are about to alter the column `role` on the `users` table. The data in that column could be lost. The data in that column will be cast from `Enum(EnumId(1))` to `Enum(EnumId(2))`.
-  - You are about to drop the `requesteditem` table. If the table is not empty, all the data it contains will be lost.
-  - Added the required column `addressId` to the `Profile` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `addressId` to the `Store` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `addressId` to the `Suppliers` table without a default value. This is not possible if the table is not empty.
+    UNIQUE INDEX `Department_name_key`(`name`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-*/
--- DropForeignKey
-ALTER TABLE `requesteditem` DROP FOREIGN KEY `RequestedItem_materialRequestId_fkey`;
+-- CreateTable
+CREATE TABLE `SupplierCategory` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
--- AlterTable
-ALTER TABLE `materialrequest` ADD COLUMN `isApproviedByDH` BOOLEAN NOT NULL DEFAULT false;
-
--- AlterTable
-ALTER TABLE `profile` ADD COLUMN `addressId` INTEGER NOT NULL,
-    MODIFY `gender` ENUM('MALE', 'FEMALE') NOT NULL DEFAULT 'MALE';
-
--- AlterTable
-ALTER TABLE `store` DROP COLUMN `city`,
-    DROP COLUMN `country`,
-    DROP COLUMN `subCity`,
-    ADD COLUMN `addressId` INTEGER NOT NULL;
-
--- AlterTable
-ALTER TABLE `suppliercategory` ADD COLUMN `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);
-
--- AlterTable
-ALTER TABLE `suppliers` DROP COLUMN `city`,
-    DROP COLUMN `country`,
-    DROP COLUMN `subCity`,
-    ADD COLUMN `addressId` INTEGER NOT NULL;
-
--- AlterTable
-ALTER TABLE `users` MODIFY `activeStatus` ENUM('ACTIVE', 'INACTIVE', 'BLOCKED') NOT NULL,
-    MODIFY `role` ENUM('ADMIN', 'EMPLOYEE', 'DEPARTMENT_HEAD', 'LOGESTIC_SUPERVISER', 'FINANCE', 'GENERAL_MANAGER', 'STORE_KEEPER') NOT NULL DEFAULT 'EMPLOYEE';
-
--- DropTable
-DROP TABLE `requesteditem`;
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `ProductCategory` (
@@ -117,6 +87,72 @@ CREATE TABLE `Address` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `Users` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `email` VARCHAR(191) NOT NULL,
+    `activeStatus` ENUM('ACTIVE', 'INACTIVE', 'BLOCKED') NOT NULL,
+    `role` ENUM('ADMIN', 'EMPLOYEE', 'DEPARTMENT_HEAD', 'LOGESTIC_SUPERVISER', 'FINANCE', 'GENERAL_MANAGER', 'STORE_KEEPER') NOT NULL DEFAULT 'EMPLOYEE',
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `departmentId` INTEGER NOT NULL,
+
+    UNIQUE INDEX `Users_email_key`(`email`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Password` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` INTEGER NOT NULL,
+    `password` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    UNIQUE INDEX `Password_userId_key`(`userId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Profile` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` INTEGER NOT NULL,
+    `firstName` VARCHAR(191) NOT NULL,
+    `lastName` VARCHAR(191) NOT NULL,
+    `middleName` VARCHAR(191) NOT NULL,
+    `gender` ENUM('MALE', 'FEMALE') NOT NULL DEFAULT 'MALE',
+    `phone` VARCHAR(191) NOT NULL,
+    `imgUrl` VARCHAR(191) NULL,
+    `addressId` INTEGER NOT NULL,
+
+    UNIQUE INDEX `Profile_userId_key`(`userId`),
+    UNIQUE INDEX `Profile_phone_key`(`phone`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Suppliers` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `categoryId` INTEGER NOT NULL,
+    `fullName` VARCHAR(191) NOT NULL,
+    `phone` VARCHAR(191) NOT NULL,
+    `email` VARCHAR(191) NOT NULL,
+    `addressId` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    UNIQUE INDEX `Suppliers_phone_key`(`phone`),
+    UNIQUE INDEX `Suppliers_email_key`(`email`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Store` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+    `addressId` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `StoreInventory` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `storId` INTEGER NOT NULL,
@@ -131,13 +167,25 @@ CREATE TABLE `StoreInventory` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `MaterialRequest` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `requesterId` INTEGER NOT NULL,
+    `departmentHeadId` INTEGER NOT NULL,
+    `logisticSuperViserId` INTEGER NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `isApproviedByDH` BOOLEAN NOT NULL DEFAULT false,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `MaterialRequestItem` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `materialRequestId` INTEGER NOT NULL,
     `productId` INTEGER NOT NULL,
     `quantityRequested` DECIMAL(65, 30) NOT NULL,
-    `quantityInStock` DECIMAL(65, 30) NOT NULL,
-    `quantityToBePurchased` DECIMAL(65, 30) NOT NULL,
+    `quantityInStock` DECIMAL(65, 30) NULL,
+    `quantityToBePurchased` DECIMAL(65, 30) NULL,
     `remark` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -157,6 +205,7 @@ CREATE TABLE `PurchasedRequest` (
 -- CreateTable
 CREATE TABLE `PurceasedRequestedItem` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `productId` INTEGER NOT NULL,
     `purchasedRequestId` INTEGER NOT NULL,
     `quantityToBePurchased` DECIMAL(65, 30) NOT NULL,
     `remark` VARCHAR(191) NOT NULL,
@@ -168,7 +217,6 @@ CREATE TABLE `PurceasedRequestedItem` (
 CREATE TABLE `PurchasedOrder` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` INTEGER NOT NULL,
-    `logesticSupperviserId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
@@ -190,7 +238,7 @@ CREATE TABLE `SupplayerOffer` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `purchasedOrderId` INTEGER NOT NULL,
     `supplayerId` INTEGER NOT NULL,
-    `totalPrice` DATETIME(3) NOT NULL,
+    `totalPrice` DECIMAL(65, 30) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
@@ -224,8 +272,18 @@ CREATE TABLE `GRN` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `reciverId` INTEGER NOT NULL,
     `supplayerId` INTEGER NOT NULL,
+    `purchasedOrderId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `GRNItem` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `productId` INTEGER NOT NULL,
     `quantity` INTEGER NOT NULL,
+    `remark` VARCHAR(191) NOT NULL,
+    `grnId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -300,7 +358,19 @@ ALTER TABLE `ProductAttribute` ADD CONSTRAINT `ProductAttribute_productId_fkey` 
 ALTER TABLE `ProductAttribute` ADD CONSTRAINT `ProductAttribute_templateAttributeId_fkey` FOREIGN KEY (`templateAttributeId`) REFERENCES `TemplateAttribute`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `Users` ADD CONSTRAINT `Users_departmentId_fkey` FOREIGN KEY (`departmentId`) REFERENCES `Department`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Password` ADD CONSTRAINT `Password_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Profile` ADD CONSTRAINT `Profile_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `Profile` ADD CONSTRAINT `Profile_addressId_fkey` FOREIGN KEY (`addressId`) REFERENCES `Address`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Suppliers` ADD CONSTRAINT `Suppliers_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `SupplierCategory`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Suppliers` ADD CONSTRAINT `Suppliers_addressId_fkey` FOREIGN KEY (`addressId`) REFERENCES `Address`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -316,6 +386,15 @@ ALTER TABLE `StoreInventory` ADD CONSTRAINT `StoreInventory_userId_fkey` FOREIGN
 
 -- AddForeignKey
 ALTER TABLE `StoreInventory` ADD CONSTRAINT `StoreInventory_storId_fkey` FOREIGN KEY (`storId`) REFERENCES `Store`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `MaterialRequest` ADD CONSTRAINT `MaterialRequest_requesterId_fkey` FOREIGN KEY (`requesterId`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `MaterialRequest` ADD CONSTRAINT `MaterialRequest_departmentHeadId_fkey` FOREIGN KEY (`departmentHeadId`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `MaterialRequest` ADD CONSTRAINT `MaterialRequest_logisticSuperViserId_fkey` FOREIGN KEY (`logisticSuperViserId`) REFERENCES `Users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `MaterialRequestItem` ADD CONSTRAINT `MaterialRequestItem_materialRequestId_fkey` FOREIGN KEY (`materialRequestId`) REFERENCES `MaterialRequest`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -355,6 +434,12 @@ ALTER TABLE `GRN` ADD CONSTRAINT `GRN_reciverId_fkey` FOREIGN KEY (`reciverId`) 
 
 -- AddForeignKey
 ALTER TABLE `GRN` ADD CONSTRAINT `GRN_supplayerId_fkey` FOREIGN KEY (`supplayerId`) REFERENCES `Suppliers`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `GRN` ADD CONSTRAINT `GRN_purchasedOrderId_fkey` FOREIGN KEY (`purchasedOrderId`) REFERENCES `PurchasedOrder`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `GRNItem` ADD CONSTRAINT `GRNItem_grnId_fkey` FOREIGN KEY (`grnId`) REFERENCES `GRN`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_ProductToPurceasedRequestedItem` ADD CONSTRAINT `_ProductToPurceasedRequestedItem_A_fkey` FOREIGN KEY (`A`) REFERENCES `Product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

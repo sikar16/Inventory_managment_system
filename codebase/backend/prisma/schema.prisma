@@ -238,14 +238,14 @@ model MaterialRequest {
   id                   Int      @id @default(autoincrement())
   requesterId          Int
   departmentHeadId     Int
-  logisticSuperViserId Int
+  logisticSuperViserId Int?
   createdAt            DateTime @default(now())
   isApproviedByDH      Boolean  @default(false)
 
   //refernces
   employee               Users                    @relation(fields: [requesterId], references: [id], name: "employedMaterialRequests")
   departmentHead         Users                    @relation(fields: [departmentHeadId], references: [id], name: "departmentHeadedMaterialRequests")
-  logisticSupervisor     Users                    @relation(fields: [logisticSuperViserId], references: [id], name: "logisticSupervisedMaterialRequests")
+  logisticSupervisor     Users?                   @relation(fields: [logisticSuperViserId], references: [id], name: "logisticSupervisedMaterialRequests")
   // relation
   items                  MaterialRequestItem[]
   purceasedRequestedItem PurceasedRequestedItem[]
@@ -257,8 +257,8 @@ model MaterialRequestItem {
   materialRequestId     Int
   productId             Int
   quantityRequested     Decimal
-  quantityInStock       Decimal
-  quantityToBePurchased Decimal
+  quantityInStock       Decimal?
+  quantityToBePurchased Decimal?
   remark                String
   //reference
   materialRequest       MaterialRequest @relation(fields: [materialRequestId], references: [id])
@@ -280,6 +280,7 @@ model PurchasedRequest {
 
 model PurceasedRequestedItem {
   id                    Int                @id @default(autoincrement())
+  productId             Int
   purchasedRequestId    Int
   quantityToBePurchased Decimal
   remark                String
@@ -291,10 +292,8 @@ model PurceasedRequestedItem {
 }
 
 model PurchasedOrder {
-  id                    Int @id @default(autoincrement())
-  userId                Int
-  logesticSupperviserId Int
-
+  id        Int                  @id @default(autoincrement())
+  userId    Int
   createdAt DateTime             @default(now())
   // relation
   items     PurchasedOrderItem[]
@@ -303,6 +302,8 @@ model PurchasedOrder {
   user      Users                @relation(fields: [userId], references: [id])
 
   SupplayerOffer SupplayerOffer[]
+
+  grn GRN[]
 }
 
 model PurchasedOrderItem {
@@ -356,14 +357,26 @@ model Winner {
 }
 
 model GRN {
-  id          Int       @id @default(autoincrement())
-  createdAt   DateTime  @default(now())
-  reciverId   Int
-  supplayerId Int
-  productId   Int
-  quantity    Int
-  user        Users     @relation(fields: [reciverId], references: [id])
-  supplayer   Suppliers @relation(fields: [supplayerId], references: [id])
+  id               Int            @id @default(autoincrement())
+  createdAt        DateTime       @default(now())
+  reciverId        Int
+  supplayerId      Int
+  purchasedOrderId Int
+  user             Users          @relation(fields: [reciverId], references: [id])
+  supplayer        Suppliers      @relation(fields: [supplayerId], references: [id])
+  purchasedOrder   PurchasedOrder @relation(fields: [purchasedOrderId], references: [id])
+
+  grnItem GRNItem[]
+}
+
+model GRNItem {
+  id        Int    @id @default(autoincrement())
+  productId Int
+  quantity  Int
+  remark    String
+  grnId     Int
+  //reference
+  grn       GRN    @relation(fields: [grnId], references: [id])
 }
 
 // ------x-----model part ---------x---------//

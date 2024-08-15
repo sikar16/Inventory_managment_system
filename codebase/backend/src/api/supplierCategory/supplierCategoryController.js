@@ -111,12 +111,17 @@ const supplierCategoryController = {
                 });
             }
 
+
             const updatecategory = await prisma.supplierCategory.update({
                 where: {
                     id: +categoryId,
                 },
                 data: req.body,
             });
+
+            const data = supplierCategorySchem.create.parse(req.body);
+
+           
 
             return res.status(200).json({
                 success: true,
@@ -148,12 +153,12 @@ const supplierCategoryController = {
                 },
             });
 
-            // if (issupplierCategoryExist) {
-            //     return res.status(400).json({
-            //         success: false,
-            //         message: "This category name is already registered",
-            //     });
-            // }
+            if (!issupplierCategoryExist) {
+                return res.status(400).json({
+                    success: false,
+                    message: "This supplier category is not exist",
+                });
+            }
 
             const deletecategory = await prisma.supplierCategory.delete({
                 where: {
