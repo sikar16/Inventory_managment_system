@@ -7,6 +7,7 @@ import storeRouter from '../api/store/storeRouter.js';
 import productCategoryRoute from '../api/ProductCategory/productCategoryRouter.js';
 import productSubCategoryRoute from '../api/ProductSubCategory/ProductSubCategoryRouter.js';
 import templeteRoute from '../api/Templete/templeteRouter.js'
+import productRouter from '../api/Product/producRouter.js';
 const appRouter=express.Router()
 appRouter.use("/user",userRouter)
 appRouter.use("/department",departmentRouter)
@@ -16,6 +17,7 @@ appRouter.use("/store",storeRouter)
 appRouter.use("/productCategory",productCategoryRoute)
 appRouter.use("/productSubCategory",productSubCategoryRoute)
 appRouter.use("/temeplate",templeteRoute)
+appRouter.use("/product",productRouter)
 
 
 
