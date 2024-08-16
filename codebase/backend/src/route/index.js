@@ -15,7 +15,7 @@ appRouter.use("/supplier", supplierRoute);
 appRouter.use("/supplierCategory", supplierCategoryRouter);
 appRouter.use("/store", storeRouter);
 appRouter.use("/productCategory", productCategoryRoute);
-// appRouter.use("/productSubCategory", productSubCategoryRoute);
+appRouter.use("/productSubCategory", productSubCategoryRoute);
 appRouter.use("/temeplate", templeteRoute);
 appRouter.use("/product", productRouter);
 export default appRouter;
