@@ -18,7 +18,4 @@ appRouter.use("/productCategory",productCategoryRoute)
 appRouter.use("/productSubCategory",productSubCategoryRoute)
 appRouter.use("/temeplate",templeteRoute)
 appRouter.use("/product",productRouter)
-
-
-
 export default appRouter;
