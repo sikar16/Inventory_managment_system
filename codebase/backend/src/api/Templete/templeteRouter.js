@@ -5,5 +5,6 @@ templateRouter.get("/:id",templateController.getSigletemplete),
 templateRouter.get("/",templateController.getAlltemplete),
 templateRouter.post("/",templateController.creattemplete),
 templateRouter.put("/:id",templateController.updatetemplete),
+templateRouter.put("/attribute/:id",templateController.updateTemplateAttribute),
 templateRouter.delete("/:id",templateController.deletetemplete)
 export default templateRouter
