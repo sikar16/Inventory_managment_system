@@ -33,7 +33,7 @@ const departmentController = {
       console.error(error);
       return res.status(500).json({
         success: false,
-        message: "error while fetching single department",
+        message:` ${error}`,
       });
     }
   },
@@ -51,7 +51,7 @@ const departmentController = {
       console.log(error);
       return res.status(500).json({
         success: false,
-        message: "error while fetching departments",
+        message:`${error}`,
       });
     }
   },
@@ -67,8 +67,6 @@ const departmentController = {
           })
         }
       }
-
-
       const data = departmentSchema.createDepartment.parse(req.body);
       const isdepartmentExist=await prisma.department.findFirst({
       where:{
@@ -96,7 +94,7 @@ const departmentController = {
     } catch (error) {
       return res.status(500).json({
         success: false,
-        message:`creating error ${error}`,
+        message:` error:- ${error}`,
       });
     }
   },
@@ -110,9 +108,22 @@ const departmentController = {
           message: "invalid department id",
         });
       }
+      
+
 
       const data = departmentSchema.updateDepartment.parse(req.body);
+const isDepartementExist=await prisma.department.findFirst({
+        where:{
+          name:data.name
+        }
+      })
 
+      if(isDepartementExist){
+        return res.status(404).json({
+          success: false,
+          message: "department is already exist",
+        });
+      }
       const updatedDepartment = await prisma.department.update({
         where: {
           id: departmentId,
@@ -131,7 +142,7 @@ const departmentController = {
       console.error(error);
       return res.status(500).json({
         success: false,
-        message: "error while updating department",
+        message: `error: ${error}`,
       });
     }
   },
@@ -174,7 +185,7 @@ const departmentController = {
       console.error(error);
       return res.status(500).json({
         success: false,
-        message: "error while deleting department",
+        message: `error- ${error}`,
       });
     }
   },
