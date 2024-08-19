@@ -1,0 +1,326 @@
+Inventory management
+    1.Login page
+        Request 
+            Method: POST
+            Endpoint: /api/login
+            Header: Content-Type: application/json
+            Body:
+            {
+            "email": "example@gmail.com",
+            "password": "123456"
+            }
+        Responce
+            {
+
+            "status": "success",
+            "data": {
+                "userId": "123456789",
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjM0NTY3ODkiLCJpYXQiOjE2MjQ1NzI4MDAsImV4cCI6MTYyNDU3NjQwMH0.Xb21nc-L3_ALDl9HU_Nl53x_u0lGKypPb692WAMsQmA"
+            }
+            }
+    2.forget password
+        Request 
+            Method: POST
+            Endpoint: /api/forgetPassword
+            Header: Content-Type: application/json
+            Body:
+            {
+            "email": "example@gmail.com"
+            }
+
+        Responce
+            {
+            "status": "success",
+            "message":"send to email succesfully"
+            }
+
+    3.new password
+        Request 
+            Method: POST
+            Endpoint: /api/newPassword
+            Header: Content-Type: application/json
+            Body:
+            {
+            "password":"123123"
+            }
+
+        Responce
+            {
+            "status": "success",
+            "message":"password changed succesfully"
+            }
+    4.profile
+        left
+            Request 
+                Method: GET
+                Endpoint: /api/user/profile
+                Headers: 
+                {
+                    Content-Type: application/json,
+                    authorization: token
+                }
+
+            Responce
+                {
+                "status": "success",
+                "data":
+                {
+                    firstName:zerubabel,
+                    lastName:damtew,
+                    imgUrl:img,
+                    email:zeru@gmail.com,
+                    phone:0989898989,
+                    role:Finance,
+                    gender:Male,
+
+                }
+                }
+                
+        right
+            Request 
+                Method: GET
+                Endpoint: /api/user/detaile
+                Headers: 
+                {
+                    Content-Type: application/json,
+                    authorization: token
+                }
+
+            Responce
+                {
+                "status": "success",
+                "data":
+                {
+                    firstName:zerubabel,
+                    lastName:damtew,
+                    imgUrl:img,
+                    email:zeru@gmail.com,
+                    phone:0989898989,
+                    role:Finance,
+                    gender:Male,
+                    address:
+                    {
+                        country:ethipia,
+                        city:addis ababa,
+                        subcity:bole
+                    }
+
+                }
+                }
+        updateAddress
+            Request 
+                Method: PUT
+                Endpoint: /api/user/address
+                Headers: 
+                {
+                    Content-Type: application/json,
+                    authorization: token
+                }               
+                Body:
+                {
+                    "country":"ethipia",
+                    "city":"addis ababa",
+                    "subcity":"bole"
+                }
+
+            Responce
+                {
+                "status": "success",
+                "message":"address changed succesfully"
+                }
+
+        updateprofile
+            Request 
+                Method: PUT
+                Endpoint: /api/user/profile
+                Headers: 
+                {
+                    Content-Type: application/json,
+                    authorization: token
+                }               
+                Body:
+                {
+                    "firstName":"zerubabel",
+                    "lastName":"damtew",
+                    "imgUrl":"img",
+                    "email":"zeru@gmail.com",
+                    "phone":"0989898989",
+                    "role":"Finance",
+                    "gender":"Male",
+                }
+
+            Responce
+                {
+                "status": "success",
+                "message":"profile changed succesfully"
+                }
+    5.users page
+        table
+            Request 
+                Method: GET
+                Endpoint: /api/user?take=10&skip=0&role=FINANCE&departemntId=1
+                Headers: 
+                {
+                    Content-Type: application/json,
+                    authorization: token
+                }
+
+            Responce
+                {
+                "success": true,
+                "message": "fetching all users",
+                "data": [
+                    {
+                        "id": 1,
+                        "email": "yohannan@gmail.com",
+                        "activeStatus": "ACTIVE",
+                        "role": "DEPARTMENT_HEAD",
+                        "createdAt": "2024-08-17T08:15:58.920Z",
+                        "departmentId": 1,
+                        "profile": {
+                            "id": 1,
+                            "userId": 1,
+                            "firstName": "yohana",
+                            "lastName": "teferi",
+                            "middleName": "engdaw",
+                            "gender": "FEMALE",
+                            "phone": "0911044444",
+                            "imgUrl": null,
+                            "addressId": 1,
+                            "address": {
+                                "id": 1,
+                                "country": "Ethiopia",
+                                "city": "Addis Ababa",
+                                "subCity": "Addis Ketema",
+                                "createdAt": "2024-08-17T08:15:58.920Z"
+                            }
+                        },
+                        "department": {
+                            "id": 1,
+                            "name": "Information Tecnology",
+                            "createdAt": "2024-08-15T14:10:47.707Z"
+                        }
+                    },...
+                ]
+            }
+        departmentList
+            Request 
+                    Method: GET
+                    Endpoint: /api/departement?take=10&skip=0
+                    Headers: 
+                    {
+                        Content-Type: application/json,
+                        authorization: token
+                    }
+            Responce
+            {
+                 "data":[ 
+                    {
+                        "id": 1,
+                        "name": "Information Tecnology",
+                        "createdAt": "2024-08-15T14:10:47.707Z"
+                    },...
+                        ]
+                        
+            }
+        roleList
+            Request 
+                    Method: GET
+                    Endpoint: /api/roles
+                    Headers: 
+                    {
+                        Content-Type: application/json,
+                        authorization: token
+                    }
+            Responce
+            {
+                 "data":
+                 [ 
+                    ADMIN
+                    EMPLOYEE
+                    DEPARTMENT_HEAD
+                    LOGESTIC_SUPERVISER
+                    FINANCE
+                    GENERAL_MANAGER
+                    STORE_KEEPER
+                ]        
+            }   
+        statistic
+
+            Request 
+                    Method: GET
+                    Endpoint: /api/dashbord/user/count
+                    Headers: 
+                    {
+                        Content-Type: application/json,
+                        authorization: token
+                    }
+            Responce
+            {
+                 "data":
+                 [ 
+                    "ADMIN":66
+                    "EMPLOYEE":99
+                    "DEPARTMENT_HEAD":99
+                    "LOGESTIC_SUPERVISER":66
+                    "FINANCE":90
+                    "GENERAL_MANAGER":90
+                    "STORE_KEEPER":80
+                ]        
+            }   
+
+    6.user resgstration page
+        Request 
+            Method: GET
+            Endpoint: /api/user/profile
+            Headers: 
+            {
+                Content-Type: application/json,
+                authorization: token
+            } 
+
+            body:
+                {
+                    "email": "yohannan@gmail.com",
+                    "firstName": "yohana",
+                    "lastName": "teferi",
+                    "middleName": "engdaw",
+                    "gender": "FEMALE",
+                    "phone": "0911044444",
+                    "imgUrl": null,
+                    "country": "Ethiopia",
+                    "city": "Addis Ababa",
+                    "subCity": "Addis Ketema",
+                    "departementId":1
+                       
+                }
+
+        Response
+        {
+            "success": true,
+            "message": "user register successfully",
+        }
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

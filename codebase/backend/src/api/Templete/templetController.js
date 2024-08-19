@@ -1,7 +1,9 @@
 import prisma from "../../config/prisma.js";
 import templeteSchem from "./templeteSchem.js";
 
-const templeteController={
+const templateController={
+
+
     getSigletemplete:async (req,res,next)=>{
         try {
             const templeteId=parseInt(req.params.id,10);
@@ -63,59 +65,58 @@ const templeteController={
         
     },
     creattemplete: async (req, res, next) => {
-        try {
-            const requiredField = ["name", "item"];
-            for (const field of requiredField) {
-                if (!req.body[field]) {
-                    return res.status(403).json({
-                        success: false,
-                        message: `${field} is required`
-                    });
-                }
-            }
-
-            const data = templeteSchem.create.parse({
-                name: req.body.name,
-                attributes: JSON.parse(req.body.item)
-            });
-
-            const istemplateExist = await prisma.template.findFirst({
+    try{
+    const data=templeteSchem.create.parse(req.body)
+        for(let i=0;i<req.body.attributes.length;i++){
+            const isTemplateAttributeExist = await prisma.templateAttribute.findFirst({
                 where: {
-                    name: data.name
-                }
+                  id: +data.items[i].templateAttributeId,
+                },
+              });
+        
+        if (!isTemplateAttributeExist) {
+            return res.status(404).json({
+              success: false,
+              message: "Template attribute not found",
             });
-            if (istemplateExist) {
-                return res.status(400).json({
-                    success: false,
-                    message: "this template already exists"
-                });
-            }
-
-
-            const newTemplate = await prisma.template.create({
-                data: {
-                    name: data.name,
-                    attributes: {
-                        create: data.attributes 
-                    }
-                }
-            });
-
-            return res.status(200).json({
-                success: true,
-                message: "New template created",
-                data: newTemplate
-            });
-
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                success: false,
-                message: "Error while creating template"
-            });
+          }
         }
-    },
+       const newTemplate=await prisma.template.create({
+        data:{
+            name:data.name,
+        }
+       })
 
+       for (let i = 0; i < req.body.attributes.length; i++) {
+            const newtemplateAttribute=await prisma.templateAttribute.create({
+                data:{
+                    templateId:+newTemplate.id,
+                    name:data.attributes[i].name,
+                    dataType:data.attributes[i].dataType
+                }
+            })
+       }
+
+       const template=await prisma.template.findFirst({
+        where:{
+            id:+newTemplate.id
+        },
+        include:{
+            templateAttribute:true
+        }
+       })
+       return res.status(200).json({
+        success: true,
+        message: "template created successfully",
+        data: template,
+      });
+    }catch(error){
+        return res.status(500).json({
+            success: false,
+            message: `${error}`,
+          });
+    }
+    },
     updatetemplete:async (req,res,next)=>{
         try {
 
@@ -126,7 +127,7 @@ const templeteController={
                     message:"invalid templete id "
                 })
             }
-            const data=templeteSchem.update.parse(req.body)
+        const data=templeteSchem.update.parse(req.body)
             const istempleteexist=await prisma.template.findFirst({
                 where:{
                     id:+templeteId
@@ -223,6 +224,7 @@ const templeteController={
         }
     },
     
+
 }
 
-export default templeteController
+export default templateController

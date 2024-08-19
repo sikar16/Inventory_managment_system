@@ -6,7 +6,7 @@ import supplierCategoryRouter from "../api/supplierCategory/supplierCategoryRout
 import storeRouter from "../api/store/storeRouter.js";
 import productCategoryRoute from "../api/ProductCategory/productCategoryRouter.js";
 import productSubCategoryRoute from "../api/ProductSubCategory/productSubCategoryRouter.js";
-import templeteRoute from "../api/Templete/templeteRouter.js";
+import temeplateRouter from "../api/Templete/templeteRouter.js";
 import productRouter from "../api/Product/producRouter.js";
 const appRouter = express.Router();
 appRouter.use("/user", userRouter);
@@ -16,6 +16,6 @@ appRouter.use("/supplierCategory", supplierCategoryRouter);
 appRouter.use("/store", storeRouter);
 appRouter.use("/productCategory", productCategoryRoute);
 appRouter.use("/productSubCategory", productSubCategoryRoute);
-appRouter.use("/temeplate", templeteRoute);
+appRouter.use("/temeplate", temeplateRouter);
 appRouter.use("/product", productRouter);
 export default appRouter;

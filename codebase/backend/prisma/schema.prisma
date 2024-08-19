@@ -272,6 +272,7 @@ model PurchasedRequest {
   createdAt            DateTime @default(now())
   isApproviedByGM      Boolean  @default(false)
   isApproviedByFinance Boolean  @default(false)
+  totalPrice           Decimal
   // reference
   user                 Users    @relation(fields: [userId], references: [id])
 
@@ -285,6 +286,7 @@ model PurceasedRequestedItem {
   purchasedRequestId    Int
   quantityToBePurchased Decimal
   remark                String
+  unitPrice             Decimal
   //reference
   purchasedRequest      MaterialRequest    @relation(fields: [purchasedRequestId], references: [id])
   // relation

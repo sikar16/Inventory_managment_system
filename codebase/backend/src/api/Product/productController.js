@@ -1,224 +1,310 @@
 import prisma from "../../config/prisma.js";
 import productSchema from "./productSchem.js";
 
-const productController={
-    getSingleProduct:(req,res,next)=>{},
-    getAllProduct:async (req,res,next)=>{
-        try {
-            const product=await prisma.product.findMany({
-                include:{
-                    productAttributes:{
-                        include:{
-                            templateAttribute:true
-                        }
-                    }
-                }
-            })
-
-            return res.status(200).json({
-                success:true,
-                message:"fetching all product",
-                data:product
-            })
-
-            
-        } catch (error) {
-            return res.status(500).json({
-                success:false,
-                message:"error fetching all product"
-            })
-        }
-    },
-    createProduct:async (req,res,next)=>{
+const productController = {
+  getSingleProduct: async (req, res, next) => {
     try {
-    const data=productSchema.create.parse(req.body) 
-
-    const issubcategoyidExist=await prisma.productSubCategory.findFirst({
-        where:{
-            id:+data.subcategoryId
-        }
-    })
-
-    if(!issubcategoyidExist){
+      const productId = parseInt(req.params.id, 10);
+      if (isNaN(productId)) {
         return res.status(404).json({
-            success:false,
-            message:"subcategory is not found"
-        })
-    }
-    for(let i=0; i<req.body.items.length;i++){
-        const istemplateattributExist=await prisma.templateAttribute.findFirst({
-            where:{
-                id:+data.items[i].templateAttributeId
-            }
-        })
-    
-        if(!istemplateattributExist){
-            return res.status(404).json({
-                success:false,
-                message:"template is not found"
-            })
-        }
-    }
+          success: false,
+          message: "Invalid product ID",
+        });
+      }
 
-    const newproduct=await prisma.product.create({
-        data:{
-            name:data.name,
-            subcategoryId:+data.subcategoryId,
-        }
-    }) 
-
-
-
-    for(let i=0; i<req.body.items.length;i++){
-        const newProductAttribute=await prisma.productAttribute.create({
-           data:{
-            productId:+newproduct.id,
-            templateAttributeId:data.items[i].templateAttributeId,
-            value:data.items[i].value
-           }
-        })
-    }
-   const products=await prisma.product.findFirst({
-    where:{
-        id:+newproduct.id,
-    },
-    include:{
-        productAttributes:{
-            include:{
-                templateAttribute:true,
-            }
-        }
-    }
-   })
-   return res.status(200).json({
-    success:true,
-    message:"successfully create product",
-    data:products
-   })
-   } catch (error) {
-    return res.status(500).json({
-        success:false,
-        message:"error creating product"
-    })
-   }
-},
-    updateProduct:async (req,res,next)=>{
-        try {
-        const data=productSchema.updateProduct.parse(req.body) 
-        const productid=parseInt(req.params.id, 10)
-        if(isNaN(productid)){
-            return res.status(404).json({
-                success:false,
-                message:"invalid id"
-            })
-        }
-        const isproductExist=await prisma.product.findFirst({
-            where:{
-                id:productid,
-            }
-        })
-
-        if(!isproductExist){
-            return res.status(404).json({
-                success:false,
-                message:"product not exist"
-            })
-        }
-
-        const isproductsubcategoryExist=await prisma.productSubCategory.findFirst({
-            where:{
-                id:+data.subcategoryId
-            }
-        })
-
-        if(!isproductsubcategoryExist){
-            return res.status(404).json({
-                success:false,
-                message:"product subcategory not exist"
-            })
-        }
-
-        const updateProduct=await prisma.product.update({
-            where:{
-                id:+productid,
-                
+      const product = await prisma.product.findFirst({
+        where: {
+          id: productId,
+        },
+        include: {
+          productAttributes: {
+            include: {
+              templateAttribute: true,
             },
-            data:{
-                name:data.name,
-                subcategoryId:+data.subcategoryId
-            }
-        })
-        return res.status(200).json({
-            success:true,
-            message:"product updated successfully",
-            data:updateProduct
-        })
+          },
+        },
+      });
+
+      if (!product) {
+        return res.status(404).json({
+          success: false,
+          message: "Product not found",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Product fetched successfully",
+        data: product,
+      });
     } catch (error) {
-        return res.status(500).json({
-            success:false,
-            message:"error while updating product"
-        })   
+      return res.status(500).json({
+        success: false,
+        message: "Error fetching product",
+      });
     }
+  },
 
-    },
-    updateProductAttribute:async (req,res,next)=>{
-        try {
-        const data=productSchema.updateProductAttribute.parse(req.body) 
-        const productattributeid=parseInt(req.params.id, 10)
-        if(isNaN(productattributeid)){
-            return res.status(404).json({
-                success:false,
-                message:"invalid id"
-            })
-        }
-        const isproductAttributExist=await prisma.productAttribute.findFirst({
-            where:{
-                id:productattributeid,
-            }
-        })
-
-        if(!isproductAttributExist){
-            return res.status(404).json({
-                success:false,
-                message:"product attribute not found"
-            })
-        }
-        const istemplateAttributExist=await prisma.templateAttribute.findFirst({
-            where:{
-                id:+data.templateAttributeId
-            }
-        })
-
-        if(!istemplateAttributExist){
-            return res.status(404).json({
-                success:false,
-                message:"template attribut not found"
-            })
-        }
-
-        const updateProductAttribute=await prisma.productAttribute.update({
-            where:{
-                id:+productattributeid,
-                
+  getAllProduct: async (req, res, next) => {
+    try {
+      const products = await prisma.product.findMany({
+        include: {
+          productAttributes: {
+            include: {
+              templateAttribute: true,
             },
-            data:{
-                value:data.value,
-                templateAttributeId:+data.templateAttributeId
-            }
-        })
-        return res.status(200).json({
-            success:true,
-            message:"product attribute updated successfully",
-            data:updateProductAttribute
-        })
-    } catch (error) {
-        return res.status(500).json({
-            success:false,
-            message:"error while update product attribute"
-        }) 
-    }
-    },
-    deleteProduct:(req,res,next)=>{},
-}
+          },
+        },
+      });
 
-export default productController
+      return res.status(200).json({
+        success: true,
+        message: "Fetching all products",
+        data: products,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Error fetching all products",
+      });
+    }
+  },
+
+  createProduct: async (req, res, next) => {
+    try {
+      const data = productSchema.create.parse(req.body);
+
+      const isSubcategoryIdExist = await prisma.productSubCategory.findFirst({
+        where: {
+          id: +data.subcategoryId,
+        },
+      });
+
+      if (!isSubcategoryIdExist) {
+        return res.status(404).json({
+          success: false,
+          message: "Subcategory not found",
+        });
+      }
+
+      for (let i = 0; i < req.body.items.length; i++) {
+        const isTemplateAttributeExist = await prisma.templateAttribute.findFirst({
+          where: {
+            id: +data.items[i].templateAttributeId,
+          },
+        });
+
+        if (!isTemplateAttributeExist) {
+          return res.status(404).json({
+            success: false,
+            message: "Template attribute not found",
+          });
+        }
+      }
+
+      const newProduct = await prisma.product.create({
+        data: {
+          name: data.name,
+          subcategoryId: +data.subcategoryId,
+        },
+      });
+
+      for (let i = 0; i < req.body.items.length; i++) {
+       const newproductAttribute= await prisma.productAttribute.create({
+          data: {
+            productId: +newProduct.id,
+            templateAttributeId: data.items[i].templateAttributeId,
+            value: data.items[i].value,
+          },
+        });
+      }
+
+      const products = await prisma.product.findFirst({
+        where: {
+          id: +newProduct.id,
+        },
+        include: {
+          productAttributes: {
+            include: {
+              templateAttribute: true,
+            },
+          },
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Product created successfully",
+        data: products,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Error creating product",
+      });
+    }
+  },
+
+  updateProduct: async (req, res, next) => {
+    try {
+      const data = productSchema.updateProduct.parse(req.body);
+      const productId = parseInt(req.params.id, 10);
+      if (isNaN(productId)) {
+        return res.status(404).json({
+          success: false,
+          message: "Invalid product ID",
+        });
+      }
+
+      const isProductExist = await prisma.product.findFirst({
+        where: {
+          id: productId,
+        },
+      });
+
+      if (!isProductExist) {
+        return res.status(404).json({
+          success: false,
+          message: "Product not found",
+        });
+      }
+
+      const isProductSubcategoryExist = await prisma.productSubCategory.findFirst({
+        where: {
+          id: +data.subcategoryId,
+        },
+      });
+
+      if (!isProductSubcategoryExist) {
+        return res.status(404).json({
+          success: false,
+          message: "Product subcategory not found",
+        });
+      }
+
+      const updateProduct = await prisma.product.update({
+        where: {
+          id: +productId,
+        },
+        data: {
+          name: data.name,
+          subcategoryId: +data.subcategoryId,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Product updated successfully",
+        data: updateProduct,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Error while updating product",
+      });
+    }
+  },
+
+  updateProductAttribute: async (req, res, next) => {
+    try {
+      const data = productSchema.updateProductAttribute.parse(req.body);
+      const productAttributeId = parseInt(req.params.id, 10);
+      if (isNaN(productAttributeId)) {
+        return res.status(404).json({
+          success: false,
+          message: "Invalid product attribute ID",
+        });
+      }
+
+      const isProductAttributeExist = await prisma.productAttribute.findFirst({
+        where: {
+          id: productAttributeId,
+        },
+      });
+
+      if (!isProductAttributeExist) {
+        return res.status(404).json({
+          success: false,
+          message: "Product attribute not found",
+        });
+      }
+
+      const isTemplateAttributeExist = await prisma.templateAttribute.findFirst({
+        where: {
+          id: +data.templateAttributeId,
+        },
+      });
+
+      if (!isTemplateAttributeExist) {
+        return res.status(404).json({
+          success: false,
+          message: "Template attribute not found",
+        });
+      }
+
+      const updateProductAttribute = await prisma.productAttribute.update({
+        where: {
+          id: +productAttributeId,
+        },
+        data: {
+          value: data.value,
+          templateAttributeId: +data.templateAttributeId,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Product attribute updated successfully",
+        data: updateProductAttribute,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Error while updating product attribute",
+      });
+    }
+  },
+
+  deleteProduct: async (req, res, next) => {
+    try {
+      const productId = parseInt(req.params.id, 10);
+      if (isNaN(productId)) {
+        return res.status(404).json({
+          success: false,
+          message: "Invalid product ID",
+        });
+      }
+
+      const isProductExist = await prisma.product.findFirst({
+        where: {
+          id: productId,
+        },
+      });
+
+      if (!isProductExist) {
+        return res.status(404).json({
+          success: false,
+          message: "Product not found",
+        });
+      }
+
+      await prisma.product.delete({
+        where: {
+          id: productId,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Product deleted successfully",
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Error deleting product",
+      });
+    }
+  },
+};
+
+export default productController;
