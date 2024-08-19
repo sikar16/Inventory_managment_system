@@ -55,7 +55,7 @@ const productSubCategoryController={
     },
     createproductSubCategory:async (req,res,next)=>{
         try {
-            console.log( req.body);
+            // console.log( req.body);
             const requiredField = ["name", "categoryId"];
             for (const field of requiredField) {
                 if (!req.body[field]) {
@@ -99,9 +99,9 @@ const productSubCategoryController={
             console.log(error)
             return res.status(500).json({
                 success:false,
-                message:"error while creating product SubCategory"
+                message:`error - ${error}`
             })
-        }
+        } 
     },
     updateproductSubCategory:async (req,res,next)=>{
         try {
@@ -109,10 +109,10 @@ const productSubCategoryController={
             if(isNaN(productSubCategoryId)){
                 return res.status(400).json({
                     success:false,
-                    message:"invalid product SubCategory id"
+                    message:"invalid  product SubCategory id"
                 })
             }
-
+ 
             const updatecategory=await prisma.productSubCategory.update({
                 where:{
                     id:+productSubCategoryId

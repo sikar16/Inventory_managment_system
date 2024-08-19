@@ -33,7 +33,7 @@ const productCategoryController={
             console.log(error);
             return res.status(500).json({
                 success: false,
-                message: "Error while fetching product category",
+                message: `error ${error}`,
             });
         }
     },
@@ -50,7 +50,7 @@ const productCategoryController={
             console.log(error)
             return res.status(500).json({
                 success:false,
-                message: "Error while fetching product category",
+                message:`error - ${error}`,
             })
         }
         
@@ -97,7 +97,7 @@ const productCategoryController={
             console.log(error)
             return res.status(500).json({
                 success:false,
-                message:"error while creating product category"
+                message:`error - ${error}`
             })
         }
     },
@@ -130,7 +130,7 @@ const productCategoryController={
             console.log(error)
             return res.status(500).json({
                 success:false,
-                message:"error while updating product category"
+                message:`error - ${error}`
             })
         }
     },
@@ -170,7 +170,8 @@ const productCategoryController={
             console.log(error)
             return res.status(500).json({
                 success:false,
-                message:"Error while deleteing product category"            })
+                message:`error- ${error}`       
+                 })
         }
     },
 }
