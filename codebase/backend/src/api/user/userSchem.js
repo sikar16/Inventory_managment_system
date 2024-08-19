@@ -29,27 +29,16 @@ const userSchem = {
   }),
 
   updateProfile: z.object({
-    email: z.string().email(),
-    password: z.string().min(6),
     firstName: z.string().min(3),
     middleName: z.string().min(3),
     lastName: z.string().min(3),
     gender: z.enum(["MALE", "FEMALE"]),
-    phone: z.string().min(10).max(14),
+
     country: z.string(),
     city: z.string(),
     subcity: z.string(),
-    role: z.enum([
-      "ADMIN",
-      "EMPLOYEE",
-      "DEPARTMENT_HEAD",
-      "LOGESTIC_SUPERVISER",
-      "FINANCE",
-      "GENERAL_MANAGER",
-      "STORE_KEEPER",
-    ]),
     departmentId: z.number(),
-   }),
+  }),
 
   changePhone: z.object({
     phone: z.string().min(10).max(14),

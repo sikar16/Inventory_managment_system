@@ -6,7 +6,7 @@ import supplierCategoryRouter from "../api/supplierCategory/supplierCategoryRout
 import storeRouter from "../api/store/storeRouter.js";
 import productCategoryRoute from "../api/ProductCategory/productCategoryRouter.js";
 import productSubCategoryRoute from "../api/ProductSubCategory/productSubCategoryRouter.js";
-import temeplateRouter from "../api/Templete/templeteRouter.js";
+import temeplateRouter from "../api/template/templeteRouter.js";
 import productRouter from "../api/Product/producRouter.js";
 const appRouter = express.Router();
 appRouter.use("/user", userRouter);

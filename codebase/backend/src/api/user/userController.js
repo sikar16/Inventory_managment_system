@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import prisma from "../../config/prisma.js";
 import jwt from "jsonwebtoken";
 import { SECRET } from "../../config/secret.js";
+import userSchem from "./userSchem.js";
 const userController = {
   getSingleUser: async (req, res, next) => {
     try {
@@ -49,11 +50,11 @@ const userController = {
 
   getAllUsers: async (req, res, next) => {
     try {
-      const take = req.query.take || 10;
-      const skip = req.query.skip || 0;
+      const skip = parseInt(req.query.skip) || 0;
+      const take = parseInt(req.query.take) || 10;
       const users = await prisma.users.findMany({
-        take: +take,
-        skip: +skip,
+        take,
+        skip,
         include: {
           profile: {
             include: {
@@ -104,6 +105,27 @@ const userController = {
           message: "this phone is already registered",
         });
       }
+      // check id the address exist
+      let addressId;
+      const isAdressExist = await prisma.address.findFirst({
+        where: {
+          country: data.country,
+          city: data.city,
+          subCity: data.subCity,
+        },
+      });
+      if (isAdressExist) {
+        addressId = isAdressExist.id;
+      } else {
+        const newAddress = await prisma.address.create({
+          data: {
+            country: data.country,
+            city: data.city,
+            subCity: data.subCity,
+          },
+        });
+        addressId = newAddress.id;
+      }
 
       const hashedPassword = await bcrypt.hashSync(data.password, 10);
       const newUser = await prisma.users.create({
@@ -124,17 +146,12 @@ const userController = {
               middleName: data.middleName,
               gender: data.gender,
               phone: data.phone,
-              address: {
-                create: {
-                  country: data.country,
-                  city: data.city,
-                  subCity: data.subcity,
-                },
-              },
+              addressId: addressId,
             },
           },
         },
       });
+
       const registeredUser = await prisma.users.findFirst({
         where: {
           id: newUser.id,
@@ -170,38 +187,12 @@ const userController = {
           message: "Invalid user ID",
         });
       }
-
-      const {
-        departmentId,
-        password,
-        firstName,
-        lastName,
-        middleName,
-        gender,
-        phone,
-        ...userData
-      } = req.body;
-
-      const userUpdateData = {
-        ...userData,
-        department: departmentId
-          ? { connect: { id: departmentId } }
-          : undefined,
-      };
-
-      const profileUpdateData = {
-        firstName,
-        lastName,
-        middleName,
-        gender,
-        phone,
-      };
-
-      const updatedUser = await prisma.users.update({
+      const data = userSchem.updateProfile.parse(req.body);
+      //check if user exist with the id
+      const user = await prisma.users.findFirst({
         where: {
-          id: userId,
+          id: +userId,
         },
-        data: userUpdateData,
         include: {
           profile: {
             include: {
@@ -211,14 +202,41 @@ const userController = {
         },
       });
 
-      if (firstName || lastName || middleName || gender || phone) {
-        await prisma.profile.update({
-          where: {
-            userId: userId,
-          },
-          data: profileUpdateData,
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
         });
       }
+      //check if user exist with the id
+      const department = await prisma.department.findFirst({
+        where: {
+          id: +data.departmentId,
+        },
+      });
+
+      if (!department) {
+        return res.status(404).json({
+          success: false,
+          message: "department not found",
+        });
+      }
+      const updatedUser = await prisma.users.update({
+        where: {
+          id: +userId,
+        },
+        data: {
+          departmentId: +data.departmentId,
+          profile: {
+            update: {
+              firstName: data.firstName,
+              middleName: data.middleName,
+              lastName: data.lastName,
+              gender: data.gender,
+            },
+          },
+        },
+      });
 
       return res.status(200).json({
         success: true,
@@ -334,9 +352,19 @@ const userController = {
           message: "invalid user id",
         });
       }
+      await prisma.password.delete({
+        where: {
+          userId: +userId,
+        },
+      });
+      await prisma.profile.delete({
+        where: {
+          userId: +userId,
+        },
+      });
       const deleteUser = await prisma.users.delete({
         where: {
-          id: userId,
+          id: +userId,
         },
       });
       return res.status(200).json({

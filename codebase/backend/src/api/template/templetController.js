@@ -18,6 +18,7 @@ const templateController = {
         },
         include: {
           attributes: true,
+          _count: true,
         },
       });
       if (!templete) {
@@ -40,9 +41,15 @@ const templateController = {
   },
   getAlltemplete: async (req, res, next) => {
     try {
+      const skip = parseInt(req.query.skip) || 0;
+      const take = parseInt(req.query.take) || 10;
+
       const templete = await prisma.template.findMany({
+        take,
+        skip,
         include: {
           attributes: true,
+          _count: true,
         },
       });
       return res.status(200).json({
@@ -73,6 +80,7 @@ const templateController = {
           message: "template already exist",
         });
       }
+
       //create template
       const newTemplate = await prisma.template.create({
         data: {
@@ -113,19 +121,19 @@ const templateController = {
     }
   },
   updatetemplete: async (req, res, next) => {
-  try {
-    const data=templeteSchem.updateTemplate.parse(req.body);
-    const templateId=parseInt(req.params.id,10)
-    if(isNaN(templateId)){
+    try {
+      const data = templeteSchem.updateTemplate.parse(req.body);
+      const templateId = parseInt(req.params.id, 10);
+      if (isNaN(templateId)) {
         return res.status(404).json({
-            success: false,
-            message: "Invalid template ID",
-          });
-    }
+          success: false,
+          message: "Invalid template ID",
+        });
+      }
 
-    const isTemplateExist = await prisma.template.findFirst({
+      const isTemplateExist = await prisma.template.findFirst({
         where: {
-          id: templateId,
+          id: +templateId,
         },
       });
 
@@ -133,6 +141,18 @@ const templateController = {
         return res.status(404).json({
           success: false,
           message: "template not found",
+        });
+      }
+      const isTemplateNameExist = await prisma.template.findFirst({
+        where: {
+          name: data.name,
+        },
+      });
+
+      if (isTemplateNameExist) {
+        return res.status(404).json({
+          success: false,
+          message: "template name is alewady in use found",
         });
       }
       const updateTemplate = await prisma.template.update({
@@ -149,60 +169,60 @@ const templateController = {
         message: "template updated successfully",
         data: updateTemplate,
       });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Error while updating template",
-    });
-  }
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Error while updating template",
+      });
+    }
   },
-  updateTemplateAttribute:async (req,res,next)=>{
+  updateTemplateAttribute: async (req, res, next) => {
     try {
-        const data = templeteSchem.updateTemplateAttribute.parse(req.body);
-        const templateAttributeId = parseInt(req.params.id, 10);
-        if (isNaN(templateAttributeId)) {
-          return res.status(404).json({
-            success: false,
-            message: "Invalid template attribute ID",
-          });
-        }
-  
-        const isTemplateAttributeExist = await prisma.templateAttribute.findFirst({
-          where: {
-            id: templateAttributeId,
-          },
+      const data = templeteSchem.updateTemplateAttribute.parse(req.body);
+      const templateAttributeId = parseInt(req.params.id, 10);
+      if (isNaN(templateAttributeId)) {
+        return res.status(404).json({
+          success: false,
+          message: "Invalid template attribute ID",
         });
-  
-        if (!isTemplateAttributeExist) {
-          return res.status(404).json({
-            success: false,
-            message: "template attribute not found",
-          });
-        }
-  
-        
-        const updateTemplateAttribute = await prisma.templateAttribute.update({
+      }
+
+      const isTemplateAttributeExist = await prisma.templateAttribute.findFirst(
+        {
           where: {
             id: +templateAttributeId,
           },
-          data: {
-            name: data.name,
-            dataType: data.dataType,
-            templateId: data.templateId         
-         },
-        });
-  
-        return res.status(200).json({
-          success: true,
-          message: "template attribute updated successfully",
-          data: updateTemplateAttribute,
-        });
-      } catch (error) {
-        return res.status(500).json({
+        }
+      );
+
+      if (!isTemplateAttributeExist) {
+        return res.status(404).json({
           success: false,
-          message: "Error while updating product attribute",
+          message: "template attribute not found",
         });
       }
+
+      const updateTemplateAttribute = await prisma.templateAttribute.update({
+        where: {
+          id: +templateAttributeId,
+        },
+        data: {
+          name: data.name,
+          dataType: data.dataType,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "template attribute updated successfully",
+        data: updateTemplateAttribute,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Error while updating product attribute",
+      });
+    }
   },
   deletetemplete: async (req, res, next) => {
     try {
@@ -216,7 +236,7 @@ const templateController = {
 
       const istempleteExist = await prisma.template.findFirst({
         where: {
-          id: templeteId,
+          id: +templeteId,
         },
       });
 
@@ -235,7 +255,7 @@ const templateController = {
 
       const deletetemplete = await prisma.template.delete({
         where: {
-          id: templeteId,
+          id: +templeteId,
         },
       });
 
