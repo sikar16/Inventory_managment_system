@@ -13,6 +13,7 @@ import supplier from '../../assets/supplier.png'
 import supplierCaategory from '../../assets/supplierCategory.png'
 import report from '../../assets/report.png'
 import UserList from './UserList';
+import TemplateList from './TemplateList';
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -193,25 +194,11 @@ export default function AdminDashbord() {
             </Drawer>
             <Main open={open} >
                 <DrawerHeader />
-                {/* <Dashboard /> */}
-                <UserList />
-                <User />
+                {/* <UserList /> */}
+                <TemplateList />
             </Main>
         </Box>
     );
 }
 
-function Dashboard() {
-    return <>
-        <p>
-            Dashbord
-        </p>
-    </>
-}
-function User() {
-    return <>
-        <div>
 
-        </div>
-    </>
-}
