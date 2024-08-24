@@ -8,6 +8,9 @@ import Employee_layout from "../layouts/Employee_layout";
 import Login from "../features/login/Login";
 import ForgetPassword from "../features/forget_pawword/ForgetPassword";
 import ConfirmPassword from "../features/confirm_password/ConfirmPassword";
+import Profile from "../features/profile/Profile";
+import AddTemplate from "../features/template/AddTemplate";
+import TemplateList from "../features/template/TemplateList";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -47,6 +50,24 @@ export const router = createBrowserRouter(
           </>
         }
       />
+      {/* Profile*/}
+      <Route
+        path="/profile"
+        element={
+          <>
+            <Profile />
+          </>
+        }
+      />{" "}
+      {/* confirm-password */}
+      <Route
+        path="/confirm-password"
+        element={
+          <>
+            <ConfirmPassword />
+          </>
+        }
+      />
       {/* Admin */}
       <Route
         path="/admin"
@@ -61,6 +82,23 @@ export const router = createBrowserRouter(
           element={
             <>
               <h1>admin home</h1>
+            </>
+          }
+        />
+        {/* template */}
+        <Route
+          path="/admin/add-template"
+          element={
+            <>
+              <AddTemplate />
+            </>
+          }
+        />
+        <Route
+          path="/admin/list-template"
+          element={
+            <>
+              <TemplateList />
             </>
           }
         />
@@ -94,7 +132,6 @@ export const router = createBrowserRouter(
       <Route path="store" element={<></>}>
         {" "}
       </Route>
-
       <Route path="gm" element={<></>}>
         {" "}
       </Route>
