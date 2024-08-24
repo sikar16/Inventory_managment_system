@@ -5,6 +5,9 @@ import {
 } from "react-router-dom";
 import Admin_layout from "../layouts/Admin_layout";
 import Employee_layout from "../layouts/Employee_layout";
+import Login from "../features/login/Login";
+import ForgetPassword from "../features/forget_pawword/ForgetPassword";
+import ConfirmPassword from "../features/confirm_password/ConfirmPassword";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -22,7 +25,25 @@ export const router = createBrowserRouter(
         path="/login"
         element={
           <>
-            <h1>Login</h1>
+            <Login />
+          </>
+        }
+      />
+      {/* forget-password */}
+      <Route
+        path="/forget-password"
+        element={
+          <>
+            <ForgetPassword />
+          </>
+        }
+      />
+      {/* confirm-password */}
+      <Route
+        path="/confirm-password"
+        element={
+          <>
+            <ConfirmPassword />
           </>
         }
       />
