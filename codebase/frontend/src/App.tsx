@@ -4,7 +4,10 @@ import { router } from "./routes";
 function App() {
   return (
     <>
-      <RouterProvider router={router}></RouterProvider>
+      <div className="dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white w-full h-screen  items-center justify-center">
+        {" "}
+        <RouterProvider router={router}></RouterProvider>
+      </div>
     </>
   );
 }

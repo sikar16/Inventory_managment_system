@@ -6,8 +6,8 @@ import {
 } from "../_types/them_type";
 
 const initialState: ThemeProviderState = {
-  theme: "system",
-  setTheme: () => null,
+  themeData: "system",
+  setThemeData: () => null,
 };
 
 const ThemeContext = createContext<ThemeProviderState>(initialState);
@@ -18,7 +18,7 @@ export const ThemeProvider = ({
   storageKey = "vite-ui-theme",
   ...props
 }: ThemeProviderProps) => {
-  const [theme, setTheme] = useState<Theme>(
+  const [themeData, setThemeData] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   );
 
@@ -26,7 +26,7 @@ export const ThemeProvider = ({
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
 
-    if (theme === "system") {
+    if (themeData === "system") {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
         .matches
         ? "dark"
@@ -36,14 +36,14 @@ export const ThemeProvider = ({
       return;
     }
 
-    root.classList.add(theme);
-  }, [theme]);
+    root.classList.add(themeData);
+  }, [themeData]);
 
   const value = {
-    theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
+    themeData,
+    setThemeData: (themeData: Theme) => {
+      localStorage.setItem(storageKey, themeData);
+      setThemeData(themeData);
     },
   };
 

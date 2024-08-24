@@ -7,6 +7,6 @@ export type ThemeProviderProps = {
 };
 
 export type ThemeProviderState = {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
+  themeData: Theme;
+  setThemeData: (themeData: Theme) => void;
 };
