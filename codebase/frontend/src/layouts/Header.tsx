@@ -4,7 +4,13 @@ import supplier from "../assets/images/supplier.png";
 import supplierCaategory from "../assets/images/supplierCategory.png";
 import report from "../assets/images/report.png";
 // icons
-import { MdNightlight, MdLightMode, MdBrightnessAuto } from "react-icons/md";
+import {
+  MdNightlight,
+  MdLightMode,
+  MdBrightnessAuto,
+  MdAccountCircle,
+} from "react-icons/md";
+import { FaRegBell } from "react-icons/fa";
 // mui
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -18,6 +24,7 @@ import React from "react";
 const drawerWidth = 240;
 // context
 import { useTheme as customTheme } from "../context/them_context";
+import IconContainer from "../components/icon/Icon_container";
 function Header() {
   const { themeData, setThemeData } = customTheme();
   const [open, setOpen] = React.useState(true);
@@ -25,7 +32,7 @@ function Header() {
     setOpen(true);
   };
 
-  const handleDrawerClose = () => { 
+  const handleDrawerClose = () => {
     setOpen(false);
   };
   const getThemeIcon = () => {
@@ -37,7 +44,7 @@ function Header() {
       return MdBrightnessAuto;
     }
   };
-  const toggleTheme = () => {
+  const toggleThemeData = () => {
     console.log(`....${themeData}`);
     if (themeData === "light") {
       setThemeData("dark");
@@ -48,7 +55,6 @@ function Header() {
     }
   };
 
-
   return (
     <div className="dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white">
       <CssBaseline />
@@ -56,36 +62,27 @@ function Header() {
 
       {/* app bar section */}
       <AppBar>
-        <div className=" ps-4 p-3 flex justify-between bg-[#002A47] w-full pe-14">
+        <div className="dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white ps-4 p-3 flex justify-between w-full pe-14">
           <div className="flex gap-2 align-middle items-center text-center">
             <MenuIcon onClick={handleDrawerOpen} />
             <img src={logo} alt="" className="w-24 md:w-40" />
           </div>
           <div className="flex gap-3 me-5 align-middle items-center ">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width={20}
-              height={20}
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="white"
-                d="M8.645 20.5a3.502 3.502 0 0 0 6.71 0zM3 19.5h18v-3l-2-3v-5a7 7 0 1 0-14 0v5l-2 3z"
-              ></path>
-            </svg>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width={30}
-              height={30}
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="white"
-                fillRule="evenodd"
-                d="M12 4a8 8 0 0 0-6.96 11.947A4.99 4.99 0 0 1 9 14h6a4.99 4.99 0 0 1 3.96 1.947A8 8 0 0 0 12 4m7.943 14.076q.188-.245.36-.502A9.96 9.96 0 0 0 22 12c0-5.523-4.477-10-10-10S2 6.477 2 12a9.96 9.96 0 0 0 2.057 6.076l-.005.018l.355.413A9.98 9.98 0 0 0 12 22q.324 0 .644-.02a9.95 9.95 0 0 0 5.031-1.745a10 10 0 0 0 1.918-1.728l.355-.413zM12 6a3 3 0 1 0 0 6a3 3 0 0 0 0-6"
-                clipRule="evenodd"
-              ></path>
-            </svg>
+            <IconContainer
+              handler={toggleThemeData}
+              Icon={getThemeIcon()}
+              iconsClassName="my-custom-icon-class"
+            />
+            <IconContainer
+              handler={() => {}}
+              Icon={MdAccountCircle}
+              iconsClassName="my-custom-icon-class"
+            />
+            <IconContainer
+              handler={() => {}}
+              Icon={FaRegBell}
+              iconsClassName="my-custom-icon-class"
+            />
           </div>
         </div>
       </AppBar>
