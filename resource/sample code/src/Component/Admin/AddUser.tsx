@@ -1,13 +1,18 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function AddUser() {
+  const navigate = useNavigate();
+
   return (
     <div className="flex items-center justify-center bg-white mt-10">
       <div className="bg-white w-[90%]  ">
         <div className="flex justify-between items-center border-b pb-3">
           <h3 className="text-xl font-medium">User Registration</h3>
-          <button
-            className="text-gray-500 hover:text-gray-700">
+          {/* <button
+            className="text-gray-500 hover:text-gray-700"
+            onClick={() => navigate('/admin/user-list')}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -22,7 +27,7 @@ function AddUser() {
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-          </button>
+          </button> */}
 
         </div>
         <div className="mt-4">

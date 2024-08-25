@@ -1,6 +1,8 @@
 import logo from '../assets/logo.png';
 import profile from '../assets/profile.jpg';
 import email from '../assets/mail.png';
+import { useNavigate } from 'react-router-dom';
+
 
 function Profile() {
 
@@ -11,13 +13,15 @@ function Profile() {
         month: 'long',
         year: 'numeric'
     });
+    const navigate = useNavigate()
 
     return (
         <>
             <div className=' text-white  items-center justify-center ' >
                 <div className=' ps-4 pt-5 flex justify-between bg-[#002A47] w-full'>
                     <img src={logo} alt="" className='w-24 md:w-40' />
-                    <svg className='me-10' xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 20 20"><path fill="#ffffff" d="M8.6 3.4L14.2 9H2v2h12.2l-5.6 5.6L10 18l8-8l-8-8z"></path></svg>
+                    <svg onClick={() => navigate(-1)}
+                        className='me-10' xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 20 20"><path fill="#ffffff" d="M8.6 3.4L14.2 9H2v2h12.2l-5.6 5.6L10 18l8-8l-8-8z"></path></svg>
                 </div>
                 <div className='w-full bg-[#edf0fc] min-h-screen text-black px-5 pt-5'>
                     <div className='bg-white rounded-sm pb-10 pt-8 ps-4'>

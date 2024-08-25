@@ -2,117 +2,145 @@ import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { useState } from "react";
 import logo from "../../assets/images/logo.png";
+import {
+  MdNightlight,
+  MdLightMode,
+  MdBrightnessAuto,
+} from "react-icons/md";
+import { IoLockClosed, IoEyeOff, IoEye } from "react-icons/io5";
+import { useTheme as customTheme } from "../../context/them_context";
+import IconContainer from "../../components/icon/Icon_container";
+
 type FormValues = {
   newPassword: string;
   confirmPassword: string;
 };
 
 function ConfirmPassword() {
-  const form = useForm<FormValues>();
-  const { register, control, handleSubmit, formState } = form;
+  const form = useForm<FormValues>({
+    mode: "onBlur", // Optional: triggers validation on blur
+    defaultValues: {
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+  const { register, control, handleSubmit, watch, formState } = form;
   const { errors } = formState;
   const [showPassword, setShowPassword] = useState(false);
+  const { themeData, setThemeData } = customTheme();
 
   const onSubmit = (data: FormValues) => {
     console.log("Form submitted", data);
   };
 
+  const getThemeIcon = () => {
+    if (themeData === "light") {
+      return MdNightlight;
+    } else if (themeData === "dark") {
+      return MdLightMode;
+    } else if (themeData === "system") {
+      return MdBrightnessAuto;
+    }
+  };
+
+  const toggleThemeData = () => {
+    if (themeData === "light") {
+      setThemeData("dark");
+    } else if (themeData === "dark") {
+      setThemeData("light");
+    } else if (themeData === "system") {
+      setThemeData("dark");
+    }
+  };
+
+  const newPassword = watch("newPassword");
+  const confirmPassword = watch("confirmPassword");
+
   return (
     <>
-      <div className="bg-[#002A47] w-full h-screen text-white  items-center justify-center">
-        <div className="ms-10 pt-5 flex justify-between">
-          <img src={logo} alt="" className="w-24 md:w-40" />
-          <svg
-            className="me-10"
-            xmlns="http://www.w3.org/2000/svg"
-            width={20}
-            height={20}
-            viewBox="0 0 20 20"
-          >
-            <path
-              fill="#ffffff"
-              d="M8.6 3.4L14.2 9H2v2h12.2l-5.6 5.6L10 18l8-8l-8-8z"
-            ></path>
-          </svg>
+      <div className="dark:bg-[#002A47] w-full h-screen text-white items-center justify-center">
+        <div className="ms-10 pt-5 flex justify-between me-4 md:me-12">
+          <img src={logo} alt="Logo" className="w-24 md:w-40" />
+          <IconContainer
+            handler={toggleThemeData}
+            Icon={getThemeIcon()}
+            iconsClassName="my-custom-icon-class"
+          />
         </div>
-        <div className="w-full max-w-lg p-6 shadow-md rounded-lg text-white m-auto">
+        <hr className="h-[1px] dark:bg-gray-600 bg-[#e7eaef] border-none" />
+        <div className="w-full max-w-lg p-6 rounded-lg m-auto mt-10 dark:bg-[#002A47] dark:shadow-none bg-white">
           <div className="flex flex-col items-center justify-center text-center mb-10">
-            <h3 className="text-3xl font-medium">Change Password</h3>
+            <h3 className="text-3xl font-medium text-[#002a47] dark:text-white">
+              Change Password
+            </h3>
           </div>
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <div className="relative mb-5 ">
-              <label htmlFor="">New password</label>
+            <div className="relative mb-6">
+              <label
+                htmlFor="newPassword"
+                className="block text-sm mb-2 text-[#002a47] dark:text-white"
+              >
+                New Password
+              </label>
               <input
                 type={showPassword ? "text" : "password"}
-                id="password"
+                id="newPassword"
                 placeholder="New Password"
-                className="w-full pl-3 pr-12 py-2 mt-2  rounded-md text-black"
+                className="w-full px-6 py-2 rounded-md dark:bg-[#1f4d6d] dark:text-white text-[#002A47] bg-[#fff] focus:outline-none"
                 {...register("newPassword", {
-                  required: "New password is required",
+                  required: "New Password is required",
                 })}
               />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={25}
-                height={25}
-                viewBox="0 0 24 24"
-                className="absolute right-3 top-3/4 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+              <div
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-xl text-[#002a47] dark:text-white"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                <path
-                  fill="#737373"
-                  d={
-                    showPassword
-                      ? "M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"
-                      : "M11.83 9L15 12.16V12a3 3 0 0 0-3-3zm-4.3.8l1.55 1.55c-.05.21-.08.42-.08.65a3 3 0 0 0 3 3c.22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53a5 5 0 0 1-5-5c0-.79.2-1.53.53-2.2M2 4.27l2.28 2.28l.45.45C3.08 8.3 1.78 10 1 12c1.73 4.39 6 7.5 11 7.5c1.55 0 3.03-.3 4.38-.84l.43.42L19.73 22L21 20.73L3.27 3M12 7a5 5 0 0 1 5 5c0 .64-.13 1.26-.36 1.82l2.93 2.93c1.5-1.25 2.7-2.89 3.43-4.75c-1.73-4.39-6-7.5-11-7.5c-1.4 0-2.74.25-4 .7l2.17 2.15C10.74 7.13 11.35 7 12 7"
-                  }
-                ></path>
-              </svg>
-              <p className="text-red-600 text-[13px] mt-1">
+                {showPassword ? <IoEye /> : <IoEyeOff />}
+              </div>
+              <p className="text-red-600 text-[10px] text-left mt-1">
                 {errors.newPassword?.message}
               </p>
             </div>
-            <div className="relative mb-4 ">
-              <label htmlFor="">Confirm password</label>
+
+            <div className="relative mb-6">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm mb-2 text-[#002a47] dark:text-white"
+              >
+                Confirm Password
+              </label>
               <input
                 type={showPassword ? "text" : "password"}
-                id="password"
+                id="confirmPassword"
                 placeholder="Confirm Password"
-                className="w-full pl-3 pr-12 py-2 mt-2 rounded-md text-black"
+                className="w-full px-6 py-2 rounded-md dark:bg-[#1f4d6d] dark:text-white text-[#002A47] bg-[#fff] focus:outline-none"
                 {...register("confirmPassword", {
-                  required: "Confirm password is required",
+                  required: "Confirm Password is required",
+                  validate: value =>
+                    value === newPassword || "Passwords must match",
                 })}
               />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={25}
-                height={25}
-                viewBox="0 0 24 24"
-                className="absolute right-3 top-3/4 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+              <div
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-xl text-[#002a47] dark:text-white"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                <path
-                  fill="#737373"
-                  d={
-                    showPassword
-                      ? "M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"
-                      : "M11.83 9L15 12.16V12a3 3 0 0 0-3-3zm-4.3.8l1.55 1.55c-.05.21-.08.42-.08.65a3 3 0 0 0 3 3c.22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53a5 5 0 0 1-5-5c0-.79.2-1.53.53-2.2M2 4.27l2.28 2.28l.45.45C3.08 8.3 1.78 10 1 12c1.73 4.39 6 7.5 11 7.5c1.55 0 3.03-.3 4.38-.84l.43.42L19.73 22L21 20.73L3.27 3M12 7a5 5 0 0 1 5 5c0 .64-.13 1.26-.36 1.82l2.93 2.93c1.5-1.25 2.7-2.89 3.43-4.75c-1.73-4.39-6-7.5-11-7.5c-1.4 0-2.74.25-4 .7l2.17 2.15C10.74 7.13 11.35 7 12 7"
-                  }
-                ></path>
-              </svg>
-              <p className="text-red-600 text-[13px] mt-1">
+                {showPassword ? <IoEye /> : <IoEyeOff />}
+              </div>
+              <p className="text-red-600 text-[10px] text-left mt-1">
                 {errors.confirmPassword?.message}
               </p>
             </div>
-            <div className="flex justify-center mt-12">
+
+            <div className="flex justify-center">
               <button
                 type="submit"
-                className="bg-white text-[#002A47] px-4 py-[6px] rounded-md transition"
+                className="bg-[#002A47] text-white dark:bg-[#1f4d6d] px-10 py-2 rounded-md transition"
               >
                 Submit
               </button>
             </div>
           </form>
+
           <DevTool control={control} />
         </div>
       </div>

@@ -38,7 +38,7 @@ export default function AddSubCategory() {
     };
 
     return (
-        <div className='mx-10 mb-10'>
+        <div className='mx-10 mb-10  w-[450px]'>
             <form className='space-y-4'>
                 <div>
                     <InputLabel id="category-label">Category</InputLabel>

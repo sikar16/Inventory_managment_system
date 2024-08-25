@@ -60,7 +60,7 @@ export default function SupplierCategoryList() {
     };
 
     return (
-        <div className='mx-10 mt-10 '>
+        <div className='mt-10 '>
             <div className='flex justify-between mb-3 mx-2'>
                 <p className='text-[#002a47] text-4xl font-medium'>Suppliers Category</p>
                 <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Add Category</button>

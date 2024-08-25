@@ -12,6 +12,13 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import AddUser from './AddUser';
 
 const columns = [
     { id: 'no', label: 'No', minWidth: 50 },
@@ -25,12 +32,11 @@ const columns = [
     { id: 'actions', label: 'Actions', minWidth: 50, align: 'center' },
 ];
 
-function createData(no, fullName, department, email, phone, gender, address, status) {
+function createData(no: number, fullName: string, department: string, email: string, phone: string, gender: string, address: string, status: string) {
     return { no, fullName, department, email, phone, gender, address, status };
 }
 
 const rows = [
-    createData(2, "Zerubabel Damtew Zeru", "Information Technology", "zeru@gmail.com", "0965199682", "Male", "Addis Ababa", "Active"),
     createData(1, "Zerubabel Damtew Zeru", "Information Technology", "zeru@gmail.com", "0965199682", "Male", "Addis Ababa", "Active"),
     createData(1, "Zerubabel Damtew Zeru", "Information Technology", "zeru@gmail.com", "0965199682", "Male", "Addis Ababa", "Active"),
     createData(1, "Zerubabel Damtew Zeru", "Information Technology", "zeru@gmail.com", "0965199682", "Male", "Addis Ababa", "Active"),
@@ -38,21 +44,23 @@ const rows = [
     createData(1, "Zerubabel Damtew Zeru", "Information Technology", "zeru@gmail.com", "0965199682", "Male", "Addis Ababa", "Active"),
     createData(1, "Zerubabel Damtew Zeru", "Information Technology", "zeru@gmail.com", "0965199682", "Male", "Addis Ababa", "Active"),
     createData(1, "Zerubabel Damtew Zeru", "Information Technology", "zeru@gmail.com", "0965199682", "Male", "Addis Ababa", "Active"),
-    createData(1, "Zerubabel Damtew Zeru", "Information Technology", "zeru@gmail.com", "0965199682", "Male", "Addis Ababa", "Active"),
-    createData(1, "Zerubabel Damtew Zeru", "Information Technology", "zeru@gmail.com", "0965199682", "Male", "Addis Ababa", "Active"),
-    createData(1, "Zerubabel Damtew Zeru", "Information Technology", "zeru@gmail.com", "0965199682", "Male", "Addis Ababa", "Active"),
-    createData(1, "Zerubabel Damtew Zeru", "Information Technology", "zeru@gmail.com", "0965199682", "Male", "Addis Ababa", "Active"),
-    createData(1, "Zerubabel Damtew Zeru", "Information Technology", "zeru@gmail.com", "0965199682", "Male", "Addis Ababa", "Active"),
-    createData(1, "Zerubabel Damtew Zeru", "Information Technology", "zeru@gmail.com", "0965199682", "Male", "Addis Ababa", "Active"),
-    createData(1, "Zerubabel Damtew Zeru", "Information Technology", "zeru@gmail.com", "0965199682", "Male", "Addis Ababa", "Active"),
-    createData(1, "Zerubabel Damtew Zeru", "Information Technology", "zeru@gmail.com", "0965199682", "Male", "Addis Ababa", "Active"),
+    // Other rows...
 ];
 
 export default function UserList() {
+    const navigate = useNavigate();
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [selectedRow, setSelectedRow] = React.useState(null);
+    const [openDialog, setOpenDialog] = React.useState(false);
+
+    const handleOpenDialog = () => {
+        setOpenDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -65,21 +73,23 @@ export default function UserList() {
 
     const handleMenuClick = (event, row) => {
         setAnchorEl(event.currentTarget);
-        setSelectedRow(row);
     };
 
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
 
-
-
     return (
-        <div className='mx-10 mt-10'>
+        <div className='mt-10'>
             <div>
-                <div className='flex justify-between mb-3 mx-2'>
-                    <p className='text-[#002a47] text-4xl font-medium'>User</p>
-                    <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={() => console.log("object")}>Add User</button>
+                <div className='flex  mb-3 mx-2'>
+                    <p className='text-[#002a47] text-4xl font-medium me-[46%]'>User</p>
+                    <button
+                        className='bg-[#002A47] px-3 py-1 text-white rounded-md'
+                        onClick={handleOpenDialog}
+                    >
+                        Add User
+                    </button>
                 </div>
                 <SliderCom />
             </div>
@@ -164,9 +174,24 @@ export default function UserList() {
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
             >
-                <MenuItem>Update</MenuItem>
-                <MenuItem>Delete</MenuItem>
+                <MenuItem onClick={handleMenuClose}>Update</MenuItem>
+                <MenuItem onClick={handleMenuClose}>Delete</MenuItem>
             </Menu>
+
+            <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+                <DialogTitle>
+                    <IconButton
+                        aria-label="close"
+                        onClick={handleCloseDialog}
+                        sx={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent>
+                    <AddUser />
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

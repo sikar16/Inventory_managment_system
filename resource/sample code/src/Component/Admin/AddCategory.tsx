@@ -25,7 +25,7 @@ export default function AddCategory() {
     };
 
     return (
-        <div className='mx-10 mb-10'>
+        <div className='mx-10 mb-10  w-[400px]'>
             <form className='space-y-2'>
                 <InputLabel id="category-label">Category</InputLabel>
                 <Select

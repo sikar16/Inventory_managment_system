@@ -60,7 +60,7 @@ export default function TemplateList() {
     };
 
     return (
-        <div className='mx-10 mt-10'>
+        <div className='mt-10'>
             <div className='flex justify-between mb-3 mx-2'>
                 <p className='text-[#002a47] text-4xl font-medium'>Template</p>
                 <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Add Template</button>
@@ -98,7 +98,7 @@ export default function TemplateList() {
                                         </TableCell>
                                     ))}
                                     <TableCell>
-                                        Details
+
                                     </TableCell>
                                 </TableRow>
                             </TableHead>
@@ -179,7 +179,6 @@ export default function TemplateList() {
                 <DialogContent>
                     <AddTemplate />
                 </DialogContent>
-
             </Dialog>
         </div>
     );

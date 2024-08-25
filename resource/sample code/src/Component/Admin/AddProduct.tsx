@@ -9,21 +9,39 @@ const categories = ['Electronics', 'Stationary', 'Food', 'Drink'];
 const subCategories = ['Computer', 'Mobile'];
 const templates = ['Template 1', 'Template 2'];
 
-export default function AddProduct() {
-
+const AddProduct = ({ onAddProduct }) => {
+    const [productName, setProductName] = useState('');
+    const [category, setCategory] = useState('');
+    const [subCategory, setSubCategory] = useState('');
+    const [template, setTemplate] = useState('');
     const [attributes, setAttributes] = useState([{ key: '', value: '' }]);
 
     const handleAddAttribute = () => {
         setAttributes([...attributes, { key: '', value: '' }]);
     };
 
+    const handleAttributeChange = (index, field, value) => {
+        const updatedAttributes = attributes.map((attr, i) =>
+            i === index ? { ...attr, [field]: value } : attr
+        );
+        setAttributes(updatedAttributes);
+    };
 
-
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        // Call the onAddProduct callback with the new product data
+        onAddProduct({
+            name: productName,
+            category,
+            subCategory,
+            template,
+            attributes
+        });
+    };
 
     return (
-
         <div className='mx-10 mb-10'>
-            <form className='space-y-2'>
+            <form className='space-y-2' onSubmit={handleSubmit}>
                 <TextField
                     autoFocus
                     margin="dense"
@@ -31,7 +49,8 @@ export default function AddProduct() {
                     className="w-full"
                     variant="outlined"
                     size="small"
-
+                    value={productName}
+                    onChange={(e) => setProductName(e.target.value)}
                 />
                 <InputLabel id="category-label">Category</InputLabel>
                 <Select
@@ -39,6 +58,8 @@ export default function AddProduct() {
                     className="w-full"
                     variant="outlined"
                     size="small"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
                 >
                     {categories.map((cat) => (
                         <MenuItem key={cat} value={cat}>
@@ -52,6 +73,8 @@ export default function AddProduct() {
                     className="w-full"
                     variant="outlined"
                     size="small"
+                    value={subCategory}
+                    onChange={(e) => setSubCategory(e.target.value)}
                 >
                     {subCategories.map((sub) => (
                         <MenuItem key={sub} value={sub}>
@@ -65,6 +88,8 @@ export default function AddProduct() {
                     className="w-full"
                     variant="outlined"
                     size="small"
+                    value={template}
+                    onChange={(e) => setTemplate(e.target.value)}
                 >
                     {templates.map((temp) => (
                         <MenuItem key={temp} value={temp}>
@@ -81,6 +106,7 @@ export default function AddProduct() {
                                 variant="outlined"
                                 size="small"
                                 value={attr.key}
+                                onChange={(e) => handleAttributeChange(index, 'key', e.target.value)}
                                 className="w-full"
                             />
                             <TextField
@@ -88,27 +114,31 @@ export default function AddProduct() {
                                 variant="outlined"
                                 size="small"
                                 value={attr.value}
+                                onChange={(e) => handleAttributeChange(index, 'value', e.target.value)}
                                 className="w-full"
                             />
                         </div>
                     ))}
-                    <Button onClick={handleAddAttribute} variant="outlined" >
+                    <Button onClick={handleAddAttribute} variant="outlined">
                         Add
                     </Button>
                 </div>
                 <div className='pt-10'>
-                    <div className='flex justify-between '>
+                    <div className='flex justify-between'>
                         <Button variant="outlined" color="error">
                             Discard
                         </Button>
-                        <button className='bg-[#002a47] py-1 px-3 text-white rounded-md'  >
+                        <button
+                            type="submit"
+                            className='bg-[#002a47] py-1 px-3 text-white rounded-md'
+                        >
                             Add Product
                         </button>
                     </div>
                 </div>
-
-
             </form>
         </div>
     );
-}
+};
+
+export default AddProduct;

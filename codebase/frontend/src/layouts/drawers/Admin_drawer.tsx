@@ -3,7 +3,10 @@ import React from 'react'
 import logo from "../../assets/images/logo.png";
 import supplier from "../../assets/images/supplier.png";
 import supplierCaategory from "../../assets/images/supplierCategory.png";
-import report from "../../assets/images/report.png";
+
+//icon
+import { TbReportAnalytics } from "react-icons/tb";
+
 // mui
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -13,14 +16,14 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 const drawerWidth = 240;
 function Admin_drawer() {
-     const [open, setOpen] = React.useState(true);
-      const handleDrawerOpen = () => {
-        setOpen(true);
-      };
+  const [open, setOpen] = React.useState(true);
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
 
-      const handleDrawerClose = () => {
-        setOpen(false);
-      };
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
   return (
     <Drawer
       sx={{
@@ -252,7 +255,18 @@ function Admin_drawer() {
                 aria-expanded="true"
                 aria-controls="users-accordion"
               >
-                <img className="size-4" src={report} alt="" />
+                <svg
+                  className="size-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={24}
+                  height={24}
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M12 18H6v-4h6m9 0v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6m0-10H4v2h16z"
+                  ></path>
+                </svg>
                 Report
               </button>
             </li>

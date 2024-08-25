@@ -18,6 +18,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import MaterialRequistForm from '../MaterialRequistForm';
+import MaterialRequestForm from '../MaterialRequistForm';
 const columns = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'orderId', label: 'Order Id', minWidth: 200 },
@@ -161,18 +162,54 @@ export default function RequiestesList() {
                     />
                 </Paper>
 
-                <Dialog open={openDialog} onClose={handleCloseDialog} >
-                    <div className='flex justify-between me-5'>
-                        <DialogTitle>Material requist form</DialogTitle>
+                <Dialog
+                    open={openDialog}
+                    onClose={handleCloseDialog}
+                    PaperProps={{
+                        style: {
+                            width: '70vw',
+                            maxWidth: '70vw', // Prevents it from being wider than 70% of viewport width
+                        },
+                    }}
+                    className="relative mx-auto"
+                >
+                    <div className='flex justify-between p-4'>
+                        <DialogTitle
+                        // className='bg-[#002a47] text-white rounded-e-full '
+                        >
+                            <p className='bg-[#002a47] text-white rounded-e-full pe-20 ps-2 py-[5px] '>
+                                Material Request Form
+                            </p>
+                            {/* Material Request Form */}
+                        </DialogTitle>
                         <DialogActions>
-                            <svg onClick={handleCloseDialog} xmlns="http://www.w3.org/2000/svg" width={25} height={25} viewBox="0 0 24 24" ><path fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"></path></svg>
+                            <svg
+                                onClick={handleCloseDialog}
+                                xmlns="http://www.w3.org/2000/svg"
+                                width={25}
+                                height={25}
+                                viewBox="0 0 24 24"
+                                className="cursor-pointer"
+                            >
+                                <path
+                                    fill="none"
+                                    stroke="black"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={1.5}
+                                    d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"
+                                ></path>
+                            </svg>
                         </DialogActions>
                     </div>
-                    <DialogContent>
-                        <MaterialRequistForm />
-                    </DialogContent>
-
+                    <div>
+                        <DialogContent>
+                            <MaterialRequestForm />
+                        </DialogContent>
+                    </div>
                 </Dialog>
+
+
 
                 <Menu
                     id="long-menu"

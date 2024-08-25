@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -16,12 +17,12 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import AddProduct from './AddProduct';
+import MaterialRequistForm from '../MaterialRequistForm';
 
 const columns = [
     { id: 'no', label: 'No', minWidth: 50 },
-    { id: 'productId', label: 'Product Id', minWidth: 70 },
-    { id: 'product', label: 'Product', minWidth: 70, align: 'left' },
+    { id: 'orderId', label: 'Order Id', minWidth: 70 },
+    { id: 'requestedEmployee', label: 'Requested Employee', minWidth: 70, align: 'left' },
     { id: 'category', label: 'Category', minWidth: 70, align: 'left' },
     { id: 'subCategory', label: 'Sub Category', minWidth: 70, align: 'left' },
 ];
@@ -45,7 +46,7 @@ const rows = [
     createData(1, "#12345", "Lenovo", "Electronics", "Computer"),
 ];
 
-export default function ProductList() {
+export default function IncomingRequest() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -89,37 +90,12 @@ export default function ProductList() {
     };
 
     return (
-        <div className='mt-10'>
+        <div className='mt-10 mx-7'>
             <div className='flex justify-between mb-3 mx-2'>
                 <p className='text-[#002a47] text-4xl font-medium'>Product</p>
                 <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Add Product</button>
             </div>
 
-            <div className='flex flex-wrap gap-2 mt-10 mx-10 mb-5'>
-                <div className='bg-[#F5F5F5] px-3 py-3 rounded-md mb-2 flex items-center '>
-                    <p className='me-3 text-gray-500'>Category :</p>
-                    <select className='bg-[#F5F5F5] text-gray-700'>
-                        <option value="">Electronics</option>
-                        <option value="">Stationary</option>
-                        <option value="">Food</option>
-                        <option value="">Drink</option>
-                    </select>
-                </div>
-                <div className='bg-[#F5F5F5] px-3 py-3 rounded-md mb-2 flex items-center '>
-                    <p className='me-3 text-gray-500'>Sub Category :</p>
-                    <select className='bg-[#F5F5F5] text-gray-700'>
-                        <option value="">Computer</option>
-                        <option value="">Mobile</option>
-                    </select>
-                </div>
-                <div className='bg-[#F5F5F5] px-3 py-3 rounded-md mb-2 flex items-center '>
-                    <p className='me-3 text-gray-500'>Template :</p>
-                    <select className='bg-[#F5F5F5] text-gray-700'>
-                        <option value="">Computer</option>
-                        <option value="">Mobile</option>
-                    </select>
-                </div>
-            </div>
 
             <hr className='w-full text-black bg-black' />
             <div className='my-4'>
@@ -140,7 +116,6 @@ export default function ProductList() {
                                         {column.label}
                                     </TableCell>
                                 ))}
-                                <TableCell>Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -217,15 +192,30 @@ export default function ProductList() {
                 </DialogActions>
             </Dialog>
 
-            <Dialog open={openDialog} onClose={handleCloseDialog} >
+            <Dialog open={openDialog} onClose={handleCloseDialog}
+                open={openDialog}
+                onClose={handleCloseDialog}
+                PaperProps={{
+                    style: {
+                        width: '70vw',
+                        maxWidth: '70vw',
+                        height: '90vw'
+                    },
+                }}
+                className="relative mx-auto"
+            >
                 <div className='flex justify-between me-5'>
-                    <DialogTitle>Add New Product</DialogTitle>
+                    <DialogTitle>
+                        <p className='bg-[#002a47] text-white rounded-e-full pe-20 ps-2 py-[5px] '>
+                            Material Request Form
+                        </p>
+                    </DialogTitle>
                     <DialogActions>
                         <svg onClick={handleCloseDialog} xmlns="http://www.w3.org/2000/svg" width={30} height={30} viewBox="0 0 24 24" ><path fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"></path></svg>
                     </DialogActions>
                 </div>
                 <DialogContent>
-                    <AddProduct />
+                    <MaterialRequistForm />
                 </DialogContent>
             </Dialog>
         </div>

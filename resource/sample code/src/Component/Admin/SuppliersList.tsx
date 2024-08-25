@@ -39,7 +39,7 @@ const rows = [
     createData(5, "#12345", "Zerubabel Damtew Zeru", "Electronics", "Ethiopia, Addis ababa, Megenagna"),
 ];
 
-export default function UserList() {
+export default function SupplierList() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -75,7 +75,7 @@ export default function UserList() {
 
 
     return (
-        <div className='mx-10 mt-10'>
+        <div className='mt-10'>
             <div>
                 <div className='flex justify-between mb-3 mx-2'>
                     <p className='text-[#002a47] text-4xl font-medium'>Suppliers</p>

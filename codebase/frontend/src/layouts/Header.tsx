@@ -1,8 +1,5 @@
 // assets
 import logo from "../assets/images/logo.png";
-import supplier from "../assets/images/supplier.png";
-import supplierCaategory from "../assets/images/supplierCategory.png";
-import report from "../assets/images/report.png";
 // icons
 import {
   MdNightlight,
@@ -11,8 +8,11 @@ import {
   MdAccountCircle,
 } from "react-icons/md";
 import { FaRegBell } from "react-icons/fa";
+import { BiSolidReport } from "react-icons/bi";
+
 // mui
-import Box from "@mui/material/Box";
+import { styled } from '@mui/material/styles';
+
 import Drawer from "@mui/material/Drawer";
 import CssBaseline from "@mui/material/CssBaseline";
 import List from "@mui/material/List";
@@ -25,9 +25,34 @@ const drawerWidth = 240;
 // context
 import { useTheme as customTheme } from "../context/them_context";
 import IconContainer from "../components/icon/Icon_container";
+import { Link } from "react-router-dom";
+
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme, open }) => ({
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginLeft: `-${drawerWidth}px`,
+    ...(open && {
+      transition: theme.transitions.create('margin', {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginLeft: 0,
+    }),
+  })
+);
+
 function Header() {
   const { themeData, setThemeData } = customTheme();
   const [open, setOpen] = React.useState(true);
+  const { showTemplate, setShowTemplate } = React.useState(false)
+  const handleShowTemplate = () => {
+    setShowTemplate(true)
+  };
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -51,21 +76,22 @@ function Header() {
     } else if (themeData === "dark") {
       setThemeData("light");
     } else if (themeData === "system") {
-      setThemeData("dark"); // You can choose 'dark' or 'light' for system mode
+      setThemeData("dark");
     }
   };
 
   return (
-    <div className="dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white">
+    <div className=" text-[#002A47] bg-white ">
       <CssBaseline />
       <MenuIcon />
 
       {/* app bar section */}
       <AppBar>
-        <div className="dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white ps-4 p-3 flex justify-between w-full pe-14">
-          <div className="flex gap-2 align-middle items-center text-center">
+        <div className="bg-[#002A47] text-[#002A47]   ps-4 p-3 flex justify-between w-full pe-14">
+          <div className="flex gap-2 align-middle items-center text-white ">
             <MenuIcon onClick={handleDrawerOpen} />
             <img src={logo} alt="" className="w-24 md:w-40" />
+
           </div>
           <div className="flex gap-3 me-5 align-middle items-center ">
             <IconContainer
@@ -74,19 +100,19 @@ function Header() {
               iconsClassName="my-custom-icon-class"
             />
             <IconContainer
-              handler={() => {}}
+              handler={() => { }}
               Icon={MdAccountCircle}
               iconsClassName="my-custom-icon-class"
             />
             <IconContainer
-              handler={() => {}}
+              handler={() => { }}
               Icon={FaRegBell}
               iconsClassName="my-custom-icon-class"
             />
           </div>
         </div>
       </AppBar>
-      <div className="dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white">
+      <div className=" text-[#002A47] bg-white ">
         <Drawer
           sx={{
             width: drawerWidth,
@@ -100,9 +126,9 @@ function Header() {
           anchor="left"
           open={open}
         >
-          <div className="dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white py-3 flex justify-between px-2 text-center align-middle items-center">
-            <div className="w-full ">
-              <img src={logo} alt="" className="w-24 md:w-40 " />
+          <div className="bg-[#002a47]  w-full py-3 flex justify-between px-2 text-center align-middle items-center">
+            <div className=" ">
+              <img src={logo} alt="" className="w-full md:w-40 " />
             </div>
             <div>
               <IconButton onClick={handleDrawerClose} className="text-white">
@@ -121,15 +147,15 @@ function Header() {
             </div>
           </div>
           <Divider />
-          <List className="dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white">
+          <List className=" text-[#002A47] bg-white ">
             <nav
               className="hs-accordion-group p-6 w-full flex flex-col flex-wrap"
               data-hs-accordion-always-open
             >
               <ul className="space-y-1.5">
-                <li>
+                <li className="">
                   <a
-                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm rounded-lg hover:text-blue-800 dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white"
+                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm   rounded-lg text-[#002A47] bg-white hover:bg-[#002a47] hover:text-white "
                     href="#"
                   >
                     <svg
@@ -151,10 +177,10 @@ function Header() {
                   </a>
                 </li>
 
-                <li className="hs-accordion" id="users-accordion">
+                <li className="hs-accordion   rounded-lg text-[#002A47] bg-white hover:bg-[#002a47] hover:text-white " id="users-accordion">
                   <button
                     type="button"
-                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm rounded-lg hover:text-blue-800 dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white"
+                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm "
                     aria-expanded="true"
                     aria-controls="users-accordion"
                   >
@@ -178,10 +204,10 @@ function Header() {
                     Users
                   </button>
                 </li>
-                <li className="hs-accordion" id="users-accordion">
+                <li className="hs-accordion  rounded-lg text-[#002A47] bg-white hover:bg-[#002a47] hover:text-white" id="users-accordion">
                   <button
                     type="button"
-                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm rounded-lg hover:text-blue-800 dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white"
+                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm "
                     aria-expanded="true"
                     aria-controls="users-accordion"
                   >
@@ -200,10 +226,10 @@ function Header() {
                     Products
                   </button>
                 </li>
-                <li className="hs-accordion" id="users-accordion">
+                <li className="hs-accordion  rounded-lg text-[#002A47] bg-white hover:bg-[#002a47] hover:text-white" id="users-accordion">
                   <button
                     type="button"
-                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm rounded-lg hover:text-blue-800 dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white"
+                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm "
                     aria-expanded="true"
                     aria-controls="users-accordion"
                   >
@@ -222,10 +248,10 @@ function Header() {
                     Category
                   </button>
                 </li>
-                <li className="hs-accordion" id="users-accordion">
+                <li className="hs-accordion  rounded-lg text-[#002A47] bg-white hover:bg-[#002a47] hover:text-white" id="users-accordion">
                   <button
                     type="button"
-                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm rounded-lg hover:text-blue-800 dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white"
+                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm  "
                     aria-expanded="true"
                     aria-controls="users-accordion"
                   >
@@ -244,10 +270,34 @@ function Header() {
                     Sub Category
                   </button>
                 </li>
-                <li className="hs-accordion" id="users-accordion">
+                <li className="hs-accordion  rounded-lg text-[#002A47] bg-white hover:bg-[#002a47] hover:text-white" id="users-accordion"
+                  onClick={handleShowTemplate}>
+                  <Link to='/admin/list-template'>
+                    <button
+                      type="button"
+                      className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm  "
+                      aria-expanded="true"
+                      aria-controls="users-accordion"
+                    >
+                      <svg
+                        className="size-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width={24}
+                        height={24}
+                        viewBox="0 0 32 32"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M26 6v4H6V6zm0-2H6a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2M10 16v10H6V16zm0-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V16a2 2 0 0 0-2-2m16 2v10H16V16zm0-2H16a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V16a2 2 0 0 0-2-2"
+                        ></path>
+                      </svg>
+                      Template
+                    </button></Link>
+                </li>
+                <li className="hs-accordion  rounded-lg text-[#002A47] bg-white hover:bg-[#002a47] hover:text-white" id="users-accordion">
                   <button
                     type="button"
-                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm rounded-lg hover:text-blue-800 dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white"
+                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm  "
                     aria-expanded="true"
                     aria-controls="users-accordion"
                   >
@@ -263,35 +313,35 @@ function Header() {
                         d="M26 6v4H6V6zm0-2H6a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2M10 16v10H6V16zm0-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V16a2 2 0 0 0-2-2m16 2v10H16V16zm0-2H16a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V16a2 2 0 0 0-2-2"
                       ></path>
                     </svg>
-                    Template
-                  </button>
-                </li>
-                <li className="hs-accordion" id="users-accordion">
-                  <button
-                    type="button"
-                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm rounded-lg hover:text-blue-800 dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white"
-                    aria-expanded="true"
-                    aria-controls="users-accordion"
-                  >
-                    <img className="size-4" src={supplier} alt="" />
                     Suppliers
                   </button>
                 </li>
-                <li className="hs-accordion" id="users-accordion">
+                <li className="hs-accordion  rounded-lg text-[#002A47] bg-white hover:bg-[#002a47] hover:text-white" id="users-accordion">
                   <button
                     type="button"
-                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm rounded-lg hover:text-blue-800 dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white"
+                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm  "
                     aria-expanded="true"
                     aria-controls="users-accordion"
                   >
-                    <img className="size-4" src={supplierCaategory} alt="" />
+                    <svg
+                      className="size-4"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width={24}
+                      height={24}
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M10 3H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1M9 9H5V5h4zm11-6h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1m-1 6h-4V5h4zm-9 4H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1m-1 6H5v-4h4zm8-6c-2.206 0-4 1.794-4 4s1.794 4 4 4s4-1.794 4-4s-1.794-4-4-4m0 6c-1.103 0-2-.897-2-2s.897-2 2-2s2 .897 2 2s-.897 2-2 2"
+                      ></path>
+                    </svg>
                     Suppliers Category
                   </button>
                 </li>
-                <li className="hs-accordion" id="users-accordion">
+                <li className="hs-accordion  rounded-lg text-[#002A47] bg-white hover:bg-[#002a47] hover:text-white" id="users-accordion">
                   <button
                     type="button"
-                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm rounded-lg hover:text-blue-800 dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white"
+                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm  "
                     aria-expanded="true"
                     aria-controls="users-accordion"
                   >
@@ -310,22 +360,22 @@ function Header() {
                     Store
                   </button>
                 </li>
-                <li className="hs-accordion" id="users-accordion">
+                <li className="hs-accordion  rounded-lg text-[#002A47] bg-white hover:bg-[#002a47] hover:text-white" id="users-accordion">
                   <button
                     type="button"
-                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm rounded-lg hover:text-blue-800 dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white"
+                    className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm  "
                     aria-expanded="true"
                     aria-controls="users-accordion"
                   >
-                    <img className="size-4" src={report} alt="" />
+                    <BiSolidReport />
                     Report
                   </button>
                 </li>
               </ul>
             </nav>
           </List>
-          <Divider />
-          <ul className=" dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white m-auto text-center align-middle rounded-sm">
+          <Divider className="pt-12" />
+          <ul className="  text-[#002A47] bg-white  m-auto text-center align-middle rounded-sm">
             <li
               className="hs-accordion flex  text-center align-middle items-center"
               id="users-accordion"
@@ -349,7 +399,7 @@ function Header() {
               </svg>
               <button
                 type="button"
-                className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm rounded-lg hover:text-blue-800 dark:bg-[#002A47] text-[#002A47] bg-white dark:text-white"
+                className="flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm  "
                 aria-expanded="true"
                 aria-controls="users-accordion"
               >
@@ -358,6 +408,11 @@ function Header() {
             </li>
           </ul>
         </Drawer>
+        <Main open={open} >
+          <DrawerHeader />
+          {/* <UserList /> */}
+          <TemplateList />
+        </Main>
       </div>
     </div>
   );
