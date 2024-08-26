@@ -20,16 +20,28 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import AddUser from './AddUser';
 
+
+// const columns = [
+//     { id: 'no', label: 'No', minWidth: 50 },
+//     { id: 'fullName', label: 'Full name', minWidth: 200 },
+//     { id: 'department', label: 'Department', minWidth: 200, align: 'left' },
+//     { id: 'email', label: 'Email', minWidth: 200, align: 'left' },
+//     { id: 'phone', label: 'Phone', minWidth: 200, align: 'left' },
+//     { id: 'gender', label: 'Gender', minWidth: 200, align: 'left' },
+//     { id: 'address', label: 'Address', minWidth: 200, align: 'left' },
+//     { id: 'status', label: 'Status', minWidth: 200, align: 'left' },
+//     { id: 'actions', label: 'Actions', minWidth: 50, align: 'center' },
+// ];
+
 const columns = [
-    { id: 'no', label: 'No', minWidth: 50 },
+    { id: 'no', label: 'No', maxWidth: 10 },
     { id: 'fullName', label: 'Full name', minWidth: 200 },
-    { id: 'department', label: 'Department', minWidth: 200, align: 'left' },
-    { id: 'email', label: 'Email', minWidth: 200, align: 'left' },
-    { id: 'phone', label: 'Phone', minWidth: 200, align: 'left' },
-    { id: 'gender', label: 'Gender', minWidth: 200, align: 'left' },
-    { id: 'address', label: 'Address', minWidth: 200, align: 'left' },
-    { id: 'status', label: 'Status', minWidth: 200, align: 'left' },
-    { id: 'actions', label: 'Actions', minWidth: 50, align: 'center' },
+    { id: 'department', label: 'Department', minWidth: 180, align: 'left' },
+    { id: 'email', label: 'Email', minWidth: 80, align: 'left' },
+    { id: 'phone', label: 'Phone', minWidth: 80, align: 'left' },
+    { id: 'gender', label: 'Gender', minWidth: 50, align: 'left' },
+    { id: 'address', label: 'Address', minWidth: 120, align: 'left' },
+    { id: 'actions', label: 'Actions', minWidth: 30, align: 'center' },
 ];
 
 function createData(no: number, fullName: string, department: string, email: string, phone: string, gender: string, address: string, status: string) {
@@ -129,9 +141,9 @@ export default function UserList() {
                                 ))}
                             </TableRow>
                         </TableHead>
-                        <TableBody>
+                        <TableBody className='text-red-500'>
                             {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                                <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                                <TableRow hover role="checkbox" tabIndex={-1} key={index} className=''>
                                     {columns.map((column) => {
                                         const value = row[column.id];
                                         return (
@@ -174,8 +186,9 @@ export default function UserList() {
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
             >
-                <MenuItem onClick={handleMenuClose}>Update</MenuItem>
+                <MenuItem onClick={handleMenuClose}>Edit</MenuItem>
                 <MenuItem onClick={handleMenuClose}>Delete</MenuItem>
+                <MenuItem onClick={handleMenuClose}>Deactivate</MenuItem>
             </Menu>
 
             <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>

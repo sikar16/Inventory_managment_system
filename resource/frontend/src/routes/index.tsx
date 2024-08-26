@@ -1,6 +1,14 @@
 import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom'
 import { AdminLayout } from '../layout/AdminLayout'
 import EmployeeLayout from '../layout/EmployeeLayout'
+import Analysis from '../features/admin/dashbord/Analysis'
+import UserList from '../features/admin/user/UserList'
+import ProductList from '../features/admin/product/ProductList'
+import CategoryList from '../features/admin/category/CategoryList'
+import SupplierCategoryList from '../features/admin/supplierCategory/SupplierCategoryList'
+import TemplateList from '../features/admin/template/TemplateList'
+import SupplierList from '../features/admin/suppllier/SuppliersList'
+import WareHouseList from '../features/admin/wareHouse/WareHouseList'
 export const router = createBrowserRouter(
     createRoutesFromElements(
         <>
@@ -14,17 +22,27 @@ export const router = createBrowserRouter(
             {/* admin section */}
             <Route path='/admin' element={<AdminLayout />}>
                 <Route path='/admin/dashbord' element={<><h1>dashbord</h1></>} />
-                <Route path='/admin/user' element={<><h1>User</h1></>} />
-                <Route path='/admin/product' element={<><h1>Product</h1></>} />
-                <Route path='/admin/category' element={<><h1>Category</h1></>} />
+                <Route path='/admin/user' element={<UserList />} />
+                <Route path='/admin/product' element={<ProductList />} />
+                <Route path='/admin/category' element={<CategoryList />} />
+                <Route path='/admin/sub-category' element={<SupplierCategoryList />} />
+                <Route path='/admin/template' element={<TemplateList />} />
+                <Route path='/admin/suppliers' element={<SupplierList />} />
+                <Route path='/admin/suppliers-category' element={<SupplierCategoryList />} />
+                <Route path='/admin/warehouse' element={<WareHouseList />} />
                 <Route path='/admin/*' element={<><h1>Not found</h1></>} />
 
             </Route>
 
             {/* employee section */}
             <Route path='/employee' element={<EmployeeLayout />}>
-                <Route path='/employee/dashbord' element={<><h1>dashbord</h1></>} />
-                <Route path='/employee/category' element={<><h1>Category</h1></>} />
+                <Route path='/employee/dashbord' element={<Analysis />} />
+                <Route path='/employee/incoming-requests' element={<><h1>incomming request</h1></>} />
+                <Route path='/employee/purchase-requests' element={<><h1>purchase request</h1></>} />
+                <Route path='/employee/purchase-order' element={<><h1>purchase order</h1></>} />
+                <Route path='/employee/supplier-response' element={<><h1>supplier response</h1></>} />
+                <Route path='/employee/stock' element={<><h1>stock</h1></>} />
+                <Route path='/employee/report' element={<><h1>report</h1></>} />
             </Route>
 
             <Route path='*' element={<><h1>Not found</h1></>} />

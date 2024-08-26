@@ -1,24 +1,35 @@
+import Footer from "./Footer"
 import Header from "./Header"
+// mui 
 import Box from '@mui/material/Box';
-import MenuIcon from '@mui/icons-material/Menu';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
-import IconButton from '@mui/material/IconButton';
-const drawerWidth = 240;
 import Divider from '@mui/material/Divider';
-import LogoContainer from "../component/LogoContainer";
-import Bottem from "./Bottem";
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+const drawerWidth = 240;
+
+import { Outlet } from "react-router-dom"
 import { useState } from "react";
-import EmployeeSidebar from "./EmployeeSidebar";
-import { Outlet } from "react-router-dom";
-const EmployeeLayout = () => {
-    const [open, setOpen] = useState(false);
+import LogoContainer from "../component/LogoContainer";
+import AdminSidebar from "./AdminSidebar";
+import Bottem from "./Bottem";
+
+
+
+export const AdminLayout = () => {
+    const [open, setOpen] = useState(true);
+
+
+
     const handleDrawerClose = () => {
         setOpen(false);
     };
+
+    // const navigate = useNavigate();
     return (
         <>
-            <Box sx={{ display: open ? 'flex' : 'block ' }}>
+            <Box sx={{ display: open ? 'flex' : 'block' }}>
                 <CssBaseline />
                 <MenuIcon />
                 <Header setOpen={setOpen} />
@@ -46,16 +57,17 @@ const EmployeeLayout = () => {
                         </div>
                     </div>
                     <Divider />
-                    <EmployeeSidebar />
+                    <AdminSidebar />
                     <Divider />
                     <Bottem />
                 </Drawer>
-                <div className={`mt-24 ${open ? 'ps-0' : 'ps-10'}`}>
+
+                <div className=" mt-24">
                     <Outlet />
+                    <Footer />
                 </div>
-            </Box>
+            </Box >
 
-        </>)
+        </>
+    );
 }
-
-export default EmployeeLayout

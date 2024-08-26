@@ -33,7 +33,7 @@ function App() {
       {/* <RequiestesList /> */}
       {/* <MaterialRequestForm /> */}
       {/* <AddProduct /> */}
-      {/* <Routes>
+      <Routes>
         <Route path='/profile' element={<Profile />} />
         <Route path="/admin" element={<AdminDashboard />}>
           <Route index element={<Analysis />} path="analysis" />
@@ -41,7 +41,7 @@ function App() {
             <Route path="add-user" element={<AddUser />} />
           </Route>
           <Route path="product-list" element={<ProductList />} >
-            <Route path="add-product" element={<AddProduct />} />
+            <Route path="add-product" element={<AddProduct onAddProduct={AddProduct} />} />
           </Route>
           <Route path="category-list" element={<CategoryList />} >
             <Route path="add-category" element={<AddCategory />} />
@@ -62,9 +62,10 @@ function App() {
             <Route path="add-wareHouse" element={<AddWareHouse />} />
           </Route>
         </Route>
-      </Routes> */}
+      </Routes>
+
       {/* <IncomingRequest /> */}
-      <Appbar />
+      {/* <Appbar /> */}
     </>
   );
 }

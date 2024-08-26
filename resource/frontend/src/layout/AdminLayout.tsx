@@ -8,25 +8,16 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 const drawerWidth = 240;
-
 import { Outlet } from "react-router-dom"
 import { useState } from "react";
 import LogoContainer from "../component/LogoContainer";
 import AdminSidebar from "./AdminSidebar";
 import Bottem from "./Bottem";
-
-
-
 export const AdminLayout = () => {
-    const [open, setOpen] = useState(true);
-
-
-
+    const [open, setOpen] = useState(false);
     const handleDrawerClose = () => {
         setOpen(false);
     };
-
-    // const navigate = useNavigate();
     return (
         <>
             <Box sx={{ display: open ? 'flex' : 'block' }}>
@@ -62,9 +53,8 @@ export const AdminLayout = () => {
                     <Bottem />
                 </Drawer>
 
-                <div className=" mt-24">
+                <div className={`mt-24 ${open ? 'ms-0' : 'ms-10'}`}>
                     <Outlet />
-                    <Footer />
                 </div>
             </Box >
 
