@@ -9,15 +9,22 @@ import SupplierCategoryList from '../features/admin/supplierCategory/SupplierCat
 import TemplateList from '../features/admin/template/TemplateList'
 import SupplierList from '../features/admin/suppllier/SuppliersList'
 import WareHouseList from '../features/admin/wareHouse/WareHouseList'
+import IncomingRequest from '../features/departmentHead/IncomingRequest'
+import MaterialRequestForm from '../component/MaterialRequistForm'
+import RequiestDetail from '../features/employee/employee/RequiestDetail'
+import Login from '../features/Login'
+import ConfirmPassword from '../features/ConfirmPassword'
+import ForgetPassword from '../features/ForgetPassword'
+import Profile from '../features/Profile'
 export const router = createBrowserRouter(
     createRoutesFromElements(
         <>
             {/* root section */}
             <Route path='/' element={<><h1>root</h1></>} />
-            <Route path='/login' element={<><h1>login</h1></>} />
-            <Route path='/confirm-password' element={<><h1>confirm passsword</h1></>} />
-            <Route path='/forget-password' element={<><h1>forget password</h1></>} />
-            <Route path='/profile' element={<><h1>profile</h1></>} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/confirm-password' element={<ConfirmPassword />} />
+            <Route path='/forget-password' element={<ForgetPassword />} />
+            <Route path='/profile' element={<Profile />} />
 
             {/* admin section */}
             <Route path='/admin' element={<AdminLayout />}>
@@ -35,16 +42,30 @@ export const router = createBrowserRouter(
 
             </Route>
 
-            {/* employee section */}
+            {/* employees section */}
+            {/* <Route path='/employee' element={<EmployeeLayout />}>
+            <Route path='/employee/employeeRequester' element={<><h1>home</h1></>}>
+                <Route path='/employee/employeeRequester/incoming-requests' element={<IncomingRequest />} >
+                    <Route path='/employee/employeeRequester/incoming-requests/material-request' element={<MaterialRequestForm />} />s
+                </Route>
+            </Route>
+
+            <Route path='/employee/departmentHead'>
+                <Route path='/employee/departmentHead/incoming-requests' element={<><h1>incomming request</h1></>} />
+            </Route> */}
+
             <Route path='/employee' element={<EmployeeLayout />}>
                 <Route path='/employee/dashbord' element={<Analysis />} />
-                <Route path='/employee/incoming-requests' element={<><h1>incomming request</h1></>} />
+                <Route path='/employee/incoming-requests' element={<IncomingRequest />} />
+                <Route path='/employee/material-request' element={<MaterialRequestForm />} />
+                <Route path='/employee/requiest-detaile' element={<RequiestDetail />} />
                 <Route path='/employee/purchase-requests' element={<><h1>purchase request</h1></>} />
                 <Route path='/employee/purchase-order' element={<><h1>purchase order</h1></>} />
                 <Route path='/employee/supplier-response' element={<><h1>supplier response</h1></>} />
                 <Route path='/employee/stock' element={<><h1>stock</h1></>} />
                 <Route path='/employee/report' element={<><h1>report</h1></>} />
             </Route>
+
 
             <Route path='*' element={<><h1>Not found</h1></>} />
 

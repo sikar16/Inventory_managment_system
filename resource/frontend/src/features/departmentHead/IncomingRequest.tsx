@@ -17,7 +17,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import MaterialRequistForm from '../MaterialRequistForm';
+import MaterialRequistForm from '../../component/MaterialRequistForm';
+import Title from '../../component/TablesTitle';
 
 const columns = [
     { id: 'no', label: 'No', minWidth: 50 },
@@ -48,8 +49,6 @@ export default function IncomingRequest() {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [openDialog, setOpenDialog] = React.useState(false);
-    const [openDetails, setOpenDetails] = React.useState(false);
-    const [selectedProduct, setSelectedProduct] = React.useState<any>(null);
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
@@ -69,15 +68,6 @@ export default function IncomingRequest() {
         setAnchorEl(null);
     };
 
-    const handleViewDetails = () => {
-        setOpenDetails(true);
-        handleCloseMenu();
-    };
-
-    const handleCloseDetails = () => {
-        setOpenDetails(false);
-    };
-
     const handleOpenDialog = () => {
         setOpenDialog(true);
     };
@@ -88,10 +78,11 @@ export default function IncomingRequest() {
 
     return (
         <div className='mt-10 mx-7'>
-            <div className='flex justify-between mb-3 mx-2'>
+            {/* <div className='flex justify-between mb-3 mx-2'>
                 <p className='text-[#002a47] text-4xl font-medium'>Incoming request</p>
                 <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Add Product</button>
-            </div>
+            </div> */}
+            <Title tableName={"Incoming request"} action={'Create req'} onClick={handleOpenDialog} />
             <hr className='w-full text-black bg-black' />
             <div className='my-4'>
                 <input type="text" placeholder='Search' className='w-[80%] bg-[#f5f5f5] rounded-2xl py-[5px] px-3' />
@@ -139,7 +130,6 @@ export default function IncomingRequest() {
                                                 open={Boolean(anchorEl)}
                                                 onClose={handleCloseMenu}
                                             >
-                                                <MenuItem onClick={handleViewDetails}>View Details</MenuItem>
                                                 <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
                                                 <MenuItem onClick={handleCloseMenu}>Delete</MenuItem>
                                             </Menu>
@@ -159,33 +149,6 @@ export default function IncomingRequest() {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
-
-            <Dialog open={openDetails} onClose={handleCloseDetails} className=''>
-                <DialogTitle> <strong>Product Details</strong></DialogTitle>
-                <DialogContent>
-                    {selectedProduct && (
-                        <div className=' grid grid-cols-2 gap-4'>
-                            <p className='text-md'> Product ID: <span className='text-sm'>{selectedProduct.productId}</span> </p>
-                            <p className='text-md'>Product: <span className='text-sm'>{selectedProduct.product} </span></p>
-                            <p className='text-md'>Category: <span className='text-sm'>{selectedProduct.category} </span></p>
-                            <p className='text-md'>Template: <span className='text-sm'>Mobile </span></p>
-                            <p className='text-md '>Attributes:
-                                <div className='grid grid-cols-2 w-full text-sm  gap-2 mt-2 '>
-                                    <p className='ms-3'>RAM  - 8GB</p>
-                                    <p className='ms-3'>ROM  - 8GB</p>
-                                    <p className='ms-3'>Graphics  - 8GB</p>
-                                    <p className='ms-3'>Screen size  - 8GB</p>
-
-                                </div>
-                            </p>
-                        </div>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDetails} color="primary">Close</Button>
-                </DialogActions>
-            </Dialog>
-
             <Dialog open={openDialog} onClose={handleCloseDialog}
                 open={openDialog}
                 onClose={handleCloseDialog}

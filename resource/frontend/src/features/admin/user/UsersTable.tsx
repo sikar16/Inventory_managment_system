@@ -58,11 +58,10 @@ const UsersTable = ({ anchorEl, setAnchorEl }) => {
                                     key={column.id}
                                     align={column.align}
                                     style={{ minWidth: column.minWidth }}
-                                // sx={{
-                                //     backgroundColor: '#313131', // Dark background color
-                                //     color: 'white',
-                                //     fontWeight: 'bold',
-                                // }}
+                                    sx={{
+                                        // backgroundColor: 'gray', // Dark background color
+                                        color: 'gray',
+                                    }}
                                 >
                                     {column.label}
                                 </TableCell>
@@ -75,7 +74,13 @@ const UsersTable = ({ anchorEl, setAnchorEl }) => {
                                 {columns.map((column) => {
                                     const value = row[column.id];
                                     return (
-                                        <TableCell key={column.id} align={column.align}>
+                                        <TableCell key={column.id} align={column.align}
+                                        // sx={{
+                                        //     backgroundColor: '#313131', // Dark background color
+                                        //     color: 'white',
+                                        //     fontWeight: 'bold',
+                                        // }}
+                                        >
                                             {column.id === 'actions' ? (
                                                 <IconButton
                                                     aria-label="more"
