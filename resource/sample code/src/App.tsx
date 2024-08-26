@@ -33,7 +33,7 @@ function App() {
       {/* <RequiestesList /> */}
       {/* <MaterialRequestForm /> */}
       {/* <AddProduct /> */}
-      <Routes>
+      {/* <Routes>
         <Route path='/profile' element={<Profile />} />
         <Route path="/admin" element={<AdminDashboard />}>
           <Route index element={<Analysis />} path="analysis" />
@@ -62,7 +62,7 @@ function App() {
             <Route path="add-wareHouse" element={<AddWareHouse />} />
           </Route>
         </Route>
-      </Routes>
+      </Routes> */}
 
       {/* <IncomingRequest /> */}
       {/* <Appbar /> */}

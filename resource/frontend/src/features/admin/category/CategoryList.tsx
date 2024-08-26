@@ -5,6 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import AddCategory from './AddCategory';
 import { useState } from 'react';
 import CategoryTable from './CategoryTable';
+import Title from '../../../component/TablesTitle';
 export default function CategoryList() {
     const [openDialog, setOpenDialog] = useState(false);
     const handleOpenDialog = () => {
@@ -15,10 +16,8 @@ export default function CategoryList() {
     };
     return (
         <div className=' mt-10'>
-            <div className='flex justify-between mb-3 mx-2'>
-                <p className='text-[#002a47] text-4xl font-medium'>Category</p>
-                <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Add Category</button>
-            </div>
+            <Title tableName={"Category"} onClick={handleOpenDialog} />
+
             <div className='flex flex-wrap gap-2 mt-10 mx-10 mb-5'>
                 <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center '>
                     <p className='me-3 text-gray-500'>Category :</p>

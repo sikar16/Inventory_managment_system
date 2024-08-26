@@ -19,7 +19,7 @@ export default function UserList() {
     };
     return (
         <div className='mt-10 '>
-            <Title tableName={"Add User"} onClick={handleOpenDialog} />
+            <Title tableName={"User"} onClick={handleOpenDialog} />
             <div className='bg-white w-[20%] px-3 py-1 rounded-md mb-4 flex'>
                 <p className='me-3 text-gray-500'>Role:</p>
                 <select name="" id="" className='w-[70%]  text-gray-700'>

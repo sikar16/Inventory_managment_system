@@ -5,6 +5,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import AddSubCategory from './AddSubCategory';
 import SubCategoryTable from './SubCategoryTable';
+import Title from '../../../component/TablesTitle';
 export default function SubCategoryList() {
     const [openDialog, setOpenDialog] = React.useState(false);
     const handleOpenDialog = () => {
@@ -17,10 +18,7 @@ export default function SubCategoryList() {
 
     return (
         <div className='mt-10'>
-            <div className='flex justify-between mb-3 mx-2'>
-                <p className='text-[#002a47] text-4xl font-medium'>Sub Category</p>
-                <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Add Sub category</button>
-            </div>
+            <Title tableName={"Sub category"} onClick={handleOpenDialog} />
 
             <div className='flex flex-wrap gap-2 mt-10 mx-10 mb-5'>
                 <div className='bg-[#F5F5F5] px-3 py-3 rounded-md mb-2 flex items-center '>

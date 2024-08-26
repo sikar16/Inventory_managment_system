@@ -5,6 +5,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import AddSuppliers from './AddSuppliers';
 import SupplierTable from './SupplierTable';
+import Title from '../../../component/TablesTitle';
 export default function SupplierList() {
     const [openDialog, setOpenDialog] = useState(false);
     const handleOpenDialog = () => {
@@ -16,10 +17,8 @@ export default function SupplierList() {
     return (
         <div className='mt-10'>
             <div>
-                <div className='flex justify-between mb-3 mx-2'>
-                    <p className='text-[#002a47] text-4xl font-medium'>Suppliers</p>
-                    <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Add Supplier</button>
-                </div>
+                <Title tableName={"Supplier"} onClick={handleOpenDialog} />
+
             </div>
             <hr className='w-full text-black bg-black' />
             <div className='my-4'>
