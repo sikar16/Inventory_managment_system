@@ -44,7 +44,7 @@ const Header: React.FC<ChildComponentProps> = ({ setOpen }) => {
     };
     return <>
         <AppBar className='bg-[#002A47] text-white dark:bg-slate-900 dark:text-white'>
-            <div className=' ps-4 p-3 flex justify-between w-full pe-14 bg-[#002A47]'>
+            <div className=' ps-4 p-3 flex justify-between w-full pe-14 bg-[#002A47] dark:bg-zinc-950 dark:text-white'>
                 <div className='flex gap-5 align-middle items-center text-center '>
                     <MenuIcon onClick={handleDrawerOpen} />  <LogoContainer />
                 </div>

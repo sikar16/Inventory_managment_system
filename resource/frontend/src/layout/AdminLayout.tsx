@@ -24,6 +24,7 @@ export const AdminLayout = () => {
                 <CssBaseline />
                 <MenuIcon />
                 <Header setOpen={setOpen} />
+                <Divider />
                 <Drawer
                     sx={{
                         width: drawerWidth,
@@ -37,7 +38,7 @@ export const AdminLayout = () => {
                     anchor="left"
                     open={open}
                 >
-                    <div className='bg-[#002A47] py-3 flex justify-between px-2 text-center align-middle items-center'>
+                    <div className='bg-[#002A47] dark:bg-zinc-950 dark:text-white py-3 flex justify-between px-2 text-center align-middle items-center'>
                         <div className='w-full '>
                             <LogoContainer />
                         </div>

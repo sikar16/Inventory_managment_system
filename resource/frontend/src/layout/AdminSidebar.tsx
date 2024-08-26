@@ -8,8 +8,8 @@ const AdminSidebar = () => {
     };
     return (
         <>
-            <List >
-                <nav className="hs-accordion-group p-6 w-full flex flex-col flex-wrap" data-hs-accordion-always-open>
+            <List className='dark:bg-zinc-950 dark:text-white h-screen'>
+                <nav className="hs-accordion-group p-6 w-full flex flex-col flex-wrap " data-hs-accordion-always-open>
                     <ul className="space-y-1.5">
                         <li>
                             <Link to='/admin/dashbord' onClick={() => handleToggleView('dashbord')}>
@@ -81,12 +81,12 @@ const AdminSidebar = () => {
                             <Link to='/admin/warehouse' onClick={() => handleToggleView('warehouse')}>
                                 <button type="button" className="hs-accordion-toggle hs-accordion-active:text-[#002a47] hs-accordion-active:hover:bg-transparent w-full text-start flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm text-gray-700 rounded-lg hover:bg-[#002A47] hover:text-white focus:outline-none  dark:bg-neutral-800 dark:text-neutral-400 dark:hs-accordion-active:text-white dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700 dark:focus:text-neutral-300" aria-expanded="true" aria-controls="users-accordion">
                                     <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24"><path fill="currentColor" d="M12 18H6v-4h6m9 0v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6m0-10H4v2h16z"></path></svg>
-                                    Store
+                                    Ware house
                                 </button>
                             </Link>
                         </li>
                         <li className="hs-accordion" id="users-accordion">
-                            <Link to='/admin/category' onClick={() => handleToggleView('products')}>
+                            <Link to='/admin/report' onClick={() => handleToggleView('report')}>
                                 <button type="button" className="hs-accordion-toggle hs-accordion-active:text-[#002a47] hs-accordion-active:hover:bg-transparent w-full text-start flex items-center gap-x-3.5 py-[5px] px-2.5 text-sm text-gray-700 rounded-lg hover:bg-[#002A47] hover:text-white focus:outline-none  dark:bg-neutral-800 dark:text-neutral-400 dark:hs-accordion-active:text-white dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700 dark:focus:text-neutral-300" aria-expanded="true" aria-controls="users-accordion">
                                     <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 32 32"><g fill="currentColor"><path d="M25 5h-.17v2H25a1 1 0 0 1 1 1v20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h.17V5H7a3 3 0 0 0-3 3v20a3 3 0 0 0 3 3h18a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3"></path><path d="M23 3h-3V0h-8v3H9v6h14zm-2 4H11V5h3V2h4v3h3z"></path><path d="M10 13h12v2H10zm0 5h12v2H10zm0 5h12v2H10z" className="ouiIcon__fillSecondary"></path></g></svg>
                                     Report

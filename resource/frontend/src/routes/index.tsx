@@ -30,6 +30,7 @@ export const router = createBrowserRouter(
                 <Route path='/admin/suppliers' element={<SupplierList />} />
                 <Route path='/admin/suppliers-category' element={<SupplierCategoryList />} />
                 <Route path='/admin/warehouse' element={<WareHouseList />} />
+                <Route path='/admin/report' element={<><h1>report</h1></>} />
                 <Route path='/admin/*' element={<><h1>Not found</h1></>} />
 
             </Route>

@@ -43,7 +43,7 @@ const rows = [
 
 ];
 
-export default function IncomingRequest() {
+export default function Approvals() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);

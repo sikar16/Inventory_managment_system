@@ -16,6 +16,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import MaterialRequestForm from '../../../component/MaterialRequistForm';
 const columns = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'orderId', label: 'Order Id', minWidth: 200 },
@@ -76,8 +77,6 @@ export default function RequiestesList() {
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
-
-
     return (
         <div>
             <div className='w-full bg-[#002a47]'>
@@ -92,7 +91,6 @@ export default function RequiestesList() {
                         <p className='text-[#002a47] text-4xl font-medium'>Requests</p>
                         <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Create request</button>
                     </div>
-                    <SliderCom />
                 </div>
                 <div className='flex gap-8 text-gray-400 mt-8 mb-1'>
                     <button className='hover:underline hover:text-black'>All requests</button>
@@ -165,14 +163,13 @@ export default function RequiestesList() {
                     PaperProps={{
                         style: {
                             width: '70vw',
-                            maxWidth: '70vw', // Prevents it from being wider than 70% of viewport width
-                        },
-                    }}
+                            maxWidth: '70vw',
+                        }
+                    }
                     className="relative mx-auto"
                 >
                     <div className='flex justify-between p-4'>
                         <DialogTitle
-                        // className='bg-[#002a47] text-white rounded-e-full '
                         >
                             <p className='bg-[#002a47] text-white rounded-e-full pe-20 ps-2 py-[5px] '>
                                 Material Request Form

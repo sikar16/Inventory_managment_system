@@ -5,6 +5,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import AddWareHouse from './AddWareHouse';
 import WareHouseTable from './WareHouseTable';
+import Title from '../../../component/TablesTitle';
 
 export default function WareHouseList() {
     const [openDialog, setOpenDialog] = React.useState(false);
@@ -19,10 +20,7 @@ export default function WareHouseList() {
 
     return (
         <div className='mt-10'>
-            <div className='flex justify-between mb-3 mx-2'>
-                <p className='text-[#002a47] text-4xl font-medium'>WareHouse</p>
-                <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Add WareHouse</button>
-            </div>
+            <Title tableName={"Ware house"} onClick={handleOpenDialog} />
 
             <hr className='w-full text-black bg-black' />
             <div className='my-4 ms-[10%]'>

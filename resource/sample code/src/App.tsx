@@ -33,6 +33,7 @@ function App() {
       {/* <RequiestesList /> */}
       {/* <MaterialRequestForm /> */}
       {/* <AddProduct /> */}
+      <IncomingRequest />
       {/* <Routes>
         <Route path='/profile' element={<Profile />} />
         <Route path="/admin" element={<AdminDashboard />}>
