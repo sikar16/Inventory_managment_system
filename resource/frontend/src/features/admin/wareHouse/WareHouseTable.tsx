@@ -1,3 +1,4 @@
+import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -35,6 +36,8 @@ const rows = [
 function WareHouseTable() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [openFaqIndex, setOpenFaqIndex] = React.useState<number | null>(null);
+
     const handleToggle = (index: number) => {
         setOpenFaqIndex(openFaqIndex === index ? null : index);
     };

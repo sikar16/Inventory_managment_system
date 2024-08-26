@@ -7,10 +7,7 @@ import AddWareHouse from './AddWareHouse';
 import WareHouseTable from './WareHouseTable';
 
 export default function WareHouseList() {
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [openDialog, setOpenDialog] = React.useState(false);
-    const [openFaqIndex, setOpenFaqIndex] = React.useState<number | null>(null);
 
     const handleOpenDialog = () => {
         setOpenDialog(true);
