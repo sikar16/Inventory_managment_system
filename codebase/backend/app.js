@@ -4,13 +4,14 @@ import { HOST, PORT } from "./src/config/secret.js";
 
 const app = express();
 
-//middleware
+// Middleware
 app.use(express.json());
 app.use(urlencoded({ extended: true }));
+
 app.use(
   cors({
-    origin: true,
-    allowedHeaders: true,
+    origin: "*", // Allow requests from any origin
+    allowedHeaders: ["Content-Type", "Authorization"], // Specify the allowed headers
     credentials: true,
   })
 );
