@@ -8,31 +8,23 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 const drawerWidth = 240;
-
 import { Outlet } from "react-router-dom"
 import { useState } from "react";
 import LogoContainer from "../component/LogoContainer";
 import AdminSidebar from "./AdminSidebar";
 import Bottem from "./Bottem";
-
-
-
 export const AdminLayout = () => {
-    const [open, setOpen] = useState(true);
-
-
-
+    const [open, setOpen] = useState(false);
     const handleDrawerClose = () => {
         setOpen(false);
     };
-
-    // const navigate = useNavigate();
     return (
         <>
             <Box sx={{ display: open ? 'flex' : 'block' }}>
                 <CssBaseline />
                 <MenuIcon />
                 <Header setOpen={setOpen} />
+                <Divider />
                 <Drawer
                     sx={{
                         width: drawerWidth,
@@ -46,7 +38,7 @@ export const AdminLayout = () => {
                     anchor="left"
                     open={open}
                 >
-                    <div className='bg-[#002A47] py-3 flex justify-between px-2 text-center align-middle items-center'>
+                    <div className='bg-[#002A47] dark:bg-zinc-950 dark:text-white py-3 flex justify-between px-2 text-center align-middle items-center'>
                         <div className='w-full '>
                             <LogoContainer />
                         </div>
@@ -62,9 +54,8 @@ export const AdminLayout = () => {
                     <Bottem />
                 </Drawer>
 
-                <div className=" mt-24">
+                <div className={`mt-24 ${open ? 'ms-0' : 'ms-10'}`}>
                     <Outlet />
-                    <Footer />
                 </div>
             </Box >
 
