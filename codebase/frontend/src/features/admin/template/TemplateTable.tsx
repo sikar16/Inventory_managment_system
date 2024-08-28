@@ -10,6 +10,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { TemplateType } from '../../../_types/template_type';
 const columns = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'templateId', label: 'Template Id', minWidth: 70 },
@@ -20,13 +21,20 @@ function createData(no: number, templateId: string, template: string) {
     return { no, templateId, template };
 }
 
-const rows = [
-    createData(1, "#12345", "Electronics"),
-    createData(2, "#12346", "Stationery"),
-    createData(2, "#12346", "Stationery"),
-    createData(2, "#12346", "Stationery"),
-];
-function TemplateTable() {
+interface Templateprops {
+    templateList: TemplateType[],
+}
+
+const TemplateTable: React.FC<Templateprops> = ({
+    templateList
+}) => {
+    const rows = templateList.map((i) =>
+        createData(
+            i.id,
+            `${i.id}`,
+            `${i.name}`
+        )
+    )
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [openFaqIndex, setOpenFaqIndex] = React.useState<number | null>(null);

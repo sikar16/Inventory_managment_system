@@ -9,6 +9,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { StoreType } from '../../../_types/store_type';
 
 const columns = [
     { id: 'no', label: 'No', minWidth: 50 },
@@ -23,17 +24,24 @@ function createData(no: number, storeName: string, city: string, subCity: string
     return { no, storeName, city, subCity, wereda };
 }
 
-const rows = [
-    createData(1, "Lebu Branch", "Addis ababa", "Bole", "08"),
-    createData(1, "Lebu Branch", "Addis ababa", "Bole", "08"),
-    createData(1, "Lebu Branch", "Addis ababa", "Bole", "08"),
-    createData(1, "Lebu Branch", "Addis ababa", "Bole", "08"),
-    createData(1, "Lebu Branch", "Addis ababa", "Bole", "08"),
-    createData(1, "Lebu Branch", "Addis ababa", "Bole", "08"),
-    createData(1, "Lebu Branch", "Addis ababa", "Bole", "08"),
-
-];
-function WareHouseTable() {
+interface storeProps {
+    storeList: StoreType[];
+}
+const WareHouseTable: React.FC<storeProps> = ({
+    storeList
+}) => {
+    const rows = storeList.map((i) =>
+        createData(
+            i.id,
+            `${i.name}`,
+            `${i.name}`,
+            `${i.name}`,
+            `${i.name}`,
+            // `${i.address.country}`,
+            // `${i.address.city}`,
+            // `${i.address.subCity}`
+        )
+    )
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [openFaqIndex, setOpenFaqIndex] = React.useState<number | null>(null);

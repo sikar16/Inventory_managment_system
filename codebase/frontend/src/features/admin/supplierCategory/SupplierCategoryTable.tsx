@@ -7,27 +7,28 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useState } from 'react';
+import { supplierCategoryType } from '../../../_types/supplierCategory_type';
 const columns = [
     { id: 'no', label: 'No', minWidth: 50 },
-    { id: 'suppliersName', label: 'Suppliers Name', minWidth: 70 },
+    { id: 'suppliersid', label: 'Suppliers id', minWidth: 70 },
     { id: 'category', label: 'Category', minWidth: 70, align: 'left' },
 ];
 
-function createData(no: number, suppliersName: string, category: string) {
-    return { no, suppliersName, category };
+function createData(no: number, suppliersid: string, category: string) {
+    return { no, suppliersid, category };
 }
 
-const rows = [
-    createData(1, "BlueSparks", "Electronics"),
-    createData(1, "BlueSparks", "Electronics"),
-    createData(1, "BlueSparks", "Electronics"),
-    createData(1, "BlueSparks", "Electronics"),
-    createData(1, "BlueSparks", "Electronics"),
-    createData(1, "BlueSparks", "Electronics"),
-    createData(1, "BlueSparks", "Electronics"),
-
-];
-function SupplierCategoryTable() {
+interface SupplierCategoryProps {
+    suppliersCategorylist: supplierCategoryType;
+}
+const SupplierCategoryTable: React.FC<SupplierCategoryProps> = ({ suppliersCategorylist }) => {
+    const rows = suppliersCategorylist.map((i) =>
+        createData(
+            i.id,
+            `${i.id}`,
+            `${i.name}`,
+        )
+    )
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 

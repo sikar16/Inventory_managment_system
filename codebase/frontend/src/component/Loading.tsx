@@ -1,13 +1,8 @@
-import React from 'react'
-
-function Loading() {
+export default function Loader() {
     return (
-        <>
-            <div aria-label="Loading..." role="status" className="flex items-center space-x-2">
-                <span className="text-4xl font-medium text-gray-500">Loading...</span>
-            </div>
-        </>
-    )
+        <div className="loader-container">
+            <div className="loader"></div>
+            <p>Loading ...</p>
+        </div>
+    );
 }
-
-export default Loading

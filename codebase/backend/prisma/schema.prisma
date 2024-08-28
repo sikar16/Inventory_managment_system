@@ -46,6 +46,7 @@ enum ActiveStatus {
 enum StoreInventoryType {
   IN
   OUT
+  // TRANSFER
 }
 
 // -----x------enum part ----------x--------//

@@ -5,8 +5,7 @@ import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
 import { useGetAllproductCategoryQuery } from '../../../services/productCategorySerivce';
-import { ProductCategoryType } from '../../../_types/category_type';
-
+import { ProductCategoryType } from '../../../_types/productCategory_type';
 
 export default function AddSubCategory() {
     const [selectedCategory, setSelectedCategory] = useState('');

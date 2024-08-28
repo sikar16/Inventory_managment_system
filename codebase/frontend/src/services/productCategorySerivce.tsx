@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { ProductCategoryType } from "../_types/category_type";
+import { ProductCategoryType } from "../_types/productCategory_type";
 import extractErrorMessage from "../util/extractErrorMessage";
 
 const baseUrl = import.meta.env.VITE_API_URL;

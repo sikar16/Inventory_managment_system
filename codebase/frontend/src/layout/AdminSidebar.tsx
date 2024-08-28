@@ -8,7 +8,7 @@ const AdminSidebar = () => {
     };
     return (
         <>
-            <List className='dark:bg-zinc-950 dark:text-white h-screen'>
+            <List className='dark:bg-zinc-950 dark:text-white  h-full'>
                 <nav className="hs-accordion-group p-6 w-full flex flex-col flex-wrap " data-hs-accordion-always-open>
                     <ul className="space-y-1.5">
                         <li>

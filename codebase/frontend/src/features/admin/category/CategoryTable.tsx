@@ -7,7 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useState } from 'react';
-import { ProductCategoryType } from '../../../_types/category_type';
+import { ProductCategoryType } from '../../../_types/productCategory_type';
 const columns = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'categoryId', label: 'Category Id', minWidth: 70 },

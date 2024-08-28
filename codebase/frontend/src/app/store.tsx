@@ -3,6 +3,11 @@ import { userApi } from "../services/user_service";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { supplierApi } from "../services/supplier_service";
 import { productCategoryApi } from "../services/productCategorySerivce";
+import { productSubcategoryApi } from "../services/productSubcategory_service";
+import { supplierCategoryApi } from "../services/supplierCategoryService";
+import { productApi } from "../services/product_service";
+import { templateApi } from "../services/template_service";
+import { storeApi } from "../services/store_service";
 
 export const store = configureStore({
   reducer: {
@@ -10,12 +15,22 @@ export const store = configureStore({
     [userApi.reducerPath]: userApi.reducer,
     [supplierApi.reducerPath]: supplierApi.reducer,
     [productCategoryApi.reducerPath]: productCategoryApi.reducer,
+    [productSubcategoryApi.reducerPath]: productSubcategoryApi.reducer,
+    [supplierCategoryApi.reducerPath]: supplierCategoryApi.reducer,
+    [productApi.reducerPath]: productApi.reducer,
+    [templateApi.reducerPath]: templateApi.reducer,
+    [storeApi.reducerPath]: storeApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(userApi.middleware)
       .concat(supplierApi.middleware)
-      .concat(productCategoryApi.middleware),
+      .concat(productCategoryApi.middleware)
+      .concat(productSubcategoryApi.middleware)
+      .concat(supplierCategoryApi.middleware)
+      .concat(productApi.middleware)
+      .concat(templateApi.middleware)
+      .concat(storeApi.middleware),
 });
 
 setupListeners(store.dispatch);

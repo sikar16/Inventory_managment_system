@@ -7,6 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import { ProductSubCategoryType } from '../../../_types/productSubcategory_type';
 const columns = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'subcategoryId', label: 'SubCategory Id', minWidth: 70 },
@@ -17,22 +18,23 @@ const columns = [
 function createData(no: number, subcategoryId: string, category: string, subCategory: string) {
     return { no, subcategoryId, category, subCategory };
 }
-const rows = [
-    createData(1, "#12345", "Electronics", "Computer"),
-    createData(1, "#12345", "Electronics", "Computer"),
-    createData(1, "#12345", "Electronics", "Computer"),
-    createData(1, "#12345", "Electronics", "Computer"),
-    createData(1, "#12345", "Electronics", "Computer"),
-    createData(1, "#12345", "Electronics", "Computer"),
-    createData(1, "#12345", "Electronics", "Computer"),
-    createData(1, "#12345", "Electronics", "Computer"),
-    createData(1, "#12345", "Electronics", "Computer"),
-    createData(1, "#12345", "Electronics", "Computer"),
-    createData(1, "#12345", "Electronics", "Computer"),
-    createData(1, "#12345", "Electronics", "Computer"),
-    createData(1, "#12345", "Electronics", "Computer"),
-];
-function SubCategoryTable() {
+
+interface productSubcategoryprops {
+    subcategoryList: ProductSubCategoryType[];
+}
+
+const SubCategoryTable: React.FC<productSubcategoryprops> = ({
+    subcategoryList
+}) => {
+    const rows = subcategoryList.map((i) =>
+        createData(
+            i.id,
+            `${i.id}`,
+            `${i.category}`,
+            `${i.name}`
+        )
+    );
+
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
