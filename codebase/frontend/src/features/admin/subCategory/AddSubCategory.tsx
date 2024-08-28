@@ -4,32 +4,28 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
+import { useGetAllproductCategoryQuery } from '../../../services/productCategorySerivce';
+import { ProductCategoryType } from '../../../_types/category_type';
 
-const categories = ['Electronics', 'Stationary', 'Food', 'Drink'];
-const subCategories = ['Computer', 'Mobile'];
 
 export default function AddSubCategory() {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedSubCategory, setSelectedSubCategory] = useState('');
     const [customSubCategory, setCustomSubCategory] = useState('');
+    const { isError, isLoading, isSuccess, data, error } = useGetAllproductCategoryQuery('productCategory');
+    const categories: ProductCategoryType[] = isSuccess ? data : [];
+    console.log(categories)
 
     const handleCategoryChange = (event) => {
         setSelectedCategory(event.target.value);
-    };
-
-    const handleSubCategoryChange = (event) => {
-        const value = event.target.value;
-        setSelectedSubCategory(value);
-        if (value !== 'Other') {
-            setCustomSubCategory(''); // Clear custom input if a predefined subcategory is selected
-        }
     };
 
     const handleCustomSubCategoryChange = (event) => {
         setCustomSubCategory(event.target.value);
     };
 
-    const handleAddCategory = () => {
+    const handleAddSubCategory = (e) => {
+        e.preventDefault()
         const subCategoryToAdd = selectedSubCategory === 'Other' && customSubCategory
             ? customSubCategory
             : selectedSubCategory;
@@ -51,8 +47,8 @@ export default function AddSubCategory() {
                         onChange={handleCategoryChange}
                     >
                         {categories.map((cat) => (
-                            <MenuItem key={cat} value={cat}>
-                                {cat}
+                            <MenuItem key={cat.id} value={cat.id}>
+                                {cat.name}
                             </MenuItem>
                         ))}
                     </Select>
@@ -60,32 +56,14 @@ export default function AddSubCategory() {
 
                 <div>
                     <InputLabel id="subCategory-label">Sub Category</InputLabel>
-                    <Select
-                        labelId="subCategory-label"
+                    <TextField
+                        label="New Sub Category"
                         variant="outlined"
                         size="small"
-                        className="w-full mt-2 mb-3"
-                        value={selectedSubCategory}
-                        onChange={handleSubCategoryChange}
-                    >
-                        {subCategories.map((sub) => (
-                            <MenuItem key={sub} value={sub}>
-                                {sub}
-                            </MenuItem>
-                        ))}
-                        <MenuItem value="Other">Other</MenuItem>
-                    </Select>
-
-                    {selectedSubCategory === 'Other' && (
-                        <TextField
-                            label="New Sub Category"
-                            variant="outlined"
-                            size="small"
-                            className="w-full mt-2"
-                            value={customSubCategory}
-                            onChange={handleCustomSubCategoryChange}
-                        />
-                    )}
+                        className="w-full mt-2"
+                        value={customSubCategory}
+                        onChange={handleCustomSubCategoryChange}
+                    />
                 </div>
 
                 <div className='pt-10'>
@@ -93,7 +71,7 @@ export default function AddSubCategory() {
                         <Button variant="outlined" color="error">
                             Discard
                         </Button>
-                        <button className='bg-[#002a47] py-1 px-3 text-white rounded-md' onClick={handleAddCategory} >
+                        <button className='bg-[#002a47] py-1 px-3 text-white rounded-md' onClick={handleAddSubCategory} >
                             Add Sub Category
                         </button>
                     </div>

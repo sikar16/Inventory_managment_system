@@ -25,7 +25,7 @@ export default function UserList() {
   //   api logic
   const { data, isLoading, isError, error, isSuccess } =
     useGetAllUsersQuery("user");
-  console.log(data);
+  // console.log(data);
   if (isError) return <h1>Error : {error.toString()}</h1>;
   if (isLoading) return <> <Loading /></>;
   if (isSuccess)

@@ -17,6 +17,7 @@ export default function CategoryList() {
 
     const { isError, isLoading, isSuccess, data, error } = useGetAllproductCategoryQuery('productCategory');
 
+    // console.log(data)
     if (isError) {
         return (
             <div>
@@ -38,11 +39,11 @@ export default function CategoryList() {
                     <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
                         <p className='me-3 text-gray-500'>Category :</p>
                         <select className='text-gray-700'>
-                            {data.map((category: ProductCategoryType) => (
+                            {/* {data.map((category: ProductCategoryType) => (
                                 <option key={category.id} value={category.id}>
                                     {category.name}
                                 </option>
-                            ))}
+                            ))} */}
                         </select>
                     </div>
                 </div>
@@ -60,7 +61,7 @@ export default function CategoryList() {
                         Add new category
                     </DialogTitle>
                     <DialogContent>
-                        <AddCategory />
+                        <AddCategory handleCloseDialog={handleCloseDialog} />
                     </DialogContent>
                     <DialogActions>
                         <button onClick={handleCloseDialog} className='p-2'>

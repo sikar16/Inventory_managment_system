@@ -48,7 +48,7 @@ export default function SubCategoryList() {
             <SubCategoryTable />
             <Dialog open={openDialog} onClose={handleCloseDialog} >
                 <div className='flex justify-between me-5'>
-                    <DialogTitle>Add new Suppliers</DialogTitle>
+                    <DialogTitle>Add new sub  category</DialogTitle>
                     <DialogActions>
                         <svg onClick={handleCloseDialog} xmlns="http://www.w3.org/2000/svg" width={25} height={25} viewBox="0 0 24 24" ><path fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"></path></svg>
                     </DialogActions>

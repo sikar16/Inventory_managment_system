@@ -24,11 +24,12 @@ interface ProductCategoryProps {
 const CategoryTable: React.FC<ProductCategoryProps> = ({
     productCategorylist
 }) => {
-    const rows = productCategorylist.map((i) =>
-        createData(
-            i.id, `${i.id}`, `${i.name}`
-        )
-    );
+    const rows =
+        productCategorylist.map((i) =>
+            createData(
+                i.id, `${i.id}`, `${i.name}`
+            )
+        );
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const handleChangePage = (event: unknown, newPage: number) => {

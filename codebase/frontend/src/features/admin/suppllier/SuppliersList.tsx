@@ -18,7 +18,7 @@ export default function SupplierList() {
     };
 
     const { isError, isLoading, isSuccess, error, data } = useGetAllsupplierQuery('supplier')
-    console.log(data)
+    // console.log(data)
     if (isError) return <h1>Error :{error.toString()}</h1>
     if (isLoading) return <Loading />
     if (isSuccess)

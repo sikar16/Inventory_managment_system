@@ -16,6 +16,7 @@ import Login from '../features/Login'
 import ConfirmPassword from '../features/ConfirmPassword'
 import ForgetPassword from '../features/ForgetPassword'
 import Profile from '../features/Profile'
+import SubCategoryList from '../features/admin/subCategory/SubCategoryList'
 export const router = createBrowserRouter(
     createRoutesFromElements(
         <>
@@ -32,7 +33,7 @@ export const router = createBrowserRouter(
                 <Route path='/admin/user' element={<UserList />} />
                 <Route path='/admin/product' element={<ProductList />} />
                 <Route path='/admin/category' element={<CategoryList />} />
-                <Route path='/admin/sub-category' element={<SupplierCategoryList />} />
+                <Route path='/admin/sub-category' element={<SubCategoryList />} />
                 <Route path='/admin/template' element={<TemplateList />} />
                 <Route path='/admin/suppliers' element={<SupplierList />} />
                 <Route path='/admin/suppliers-category' element={<SupplierCategoryList />} />

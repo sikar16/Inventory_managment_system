@@ -5,7 +5,7 @@ const baseUrl = import.meta.env.VITE_API_URL;
 
 export const supplierApi = createApi({
     reducerPath: "supplierApi",
-    baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}/supplier` }),
+    baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}supplier` }),
     endpoints: (builder) => ({
         getAllsupplier: builder.query({
             query: () => ({
