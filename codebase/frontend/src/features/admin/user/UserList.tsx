@@ -7,6 +7,7 @@ import Button from "@mui/material/Button";
 import Title from "../../../component/TablesTitle";
 // api
 import { useGetAllUsersQuery } from "../../../services/user_service";
+import Loading from "../../../component/Loading";
 
 export default function UserList() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -24,13 +25,13 @@ export default function UserList() {
   //   api logic
   const { data, isLoading, isError, error, isSuccess } =
     useGetAllUsersQuery("user");
-  // console.log(data);
-  if (isError) return <h1>Erroro : {error.toString()}</h1>;
-  if (isLoading) return <h1>Loading ...</h1>;
+  console.log(data);
+  if (isError) return <h1>Error : {error.toString()}</h1>;
+  if (isLoading) return <> <Loading /></>;
   if (isSuccess)
     return (
       <div className="mt-10  ">
-        <Title tableName={"User"} onClick={handleOpenDialog} />
+        <Title tableName={"User"} action={"Add user"} onClick={handleOpenDialog} />
         <div className="  dark:bg-[#313131] w-[20%] px-3 py-1 rounded-md mb-4 flex">
           <p className="me-3 text-gray-500 ">Role:</p>
           <select name="" id="" className="w-[70%]  dark:bg-[#313131] ">

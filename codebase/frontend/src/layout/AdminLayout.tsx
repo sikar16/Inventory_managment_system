@@ -20,7 +20,10 @@ export const AdminLayout = () => {
     };
     return (
         <>
-            <Box sx={{ display: open ? 'flex' : 'block' }}>
+            <Box sx={{
+                marginLeft: open ? '20%' : '0',
+
+            }}>
                 <CssBaseline />
                 <MenuIcon />
                 <Header setOpen={setOpen} />

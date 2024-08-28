@@ -30,7 +30,7 @@ export default function ProductList() {
     };
     return (
         <div className='mt-10'>
-            <Title tableName='Product' onClick={handleOpenDialog} />
+            <Title tableName='Product' action={"Add product"} onClick={handleOpenDialog} />
             <div className='flex flex-wrap gap-2 mt-10 mx-10 mb-5'>
                 <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center '>
                     <p className='me-3 text-gray-500'>Category :</p>

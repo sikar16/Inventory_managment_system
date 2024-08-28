@@ -23,17 +23,18 @@ import RequiestesList from "./Component/Employee/RequiestesList";
 import MaterialRequestForm from "./Component/MaterialRequistForm";
 import IncomingRequest from "./Component/DepartmentHead/IncomingRequest";
 import Appbar from "./Component/DepartmentHead/Appbar";
+import RequiestesListinlS from "./Component/Logistics/RequiestesList";
 
 function App() {
   const [count, setCount] = useState<number>(0);
 
   return (
     <>
-
+      <RequiestesListinlS />
       {/* <RequiestesList /> */}
       {/* <MaterialRequestForm /> */}
       {/* <AddProduct /> */}
-      <IncomingRequest />
+      {/* <IncomingRequest /> */}
       {/* <Routes>
         <Route path='/profile' element={<Profile />} />
         <Route path="/admin" element={<AdminDashboard />}>

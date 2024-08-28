@@ -7,7 +7,7 @@ const IconContainer = ({ children, handler, Icon, iconsClassName }: any) => {
       onClick={handler}
     >
       <Icon
-        className={cn("text-3xl text-white", iconsClassName)}
+        className={cn("text-xl text-white", iconsClassName)}
       />
       {children && children}
     </button>

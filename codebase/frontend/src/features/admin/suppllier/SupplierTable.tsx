@@ -11,6 +11,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useState } from 'react';
+import { SupplierType } from '../../../_types/supplier_type';
 
 const columns = [
     { id: 'no', label: 'No', minWidth: 50 },
@@ -25,32 +26,42 @@ function createData(no: number, supplierId: string, supplierName: string, catego
     return { no, supplierId, supplierName, category, address };
 }
 
-const rows = [
-    createData(1, "#12345", "Zerubabel Damtew Zeru", "Electronics", "Ethiopia, Addis ababa, Megenagna"),
-    createData(2, "#12345", "Zerubabel Damtew Zeru", "Electronics", "Ethiopia, Addis ababa, Megenagna"),
-    createData(3, "#12345", "Zerubabel Damtew Zeru", "Electronics", "Ethiopia, Addis ababa, Megenagna"),
-    createData(4, "#12345", "Zerubabel Damtew Zeru", "Electronics", "Ethiopia, Addis ababa, Megenagna"),
-    createData(5, "#12345", "Zerubabel Damtew Zeru", "Electronics", "Ethiopia, Addis ababa, Megenagna"),
-];
-function SupplierTable() {
+interface SuppliersTableProps {
+    anchorEl: any;
+    setAnchorEl: any;
+    supplierslist: SupplierType[];
+}
+
+const SupplierTable: React.FC<SuppliersTableProps> = ({ supplierslist }) => {
+    const rows = supplierslist.map((i) =>
+        createData(
+            i.id, `${i.id}`, `${i.fullName}`, `${i.category.name}`, ` ${i.address} `
+        )
+    );
+
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedRow, setSelectedRow] = useState(null);
+
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
+
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
+
     const handleMenuClick = (event, row) => {
         setAnchorEl(event.currentTarget);
         setSelectedRow(row);
     };
+
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
+
     return (
         <>
             <div>
@@ -94,8 +105,8 @@ function SupplierTable() {
                                                                 open={Boolean(anchorEl)}
                                                                 onClose={handleMenuClose}
                                                             >
-                                                                <MenuItem >Update</MenuItem>
-                                                                <MenuItem >Delete</MenuItem>
+                                                                <MenuItem>Update</MenuItem>
+                                                                <MenuItem>Delete</MenuItem>
                                                             </Menu>
                                                         </div>
                                                     ) : (
@@ -121,7 +132,7 @@ function SupplierTable() {
                 </Paper>
             </div>
         </>
-    )
-}
+    );
+};
 
-export default SupplierTable
+export default SupplierTable;

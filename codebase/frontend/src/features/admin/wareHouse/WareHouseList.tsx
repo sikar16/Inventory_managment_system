@@ -20,7 +20,7 @@ export default function WareHouseList() {
 
     return (
         <div className='mt-10'>
-            <Title tableName={"Ware house"} onClick={handleOpenDialog} />
+            <Title tableName={"stock"} action={"Add stock"} onClick={handleOpenDialog} />
 
             <hr className='w-full text-black bg-black' />
             <div className='my-4 ms-[10%]'>

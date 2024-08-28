@@ -1,14 +1,44 @@
 import logo from '../assets/logo.png';
 import LogoContainer from '../component/LogoContainer';
-
+import { useThemeData } from '../context/them_context';
+import {
+    MdNightlight,
+    MdLightMode,
+    MdBrightnessAuto,
+} from "react-icons/md";
+import IconContainer from '../component/icon/Icon_container';
 function ForgetPassword() {
+    const { themeData, setThemeData } = useThemeData();
+
+    const getThemeIcon = () => {
+        if (themeData === "light") {
+            return MdNightlight;
+        } else if (themeData === "dark") {
+            return MdLightMode;
+        } else if (themeData === "system") {
+            return MdBrightnessAuto;
+        }
+    };
+    const toggleThemeData = () => {
+        // console.log(`....${themeData}`);
+        if (themeData === "light") {
+            setThemeData("dark");
+        } else if (themeData === "dark") {
+            setThemeData("light");
+        } else if (themeData === "system") {
+            setThemeData("dark");
+        }
+    };
     return (
-        <div className='bg-[#002A47] w-full h-screen text-white  items-center justify-center'>
-            <div className='ms-10 pt-5 flex justify-between'>
+        <div className='bg-[#002A47] text-white w-full h-screen dark:bg-[#1C1E22] dark:text-[#B7E4FF]  items-center justify-center'>
+            <div className='ms-10 pt-2 flex justify-between me-10 items-center'>
                 <LogoContainer />
-                <svg className='me-10' xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 20 20"><path fill="#ffffff" d="M8.6 3.4L14.2 9H2v2h12.2l-5.6 5.6L10 18l8-8l-8-8z"></path></svg>
-            </div>
-            <div className='w-full max-w-md p-6 shadow-md rounded-lg text-white text-center mt-10 m-auto'>
+                <IconContainer
+                    handler={toggleThemeData}
+                    Icon={getThemeIcon()}
+                    iconsClassName="my-custom-icon-class"
+                />            </div>
+            <div className='w-full max-w-md p-6 shadow-md dark:shadow-neutral-100 rounded-lg  text-center mt-10 m-auto'>
                 <div className='flex flex-col items-center justify-center mb-8'>
                     <h3 className='text-4xl font-medium mb-6'>Forget Password</h3>
                     <h5 className='text-[12px] text-gray-500 mb-2'>Sending verification code to your email:</h5>
@@ -27,7 +57,7 @@ function ForgetPassword() {
                     <div className='flex justify-center'>
                         <button
                             type="submit"
-                            className='bg-white text-[#002A47] px-6 py-2 rounded-md font-medium transition'>
+                            className='bg-white text-[#002A47] dark:bg-[#B7E4FF] dark:text-black px-6 py-2 rounded-md font-medium transition'>
                             Send
                         </button>
                     </div>

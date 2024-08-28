@@ -9,7 +9,7 @@ import TableRow from "@mui/material/TableRow";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { UserType } from "../../../_types/user_type";
 
 const columns = [
@@ -112,11 +112,11 @@ const UsersTable: React.FC<UsersTableProps> = ({
                       <TableCell
                         key={column.id}
                         align={column.align}
-                        // sx={{
-                        //     backgroundColor: '#313131', // Dark background color
-                        //     color: 'white',
-                        //     fontWeight: 'bold',
-                        // }}
+                      // sx={{
+                      //     backgroundColor: '#313131', // Dark background color
+                      //     color: 'white',
+                      //     fontWeight: 'bold',
+                      // }}
                       >
                         {column.id === "actions" ? (
                           <IconButton

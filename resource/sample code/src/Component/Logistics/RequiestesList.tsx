@@ -13,37 +13,31 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import logo from "../../assets/logo.png"
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import MaterialRequestForm from '../MaterialRequistForm';
 const columns = [
     { id: 'no', label: 'No', minWidth: 50 },
-    { id: 'orderId', label: 'Order Id', minWidth: 200 },
-    { id: 'category', label: 'Category', minWidth: 200, align: 'left' },
-    { id: 'product', label: 'Product', minWidth: 200, align: 'left' },
-    { id: 'quantity', label: 'Quantity', minWidth: 200, align: 'left' },
-    { id: 'status', label: 'Status', minWidth: 200, align: 'left' },
-    { id: 'createdAt', label: 'Created at', minWidth: 200, align: 'left' },
-    { id: 'status', label: 'Status', minWidth: 200, align: 'left' },
-    { id: 'actions', label: 'Actions', minWidth: 50, align: 'center' },
+    { id: 'orderId', label: 'Order Id', minWidth: 100 },
+    { id: 'requestedDepartment', label: 'Requested Department', minWidth: 100, align: 'left' },
+    { id: 'quantity', label: 'Quantity', minWidth: 100, align: 'left' },
+
 ];
 
-function createData(no: number, orderId: string, category: string, product: string, quantity: string, status: string, createdAt: string) {
-    return { no, orderId, category, product, quantity, status, createdAt };
+function createData(no: number, orderId: string, requestedDepartment: string, quantity: string) {
+    return { no, orderId, requestedDepartment, quantity };
 }
 
 const rows = [
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
+    createData(1, "#12345", "Finance", "20"),
+    createData(1, "#12345", "Finance", "20"),
+    createData(1, "#12345", "Finance", "20"),
+    createData(1, "#12345", "Finance", "20"),
+    createData(1, "#12345", "Finance", "20"),
+    createData(1, "#12345", "Finance", "20"),
+    createData(1, "#12345", "Finance", "20"),
+    createData(1, "#12345", "Finance", "20"),
+    createData(1, "#12345", "Finance", "20"),
+    createData(1, "#12345", "Finance", "20"),
+    createData(1, "#12345", "Finance", "20"),
+
 ];
 
 export default function RequiestesList() {
@@ -145,6 +139,9 @@ export default function RequiestesList() {
                                                 </TableCell>
                                             );
                                         })}
+                                        {/* <div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" ><path fill="#002A47" d="M9.923 16.5H13.5v-1H9.923zm0-4H16.5v-1H9.923zM7.5 8.5h9v-1h-9zM3 21v-1h2.704q-1.2-.46-1.966-1.527q-.767-1.067-.767-2.434q0-1.764 1.243-2.998q1.244-1.233 3.007-1.233v1q-1.355 0-2.303.944q-.947.944-.947 2.306q0 1.167.725 2.051t1.843 1.124v-2.771h1V21zm6.923-1v-1h8.462q.23 0 .423-.192t.192-.424V5.616q0-.231-.192-.424T18.384 5H5.616q-.231 0-.424.192T5 5.616v3.807H4V5.616q0-.691.463-1.153T5.616 4h12.769q.69 0 1.153.463T20 5.616v12.769q0 .69-.462 1.153T18.384 20z"></path></svg>
+                                        </div> */}
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -160,56 +157,6 @@ export default function RequiestesList() {
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />
                 </Paper>
-
-                <Dialog
-                    open={openDialog}
-                    onClose={handleCloseDialog}
-                    PaperProps={{
-                        style: {
-                            width: '70vw',
-                            maxWidth: '70vw', // Prevents it from being wider than 70% of viewport width
-                        },
-                    }}
-                    className="relative mx-auto"
-                >
-                    <div className='flex justify-between p-4'>
-                        <DialogTitle
-                        // className='bg-[#002a47] text-white rounded-e-full '
-                        >
-                            <p className='bg-[#002a47] text-white rounded-e-full pe-20 ps-2 py-[5px] '>
-                                Material Request Form
-                            </p>
-                            {/* Material Request Form */}
-                        </DialogTitle>
-                        <DialogActions>
-                            <svg
-                                onClick={handleCloseDialog}
-                                xmlns="http://www.w3.org/2000/svg"
-                                width={25}
-                                height={25}
-                                viewBox="0 0 24 24"
-                                className="cursor-pointer"
-                            >
-                                <path
-                                    fill="none"
-                                    stroke="black"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={1.5}
-                                    d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"
-                                ></path>
-                            </svg>
-                        </DialogActions>
-                    </div>
-                    <div>
-                        <DialogContent>
-                            <MaterialRequestForm />
-                        </DialogContent>
-                    </div>
-                </Dialog>
-
-
-
                 <Menu
                     id="long-menu"
                     anchorEl={anchorEl}
@@ -217,7 +164,7 @@ export default function RequiestesList() {
                     open={Boolean(anchorEl)}
                     onClose={handleMenuClose}
                 >
-                    <MenuItem>Update</MenuItem>
+                    <MenuItem>Edit</MenuItem>
                     <MenuItem>Delete</MenuItem>
                 </Menu>
             </div>

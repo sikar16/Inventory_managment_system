@@ -16,7 +16,7 @@ export default function SupplierCategoryList() {
     };
     return (
         <div className='mt-10 '>
-            <Title tableName={"Supplier category"} onClick={handleOpenDialog} />
+            <Title tableName={"Supplier category"} action={"Add category"} onClick={handleOpenDialog} />
 
             <div className='flex flex-wrap gap-2 mt-10 mx-10 mb-5'>
                 <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center '>

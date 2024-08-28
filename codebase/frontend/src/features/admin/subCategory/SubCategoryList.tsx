@@ -18,7 +18,7 @@ export default function SubCategoryList() {
 
     return (
         <div className='mt-10'>
-            <Title tableName={"Sub category"} onClick={handleOpenDialog} />
+            <Title tableName={"Sub category"} action={"Add sub-category"} onClick={handleOpenDialog} />
 
             <div className='flex flex-wrap gap-2 mt-10 mx-10 mb-5'>
                 <div className='bg-[#F5F5F5] px-3 py-3 rounded-md mb-2 flex items-center '>

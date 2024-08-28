@@ -1,9 +1,14 @@
 import { useForm } from 'react-hook-form';
 import { DevTool } from "@hookform/devtools";
-import logo from '../assets/logo.png';
 import { useState } from 'react';
 import LogoContainer from '../component/LogoContainer';
-
+import { useThemeData } from '../context/them_context';
+import {
+    MdNightlight,
+    MdLightMode,
+    MdBrightnessAuto,
+} from "react-icons/md";
+import IconContainer from '../component/icon/Icon_container';
 type FormValues = {
     newPassword: string;
     confirmPassword: string;
@@ -14,19 +19,50 @@ function ConfirmPassword() {
     const { register, control, handleSubmit, formState } = form;
     const { errors } = formState;
     const [showPassword, setShowPassword] = useState(false);
+    const { themeData, setThemeData } = useThemeData();
 
     const onSubmit = (data: FormValues) => {
         console.log("Form submitted", data);
     };
-
+    const getThemeIcon = () => {
+        if (themeData === "light") {
+            return MdNightlight;
+        } else if (themeData === "dark") {
+            return MdLightMode;
+        } else if (themeData === "system") {
+            return MdBrightnessAuto;
+        }
+    };
+    const toggleThemeData = () => {
+        // console.log(`....${themeData}`);
+        if (themeData === "light") {
+            setThemeData("dark");
+        } else if (themeData === "dark") {
+            setThemeData("light");
+        } else if (themeData === "system") {
+            setThemeData("dark");
+        }
+    };
     return (
         <>
-            <div className='bg-[#002A47] w-full h-screen text-white  items-center justify-center'>
-                <div className='ms-10 pt-5 flex justify-between'>
-                    <LogoContainer />
-                    <svg className='me-10' xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 20 20"><path fill="#ffffff" d="M8.6 3.4L14.2 9H2v2h12.2l-5.6 5.6L10 18l8-8l-8-8z"></path></svg>
+            <div className='bg-[#002A47] text-white dark:bg-[#1C1E22] dark:text-[#B7E4FF]  w-full h-screen  items-center justify-center'>
+                <div className='ms-4 pt-2 flex justify-between  me-10 items-center'>
+                    <div className="flex items-center justify-center space-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24">
+                            <path fill="white" d="M10 21.308L.692 12L10 2.692l1.064 1.064L2.819 12l8.244 8.244z"></path>
+                        </svg>
+                        <LogoContainer />
+                    </div>
+
+                    <div>
+                        <IconContainer
+                            handler={toggleThemeData}
+                            Icon={getThemeIcon()}
+                            iconsClassName="my-custom-icon-class"
+                        />
+                    </div>
                 </div>
-                <div className='w-full max-w-lg p-6 shadow-md rounded-lg text-white m-auto'>
+                <div className='w-full max-w-lg p-10 shadow-md rounded-lg  m-auto'>
                     <div className='flex flex-col items-center justify-center text-center mb-10'>
                         <h3 className='text-3xl font-medium'>Change Password</h3>
                     </div>
@@ -80,7 +116,7 @@ function ConfirmPassword() {
                             <p className="text-red-600 text-[13px] mt-1">{errors.confirmPassword?.message}</p>
                         </div>
                         <div className='flex justify-center mt-12'>
-                            <button type="submit" className='bg-white text-[#002A47] px-4 py-[6px] rounded-md transition'>
+                            <button type="submit" className='bg-white text-[#002A47] dark:bg-[#B7E4FF] dark:text-black px-4 py-[6px] rounded-md transition'>
                                 Submit
                             </button>
                         </div>

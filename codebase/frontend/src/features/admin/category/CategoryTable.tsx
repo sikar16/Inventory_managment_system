@@ -7,6 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useState } from 'react';
+import { ProductCategoryType } from '../../../_types/category_type';
 const columns = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'categoryId', label: 'Category Id', minWidth: 70 },
@@ -15,21 +16,19 @@ const columns = [
 function createData(no: number, categoryId: string, category: string) {
     return { no, categoryId, category };
 }
-const rows = [
-    createData(1, "#12345", "Electronics"),
-    createData(1, "#12345", "Electronics"),
-    createData(1, "#12345", "Electronics"),
-    createData(1, "#12345", "Electronics"),
-    createData(1, "#12345", "Electronics"),
-    createData(1, "#12345", "Electronics"),
-    createData(1, "#12345", "Electronics"),
-    createData(1, "#12345", "Electronics"),
-    createData(1, "#12345", "Electronics"),
-    createData(1, "#12345", "Electronics"),
-    createData(1, "#12345", "Electronics"),
-    createData(1, "#12345", "Electronics"),
-];
-function CategoryTable() {
+interface ProductCategoryProps {
+    anchorEl: any;
+    setAnchorEl: any;
+    productCategorylist: ProductCategoryType[]
+}
+const CategoryTable: React.FC<ProductCategoryProps> = ({
+    productCategorylist
+}) => {
+    const rows = productCategorylist.map((i) =>
+        createData(
+            i.id, `${i.id}`, `${i.name}`
+        )
+    );
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const handleChangePage = (event: unknown, newPage: number) => {
@@ -62,7 +61,7 @@ function CategoryTable() {
                                 {rows
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row) => (
-                                        <TableRow hover role="checkbox" tabIndex={-1} key={row.productId}>
+                                        <TableRow hover role="checkbox" tabIndex={-1} key={row.categoryId}>
                                             {columns.map((column) => {
                                                 const value = row[column.id];
                                                 return (
@@ -71,7 +70,6 @@ function CategoryTable() {
                                                     </TableCell>
                                                 );
                                             })}
-
                                         </TableRow>
                                     ))}
                             </TableBody>
@@ -89,7 +87,7 @@ function CategoryTable() {
                 </Paper>
             </div>
         </>
-    )
-}
+    );
+};
 
-export default CategoryTable
+export default CategoryTable;

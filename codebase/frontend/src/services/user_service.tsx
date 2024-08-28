@@ -5,7 +5,7 @@ const baseUrl = import.meta.env.VITE_API_URL;
 
 export const userApi = createApi({
   reducerPath: "userApi",
-  baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}user` }),
+  baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}/user` }),
   endpoints: (builder) => ({
     getAllUsers: builder.query({
       query: () => ({
