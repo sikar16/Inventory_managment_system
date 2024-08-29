@@ -8,6 +8,8 @@ import TemplateTable from './TemplateTable';
 import Title from '../../../component/TablesTitle';
 import { useGetAlltemplateQuery } from '../../../services/template_service';
 import Loader from '../../../component/Loading';
+import { useGetAllproductCategoryQuery } from '../../../services/productCategorySerivce';
+import { useGetAllproductSubCategoryQuery } from '../../../services/productSubcategory_service';
 
 
 
@@ -23,6 +25,23 @@ export default function TemplateList() {
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
+    const {
+        isError: isCategoryError,
+        isLoading: isCategoryLoading,
+        isSuccess: isCategorySuccess,
+        data: categories,
+        error: categoryError,
+    } = useGetAllproductCategoryQuery();
+
+    const {
+        data: subCategories,
+        isError: isSubCategoryError,
+        isLoading: isSubCategoryLoading,
+        error: subCategoryError,
+        isSuccess: isSubCategorySuccess,
+    } = useGetAllproductSubCategoryQuery("product subcategory");
+
+
     const { isError, isLoading, isSuccess, data, error } = useGetAlltemplateQuery('template')
     console.log(data)
     if (isError) return <h1>Error :{error.toString()}</h1>
@@ -31,14 +50,25 @@ export default function TemplateList() {
         return (
             <div className='mt-10'>
                 <Title tableName={"Template"} action={"Add template"} onClick={handleOpenDialog} />
-                <div className='flex flex-wrap gap-2 mt-10 mx-10 mb-5'>
-                    <div className='bg-[#F5F5F5] px-3 py-3 rounded-md mb-2 flex items-center '>
+                <div className='flex flex-wrap  mt-10 mx-10 mb-5'>
+                    <div className='bg-white me-[5%] px-3 py-3 rounded-md mb-2 flex items-center '>
                         <p className='me-3 text-gray-500'>Category :</p>
                         <select className='bg-[#F5F5F5] text-gray-700'>
-                            <option value="">Electronics</option>
-                            <option value="">Stationary</option>
-                            <option value="">Food</option>
-                            <option value="">Drink</option>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
+                        <p className='me-3 text-gray-500'>Sub Category:</p>
+                        <select className='bg-[#F5F5F5] text-gray-700'>
+                            {subCategories.map((subCategory) => (
+                                <option key={subCategory.id} value={subCategory.id}>
+                                    {subCategory.name}
+                                </option>
+                            ))}
                         </select>
                     </div>
                 </div>

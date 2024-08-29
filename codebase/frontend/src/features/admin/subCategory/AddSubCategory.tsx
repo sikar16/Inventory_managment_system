@@ -6,35 +6,46 @@ import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
 import { useGetAllproductCategoryQuery } from '../../../services/productCategorySerivce';
 import { ProductCategoryType } from '../../../_types/productCategory_type';
+import { useAddNewProductSubCategoryMutation } from '../../../services/productSubcategory_service';
 
-export default function AddSubCategory() {
+interface AddSubcategoryProps {
+    handleCloseDialog: () => void;
+}
+const AddSubCategory: React.FC<AddSubcategoryProps> = ({ handleCloseDialog }) => {
     const [selectedCategory, setSelectedCategory] = useState('');
-    const [selectedSubCategory, setSelectedSubCategory] = useState('');
     const [customSubCategory, setCustomSubCategory] = useState('');
-    const { isError, isLoading, isSuccess, data, error } = useGetAllproductCategoryQuery('productCategory');
-    const categories: ProductCategoryType[] = isSuccess ? data : [];
-    console.log(categories)
+    const { isError, isLoading, isSuccess, data, error } = useGetAllproductCategoryQuery();
+    const [addSubcategory, { isSuccess: isAddSuccess }] = useAddNewProductSubCategoryMutation();
 
-    const handleCategoryChange = (event) => {
-        setSelectedCategory(event.target.value);
+    const categories: ProductCategoryType[] = isSuccess ? data : [];
+
+    const handleCategoryChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        setSelectedCategory(event.target.value as string);
     };
 
-    const handleCustomSubCategoryChange = (event) => {
+    const handleCustomSubCategoryChange = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
         setCustomSubCategory(event.target.value);
     };
 
-    const handleAddSubCategory = (e) => {
-        e.preventDefault()
-        const subCategoryToAdd = selectedSubCategory === 'Other' && customSubCategory
-            ? customSubCategory
-            : selectedSubCategory;
-        console.log('Category:', selectedCategory);
-        console.log('Sub Category Added:', subCategoryToAdd);
+    const handleAddSubCategory = async () => {
+        const formData = {
+            name: customSubCategory,
+            categoryId: selectedCategory,
+        };
+        console.log(formData);
+        await addSubcategory(formData);
+        handleCloseDialog()
+    };
+
+    const handleDiscard = () => {
+        handleCloseDialog();
     };
 
     return (
-        <div className='mx-10 mb-10  w-[450px]'>
-            <form className='space-y-4'>
+        <div className="mx-10 mb-10 w-[450px]">
+            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
                 <div>
                     <InputLabel id="category-label">Category</InputLabel>
                     <Select
@@ -65,17 +76,24 @@ export default function AddSubCategory() {
                     />
                 </div>
 
-                <div className='pt-10'>
-                    <div className='flex justify-between gap-5'>
-                        <Button variant="outlined" color="error">
+                <div className="pt-10">
+                    <div className="flex justify-between gap-5">
+                        <Button variant="outlined" color="error" onClick={handleDiscard}>
                             Discard
                         </Button>
-                        <button className='bg-[#002a47] py-1 px-3 text-white rounded-md' onClick={handleAddSubCategory} >
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            className="bg-[#002a47]"
+                            onClick={handleAddSubCategory}
+                        >
                             Add Sub Category
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </form>
         </div>
     );
-}
+};
+
+export default AddSubCategory;

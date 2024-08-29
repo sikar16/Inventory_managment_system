@@ -9,6 +9,9 @@ import { useState } from 'react'
 import ProductTable from './ProductTable';
 import { useGetAllproductQuery } from '../../../services/product_service';
 import Loader from '../../../component/Loading';
+import { useGetAllproductCategoryQuery } from '../../../services/productCategorySerivce';
+import { useGetAllproductSubCategoryQuery } from '../../../services/productSubcategory_service';
+import { useGetAlltemplateQuery } from '../../../services/template_service';
 export default function ProductList() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [openDialog, setOpenDialog] = useState(false);
@@ -30,6 +33,29 @@ export default function ProductList() {
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
+
+    const {
+        isError: isproductCategoryError,
+        isLoading: isproductCategoryLoading,
+        isSuccess: isproductCategorySuccess,
+        data: productCategorys,
+        error: productCategoryError,
+    } = useGetAllproductCategoryQuery();
+    const {
+        isError: isproductSubCategoryError,
+        isLoading: isproductSubCategoryLoading,
+        isSuccess: isproductSubCategorySuccess,
+        data: productSubCategorys,
+        error: productSubCategoryError,
+    } = useGetAllproductSubCategoryQuery();
+    const {
+        isError: istemplateError,
+        isLoading: istemplateLoading,
+        isSuccess: istemplateSuccess,
+        data: templates,
+        error: templateError,
+    } = useGetAlltemplateQuery();
+
     const { isError, isLoading, isSuccess, error, data } = useGetAllproductQuery('product')
     console.log(data)
     if (isError) return <h1>Error :{error.toString()}</h1>
@@ -41,25 +67,32 @@ export default function ProductList() {
                 <div className='flex flex-wrap gap-2 mt-10 mx-10 mb-5'>
                     <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center '>
                         <p className='me-3 text-gray-500'>Category :</p>
-                        <select className='bg-white text-gray-700'>
-                            <option value="">Electronics</option>
-                            <option value="">Stationary</option>
-                            <option value="">Food</option>
-                            <option value="">Drink</option>
+                        <select className='bg-[#F5F5F5] text-gray-700'>
+                            {productCategorys.map((productCategory) => (
+                                <option key={productCategory.id} value={productCategory.id}>
+                                    {productCategory.name}
+                                </option>
+                            ))}
                         </select>
                     </div>
                     <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center '>
                         <p className='me-3 text-gray-500'>Sub Category :</p>
-                        <select className='bg-white text-gray-700'>
-                            <option value="">Computer</option>
-                            <option value="">Mobile</option>
+                        <select className='bg-[#F5F5F5] text-gray-700'>
+                            {productSubCategorys.map((productSubCategory) => (
+                                <option key={productSubCategory.id} value={productSubCategory.id}>
+                                    {productSubCategory.name}
+                                </option>
+                            ))}
                         </select>
                     </div>
                     <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center '>
                         <p className='me-3 text-gray-500'>Template :</p>
-                        <select className='bg-white text-gray-700'>
-                            <option value="">Computer</option>
-                            <option value="">Mobile</option>
+                        <select className='bg-[#F5F5F5] text-gray-700'>
+                            {templates.map((template) => (
+                                <option key={template.id} value={template.id}>
+                                    {template.name}
+                                </option>
+                            ))}
                         </select>
                     </div>
                 </div>
@@ -68,7 +101,14 @@ export default function ProductList() {
                 <div className='my-4'>
                     <input type="text" placeholder='Search' className='w-[80%] bg-white rounded-xl py-[5px] px-3' />
                 </div>
-                <ProductTable productList={data} anchorEl={anchorEl} setAnchorEl={setAnchorEl} selectedProduct={selectedProduct} setSelectedProduct={setSelectedProduct} setOpenDetails={setOpenDetails} />
+                <ProductTable
+                    productList={data}
+                    anchorEl={anchorEl}
+                    setAnchorEl={setAnchorEl}
+                    selectedProduct={selectedProduct}
+                    setSelectedProduct={setSelectedProduct}
+                    setOpenDetails={setOpenDetails}
+                />
                 <Dialog open={openDetails} onClose={handleCloseDetails} className=''>
                     <DialogTitle> <strong>Product Details</strong></DialogTitle>
                     <DialogContent>
@@ -101,7 +141,12 @@ export default function ProductList() {
                         </DialogActions>
                     </div>
                     <DialogContent>
-                        <AddProduct onAddProduct={AddProduct} />
+                        <AddProduct onAddProduct={AddProduct}
+                            productCategorys={productCategorys}
+                            productSubCategorys={productSubCategorys}
+                            templates={templates}
+                            close={handleCloseDialog}
+                        />
                     </DialogContent>
                 </Dialog>
             </div>

@@ -34,7 +34,6 @@ const SubCategoryTable: React.FC<productSubcategoryprops> = ({
             `${i.name}`
         )
     );
-
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 

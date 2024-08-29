@@ -4,34 +4,49 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
-const categories = ['Electronics', 'Stationary', 'Food', 'Drink'];
-const subCategories = ['Computer', 'Mobile'];
-const templates = ['Template 1', 'Template 2'];
-const AddProduct = ({ onAddProduct }) => {
+import { useAddNewProductMutation } from '../../../services/product_service';
+
+interface AddProductProps {
+    handleCloseDialog: () => void;
+    productCategorys: any[];
+    templates: any[];
+    productSubCategorys: any[];
+    close
+}
+
+const AddProduct: React.FC<AddProductProps> = ({ onAddProduct, productCategorys, productSubCategorys, templates, close }) => {
     const [productName, setProductName] = useState('');
     const [category, setCategory] = useState('');
     const [subCategory, setSubCategory] = useState('');
     const [template, setTemplate] = useState('');
     const [attributes, setAttributes] = useState([{ key: '', value: '' }]);
+    const [customCategory, setCustomCategory] = useState('');
+    const [customSubCategory, setCustomSubCategory] = useState('');
+    const [customTemplate, setCustomTemplate] = useState('');
+    const [addproduct, { isSuccess: isAddSuccess }] = useAddNewProductMutation();
+
     const handleAddAttribute = () => {
         setAttributes([...attributes, { key: '', value: '' }]);
     };
+
     const handleAttributeChange = (index, field, value) => {
         const updatedAttributes = attributes.map((attr, i) =>
             i === index ? { ...attr, [field]: value } : attr
         );
         setAttributes(updatedAttributes);
     };
+
     const handleSubmit = (event) => {
         event.preventDefault();
         onAddProduct({
             name: productName,
-            category,
-            subCategory,
-            template,
+            category: category === 'Other' ? customCategory : category,
+            subCategory: subCategory === 'Other' ? customSubCategory : subCategory,
+            template: template === 'Other' ? customTemplate : template,
             attributes
         });
     };
+
     return (
         <div className='mx-10 mb-10'>
             <form className='space-y-2' onSubmit={handleSubmit}>
@@ -53,12 +68,23 @@ const AddProduct = ({ onAddProduct }) => {
                     size="small"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}>
-                    {categories.map((cat) => (
-                        <MenuItem key={cat} value={cat}>
-                            {cat}
+                    {productCategorys.map((cat) => (
+                        <MenuItem key={cat.id} value={cat.name}>
+                            {cat.name}
                         </MenuItem>
                     ))}
+                    <MenuItem value="Other">Other</MenuItem>
                 </Select>
+                {category === 'Other' && (
+                    <TextField
+                        label="Enter Custom Category"
+                        variant="outlined"
+                        size="small"
+                        value={customCategory}
+                        onChange={(e) => setCustomCategory(e.target.value)}
+                        className="w-full"
+                    />
+                )}
                 <InputLabel id="subCategory-label">Sub Category</InputLabel>
                 <Select
                     labelId="subCategory-label"
@@ -67,12 +93,23 @@ const AddProduct = ({ onAddProduct }) => {
                     size="small"
                     value={subCategory}
                     onChange={(e) => setSubCategory(e.target.value)}>
-                    {subCategories.map((sub) => (
-                        <MenuItem key={sub} value={sub}>
-                            {sub}
+                    {productSubCategorys.map((sub) => (
+                        <MenuItem key={sub.id} value={sub.name}>
+                            {sub.name}
                         </MenuItem>
                     ))}
+                    <MenuItem value="Other">Other</MenuItem>
                 </Select>
+                {subCategory === 'Other' && (
+                    <TextField
+                        label="Enter Custom Sub-Category"
+                        variant="outlined"
+                        size="small"
+                        value={customSubCategory}
+                        onChange={(e) => setCustomSubCategory(e.target.value)}
+                        className="w-full"
+                    />
+                )}
                 <InputLabel id="template-label">Template</InputLabel>
                 <Select
                     labelId="template-label"
@@ -82,11 +119,22 @@ const AddProduct = ({ onAddProduct }) => {
                     value={template}
                     onChange={(e) => setTemplate(e.target.value)}>
                     {templates.map((temp) => (
-                        <MenuItem key={temp} value={temp}>
-                            {temp}
+                        <MenuItem key={temp.id} value={temp.name}>
+                            {temp.name}
                         </MenuItem>
                     ))}
+                    <MenuItem value="Other">Other</MenuItem>
                 </Select>
+                {template === 'Other' && (
+                    <TextField
+                        label="Enter Custom Template"
+                        variant="outlined"
+                        size="small"
+                        value={customTemplate}
+                        onChange={(e) => setCustomTemplate(e.target.value)}
+                        className="w-full"
+                    />
+                )}
                 <div className='w-full'>
                     <p className='mt-4 mb-2'>Attributes</p>
                     {attributes.map((attr, index) => (
@@ -113,7 +161,7 @@ const AddProduct = ({ onAddProduct }) => {
                 </div>
                 <div className='pt-10'>
                     <div className='flex justify-between'>
-                        <Button variant="outlined" color="error">
+                        <Button variant="outlined" color="error" onClick={close}>
                             Discard
                         </Button>
                         <button

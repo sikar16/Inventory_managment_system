@@ -1,32 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
+import { useAddNewtemplateMutation, useGetAlltemplateQuery } from '../../../services/template_service';
 
-const categories = ['Electronics', 'Stationary', 'Food', 'Drink'];
+interface AddTemplateProps {
+    handleCloseDialog: () => void;
+    onTemplateAdded: () => void;
+}
 
-export default function AddTemplate() {
-    const [selectedtemplate, setSelectedtemplate] = useState('');
-    const [customtemplate, setCustomtemplate] = useState('');
-    const [attributes, setAttributes] = useState([{ key: '', value: '' }]);
+const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog, onTemplateAdded }) => {
+    const [selectedTemplate, setSelectedTemplate] = useState('');
+    const [customTemplate, setCustomTemplate] = useState('');
+    const [attributes, setAttributes] = useState<{ key: string; value: string }[]>([]);
+    const [addTemplate, { isSuccess: isAddSuccess }] = useAddNewtemplateMutation();
+
+    const { isError: isTemplateError, isLoading: isTemplateLoading, data: templates = [] } = useGetAlltemplateQuery();
+
+    useEffect(() => {
+        if (selectedTemplate && selectedTemplate !== 'Other') {
+            const selectedTemplateData = templates.find(t => t.name === selectedTemplate);
+            if (selectedTemplateData && selectedTemplateData.attributes) {
+                console.log("Attribute Names:", selectedTemplateData.attributes.map(attr => attr.name));
+                setAttributes(selectedTemplateData.attributes.map(attr => ({ key: attr.name, value: '' })));
+            }
+        } else {
+            setAttributes([]);
+        }
+    }, [selectedTemplate, templates]);
 
     const handleAddAttribute = () => {
         setAttributes([...attributes, { key: '', value: '' }]);
     };
-    const handleSelectChange = (event) => {
-        setSelectedtemplate(event.target.value);
+
+    const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        setSelectedTemplate(event.target.value as string);
     };
 
-    const handleCustomtemplateChange = (event) => {
-        setCustomtemplate(event.target.value);
+    const handleCustomTemplateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setCustomTemplate(event.target.value);
     };
 
-    const handleAddtemplate = () => {
-        const templateToAdd = selectedtemplate === 'Other' && customtemplate ? customtemplate : selectedtemplate;
-        console.log('template Added:', templateToAdd);
+    const handleAttributeChange = (index: number, field: 'key' | 'value', value: string) => {
+        const updatedAttributes = attributes.map((attr, i) =>
+            i === index ? { ...attr, [field]: value } : attr
+        );
+        setAttributes(updatedAttributes);
     };
+
+    const handleAddTemplate = async () => {
+        const templateToAdd = selectedTemplate === 'Other' && customTemplate ? customTemplate : selectedTemplate;
+        const formData = {
+            name: templateToAdd,
+            attributes: attributes
+        };
+        console.log('Template Data:', formData);
+
+        try {
+            await addTemplate(formData).unwrap();
+            handleCloseDialog();
+            onTemplateAdded();
+        } catch (error) {
+            console.error('Error adding template:', error);
+        }
+    };
+
+    const handleDiscard = () => {
+        handleCloseDialog();
+    };
+
+    if (isTemplateLoading) return <div>Loading templates...</div>;
+    if (isTemplateError) return <div>Error loading templates: {isTemplateError.message}</div>;
 
     return (
         <div className='mx-10 mb-10'>
@@ -37,25 +83,25 @@ export default function AddTemplate() {
                     variant="outlined"
                     size="small"
                     className="w-full mt-2"
-                    value={selectedtemplate}
+                    value={selectedTemplate}
                     onChange={handleSelectChange}
                 >
-                    {categories.map((cat) => (
-                        <MenuItem key={cat} value={cat}>
-                            {cat}
+                    {templates.map((template) => (
+                        <MenuItem key={template.id} value={template.name}>
+                            {template.name}
                         </MenuItem>
                     ))}
                     <MenuItem value="Other">Other</MenuItem>
                 </Select>
 
-                {selectedtemplate === 'Other' && (
+                {selectedTemplate === 'Other' && (
                     <TextField
-                        label="New template"
+                        label="New Template"
                         variant="outlined"
                         size="small"
                         className="w-full mt-2"
-                        value={customtemplate}
-                        onChange={handleCustomtemplateChange}
+                        value={customTemplate}
+                        onChange={handleCustomTemplateChange}
                     />
                 )}
 
@@ -68,6 +114,7 @@ export default function AddTemplate() {
                                 variant="outlined"
                                 size="small"
                                 value={attr.key}
+                                onChange={(e) => handleAttributeChange(index, 'key', e.target.value)}
                                 className="w-full"
                             />
                             <TextField
@@ -75,30 +122,33 @@ export default function AddTemplate() {
                                 variant="outlined"
                                 size="small"
                                 value={attr.value}
+                                onChange={(e) => handleAttributeChange(index, 'value', e.target.value)}
                                 className="w-full"
                             />
                         </div>
                     ))}
-                    <Button onClick={handleAddAttribute} variant="outlined" >
+                    <Button onClick={handleAddAttribute} variant="outlined">
                         Add
                     </Button>
                 </div>
 
-                <div className='pt-10 '>
+                <div className='pt-10'>
                     <div className='flex justify-between gap-5'>
-                        <Button variant="outlined" color="error">
+                        <Button variant="outlined" color="error" onClick={handleDiscard}>
                             Discard
                         </Button>
                         <button
                             type="button"
                             className='bg-[#002a47] py-1 px-3 text-white rounded-md'
-                            onClick={handleAddtemplate}
+                            onClick={handleAddTemplate}
                         >
-                            Add template
+                            Add Template
                         </button>
                     </div>
                 </div>
             </form>
         </div>
     );
-}
+};
+
+export default AddTemplate;

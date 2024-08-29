@@ -16,6 +16,13 @@ export default function SupplierCategoryList() {
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
+    const {
+        isError: isCategoryError,
+        isLoading: isCategoryLoading,
+        isSuccess: isCategorySuccess,
+        data: categories,
+        error: categoryError,
+    } = useGetAllsupplierCategoryQuery();
     const { isError, isLoading, isSuccess, data, error } = useGetAllsupplierCategoryQuery('supplier category')
     console.log(data)
     if (isError) return <h1>Error :{error.toString()}</h1>
@@ -28,11 +35,12 @@ export default function SupplierCategoryList() {
                 <div className='flex flex-wrap gap-2 mt-10 mx-10 mb-5'>
                     <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center '>
                         <p className='me-3 text-gray-500'>Category :</p>
-                        <select className='bg-white text-gray-700'>
-                            <option value="">Electronics</option>
-                            <option value="">Stationary</option>
-                            <option value="">Food</option>
-                            <option value="">Drink</option>
+                        <select className='bg-[#F5F5F5] text-gray-700'>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                            ))}
                         </select>
                     </div>
                 </div>

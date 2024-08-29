@@ -1,7 +1,14 @@
-import React from 'react';
 import Button from '@mui/material/Button';
+import { useGetAllsupplierCategoryQuery } from '../../../services/supplierCategoryService';
 
 function AddSuppliers() {
+    const {
+        isError: issupplierCategoryError,
+        isLoading: issupplierCategoryLoading,
+        isSuccess: issupplierCategorySuccess,
+        data: supplierCategorys,
+        error: supplierCategoryError,
+    } = useGetAllsupplierCategoryQuery();
     return (
         <div className="flex items-center justify-center bg-white w-[450px]">
             <div className="bg-white w-full  ">
@@ -52,14 +59,13 @@ function AddSuppliers() {
                                 </td>
                                 <td>
                                     <select
-                                        id="category"
-                                        className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                                    >
-                                        <option value="" disabled selected>Select Category</option>
-                                        <option value="electronics">Electronics</option>
-                                        <option value="clothing">Food</option>
-                                        <option value="furniture">Statinary</option>
-                                        <option value="food">Food</option>
+                                        className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]" >
+                                        {supplierCategorys.map((supplierCategory) => (
+                                            <option key={supplierCategory.id} value={supplierCategory.id}>
+                                                {supplierCategory.name}
+                                            </option>
+                                        ))}
+
                                     </select>
                                 </td>
                             </tr>

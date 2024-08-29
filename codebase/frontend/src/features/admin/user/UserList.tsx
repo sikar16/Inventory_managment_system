@@ -8,6 +8,7 @@ import Title from "../../../component/TablesTitle";
 // api
 import { useGetAllUsersQuery } from "../../../services/user_service";
 import Loading from "../../../component/Loading";
+import { useGetAlldepartmentQuery } from "../../../services/department_service";
 
 export default function UserList() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -21,7 +22,13 @@ export default function UserList() {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-
+  const {
+    isError: isuserError,
+    isLoading: isuserLoading,
+    isSuccess: isuserSuccess,
+    data: users,
+    error: userError,
+  } = useGetAlldepartmentQuery();
   //   api logic
   const { data, isLoading, isError, error, isSuccess } =
     useGetAllUsersQuery("user");
@@ -32,14 +39,17 @@ export default function UserList() {
     return (
       <div className="mt-10  ">
         <Title tableName={"User"} action={"Add user"} onClick={handleOpenDialog} />
-        <div className="  dark:bg-[#313131] w-[20%] px-3 py-1 rounded-md mb-4 flex">
-          <p className="me-3 text-gray-500 ">Role:</p>
-          <select name="" id="" className="w-[70%]  dark:bg-[#313131] ">
-            <option value="">Finance</option>
-            <option value="">Logistics</option>
-            <option value="">Information Technology</option>
-            <option value="">Human Resource</option>
-          </select>
+        <div className="flex">
+          <div className="  dark:bg-[#313131] w-[20%] px-3 py-1 rounded-md mb-4 flex">
+            <p className="me-3 text-gray-500 ">Role:</p>
+            <select className='bg-[#F5F5F5] text-gray-700'>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <div className="flex gap-8 text-gray-400 mt-8 mb-1">
           <button className="hover:underline hover:text-black dark:hover:text-gray-300">

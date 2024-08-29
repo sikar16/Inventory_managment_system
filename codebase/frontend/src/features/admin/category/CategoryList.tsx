@@ -16,7 +16,13 @@ export default function CategoryList() {
     const handleCloseDialog = () => setOpenDialog(false);
 
     const { isError, isLoading, isSuccess, data, error } = useGetAllproductCategoryQuery('productCategory');
-
+    const {
+        isError: isCategoryError,
+        isLoading: isCategoryLoading,
+        isSuccess: isCategorySuccess,
+        data: categories,
+        error: categoryError,
+    } = useGetAllproductCategoryQuery();
     // console.log(data)
     if (isError) {
         return (
@@ -29,7 +35,6 @@ export default function CategoryList() {
     if (isLoading) {
         return <Loading />;
     }
-
     if (isSuccess) {
         return (
             <div className='mt-10'>
@@ -38,12 +43,12 @@ export default function CategoryList() {
                 <div className='flex flex-wrap gap-2 mt-10 mx-10 mb-5'>
                     <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
                         <p className='me-3 text-gray-500'>Category :</p>
-                        <select className='text-gray-700'>
-                            {/* {data.map((category: ProductCategoryType) => (
+                        <select className='bg-[#F5F5F5] text-gray-700'>
+                            {categories.map((category) => (
                                 <option key={category.id} value={category.id}>
                                     {category.name}
                                 </option>
-                            ))} */}
+                            ))}
                         </select>
                     </div>
                 </div>
@@ -75,5 +80,5 @@ export default function CategoryList() {
         );
     }
 
-    return null; // Fallback in case none of the conditions are met
+    return null;
 }
