@@ -12,6 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useState } from 'react';
 import { ProductType } from '../../../_types/product_type';
+import { useDeleteProductMutation } from '../../../services/product_service';
 
 const columns = [
     { id: 'no', label: 'No', minWidth: 50 },
@@ -70,6 +71,19 @@ const ProductTable: React.FC<Productprops> = ({ productList, anchorEl, setAnchor
         handleCloseMenu();
     };
 
+
+    const [deleteProduct] = useDeleteProductMutation();
+
+    const handleDelete = async (id: string) => {
+        try {
+            await deleteProduct(id).unwrap(); // Assuming 'unwrap' is used to handle resolved/rejected state
+            console.log("Product deleted successfully");
+        } catch (error) {
+            console.error("Failed to delete product:", error);
+        }
+    };
+
+
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
             <TableContainer sx={{ maxHeight: 440 }}>
@@ -116,7 +130,7 @@ const ProductTable: React.FC<Productprops> = ({ productList, anchorEl, setAnchor
                                             onClose={handleCloseMenu}>
                                             <MenuItem onClick={handleViewDetails}>View Details</MenuItem>
                                             <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
-                                            <MenuItem onClick={handleCloseMenu}>Delete</MenuItem>
+                                            <MenuItem onClick={() => handleDelete(row.productId)}>Delete</MenuItem>
                                         </Menu>
                                     </TableCell>
                                 </TableRow>

@@ -22,7 +22,6 @@ const AddSubCategory: React.FC<AddSubcategoryProps> = ({ handleCloseDialog }) =>
     const handleCategoryChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         setSelectedCategory(event.target.value as string);
     };
-
     const handleCustomSubCategoryChange = (
         event: React.ChangeEvent<HTMLInputElement>,
     ) => {

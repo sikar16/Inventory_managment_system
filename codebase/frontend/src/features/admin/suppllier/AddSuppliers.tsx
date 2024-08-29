@@ -1,132 +1,175 @@
+import React, { useState } from 'react';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
 import { useGetAllsupplierCategoryQuery } from '../../../services/supplierCategoryService';
+import { SupplierCategoryType } from '../../../_types/supplierCategory_type';
+import { useAddNewsupplierMutation } from '../../../services/supplier_service';
 
-function AddSuppliers() {
-    const {
-        isError: issupplierCategoryError,
-        isLoading: issupplierCategoryLoading,
-        isSuccess: issupplierCategorySuccess,
-        data: supplierCategorys,
-        error: supplierCategoryError,
-    } = useGetAllsupplierCategoryQuery();
+interface AddSuppliersProps {
+    handleCloseDialog: () => void;
+}
+
+const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
+    const [formData, setFormData] = useState({
+        fullName: '',
+        email: '',
+        phone: '',
+        categoryId: '',
+        country: '',
+        city: '',
+        subCity: '',
+    });
+
+    const { isError, isLoading, isSuccess, data, error } = useGetAllsupplierCategoryQuery();
+    const [addSupplier] = useAddNewsupplierMutation();
+
+    const categories: SupplierCategoryType[] = isSuccess ? data : [];
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        setFormData((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
+    };
+
+    const handleCategoryChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            categoryId: event.target.value as string,
+        }));
+    };
+
+    const handleAddSupplier = async () => {
+        try {
+            await addSupplier(formData);
+            handleCloseDialog();
+        } catch (error) {
+            console.error('Failed to add supplier:', error);
+        }
+    };
+
+    const handleDiscard = () => {
+        handleCloseDialog();
+    };
+
     return (
-        <div className="flex items-center justify-center bg-white w-[450px]">
-            <div className="bg-white w-full  ">
-                <div className="">
-                    <div className="">
-                        <table className='w-full '>
-                            <tr className=''>
-                                <td>
-                                    <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Full Name</label>
-                                </td>
-                                <td>
-                                    <div className="w-full ">
-                                        <input
-                                            type="text"
-                                            id="fullName"
-                                            className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                                        />
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                                </td>
-                                <td>
-                                    <input
-                                        type="email"
-                                        id="email"
-                                        className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                                    />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone</label>
-                                </td>
-                                <td>
-                                    <input
-                                        type="number"
-                                        id="phone"
-                                        className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                                    />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
-                                </td>
-                                <td>
-                                    <select
-                                        className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]" >
-                                        {supplierCategorys.map((supplierCategory) => (
-                                            <option key={supplierCategory.id} value={supplierCategory.id}>
-                                                {supplierCategory.name}
-                                            </option>
-                                        ))}
+        <div className="mx-10 mb-10 w-[450px]">
+            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                <div>
+                    <TextField
+                        label="Full Name"
+                        name="fullName"
+                        variant="outlined"
+                        size="small"
+                        className="w-full mt-2"
+                        value={formData.fullName}
+                        onChange={handleInputChange}
+                    />
+                </div>
 
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="country" className="block text-sm font-medium text-gray-700">Country</label>
-                                </td>
-                                <td><input
-                                    placeholder='Country'
-                                    type="text"
-                                    id="country"
-                                    className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                                />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="city" className="block text-sm font-medium text-gray-700">City</label>
-                                </td>
-                                <td>
-                                    <input
-                                        placeholder='City'
-                                        type="text"
-                                        id="city"
-                                        className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                                    />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="subCity" className="block text-sm font-medium text-gray-700">Sub-city</label>
-                                </td>
-                                <td>
-                                    <input
-                                        placeholder='Sub-city'
-                                        type="text"
-                                        id="subcity"
-                                        className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                                    />
-                                </td>
-                            </tr>
-                        </table>
+                <div>
+                    <TextField
+                        label="Email"
+                        name="email"
+                        type="email"
+                        variant="outlined"
+                        size="small"
+                        className="w-full mt-2"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                    />
+                </div>
 
-                    </div>
-                    <div className='pt-10 '>
-                        <div className='flex justify-end gap-5'>
-                            <Button variant="outlined" color="error">
-                                Discard
-                            </Button>
-                            <button
-                                type="button"
-                                className='bg-[#002a47] py-1 px-3 text-white rounded-md'
-                            >
-                                Add template
-                            </button>
-                        </div>
+                <div>
+                    <TextField
+                        label="Phone"
+                        name="phone"
+                        type="tel"
+                        variant="outlined"
+                        size="small"
+                        className="w-full mt-2"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                    />
+                </div>
+
+                <div>
+                    <InputLabel id="category-label">Category</InputLabel>
+                    <Select
+                        labelId="category-label"
+                        name="categoryId"
+                        variant="outlined"
+                        size="small"
+                        className="w-full mt-2"
+                        value={formData.categoryId}
+                        onChange={handleCategoryChange}
+                    >
+                        {categories.map((cat) => (
+                            <MenuItem key={cat.id} value={cat.id}>
+                                {cat.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </div>
+
+                <div>
+                    <TextField
+                        label="Country"
+                        name="country"
+                        variant="outlined"
+                        size="small"
+                        className="w-full mt-2"
+                        value={formData.country}
+                        onChange={handleInputChange}
+                    />
+                </div>
+
+                <div>
+                    <TextField
+                        label="City"
+                        name="city"
+                        variant="outlined"
+                        size="small"
+                        className="w-full mt-2"
+                        value={formData.city}
+                        onChange={handleInputChange}
+                    />
+                </div>
+
+                <div>
+                    <TextField
+                        label="Sub-city"
+                        name="subCity"
+                        variant="outlined"
+                        size="small"
+                        className="w-full mt-2"
+                        value={formData.subCity}
+                        onChange={handleInputChange}
+                    />
+                </div>
+
+                <div className="pt-10">
+                    <div className="flex justify-between gap-5">
+                        <Button variant="outlined" color="error" onClick={handleDiscard}>
+                            Discard
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            className="bg-[#002a47]"
+                            onClick={handleAddSupplier}
+                        >
+                            Add Supplier
+                        </Button>
                     </div>
                 </div>
-            </div>
-        </div >
+            </form>
+        </div>
     );
-}
+};
 
 export default AddSuppliers;

@@ -23,6 +23,7 @@ const AddProduct: React.FC<AddProductProps> = ({ onAddProduct, productCategorys,
     const [customCategory, setCustomCategory] = useState('');
     const [customSubCategory, setCustomSubCategory] = useState('');
     const [customTemplate, setCustomTemplate] = useState('');
+
     const [addproduct, { isSuccess: isAddSuccess }] = useAddNewProductMutation();
 
     const handleAddAttribute = () => {
@@ -38,12 +39,12 @@ const AddProduct: React.FC<AddProductProps> = ({ onAddProduct, productCategorys,
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        onAddProduct({
+        addproduct({
             name: productName,
-            category: category === 'Other' ? customCategory : category,
-            subCategory: subCategory === 'Other' ? customSubCategory : subCategory,
-            template: template === 'Other' ? customTemplate : template,
-            attributes
+            // category: category === 'Other' ? customCategory : category,
+            // subCategory: subCategory === 'Other' ? customSubCategory : subCategory,
+            // template: template === 'Other' ? customTemplate : template,
+            // attributes
         });
     };
 

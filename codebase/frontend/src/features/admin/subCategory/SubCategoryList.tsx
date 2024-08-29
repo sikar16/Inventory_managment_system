@@ -14,7 +14,6 @@ export default function SubCategoryList() {
     const [openDialog, setOpenDialog] = React.useState(false);
     const handleOpenDialog = () => setOpenDialog(true);
     const handleCloseDialog = () => setOpenDialog(false);
-
     // Fetch categories and subcategories data
     const {
         isError: isCategoryError,

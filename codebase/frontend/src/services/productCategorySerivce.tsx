@@ -38,7 +38,23 @@ export const productCategoryApi = createApi({
                 return extractErrorMessage(response.data.message as string);
             },
         }),
+        deleteProductCategory: builder.mutation<void, string>({
+            query: (id) => ({
+                url: `/${id}`,
+                method: 'DELETE',
+                headers: {
+                    "Content-Type": "application/json",
+                    // Authorization: "token",
+                },
+            }),
+            invalidatesTags: ['ProductCategory'], // Invalidate cache after mutation
+            transformErrorResponse: (response: any) => {
+                // Safely handle the error response
+                const message = response?.data?.message;
+                return extractErrorMessage(message);
+            },
+        }),
     }),
 });
 
-export const { useGetAllproductCategoryQuery, useAddNewProductCategoryMutation } = productCategoryApi;
+export const { useGetAllproductCategoryQuery, useAddNewProductCategoryMutation, useDeleteProductCategoryMutation } = productCategoryApi;

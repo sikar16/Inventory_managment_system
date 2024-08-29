@@ -8,10 +8,9 @@ import { useAddNewtemplateMutation, useGetAlltemplateQuery } from '../../../serv
 
 interface AddTemplateProps {
     handleCloseDialog: () => void;
-    onTemplateAdded: () => void;
 }
 
-const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog, onTemplateAdded }) => {
+const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog }) => {
     const [selectedTemplate, setSelectedTemplate] = useState('');
     const [customTemplate, setCustomTemplate] = useState('');
     const [attributes, setAttributes] = useState<{ key: string; value: string }[]>([]);
@@ -56,15 +55,10 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog, onTemplate
             name: templateToAdd,
             attributes: attributes
         };
-        console.log('Template Data:', formData);
+        console.log(formData);
+        await addTemplate(formData)
+        handleCloseDialog();
 
-        try {
-            await addTemplate(formData).unwrap();
-            handleCloseDialog();
-            onTemplateAdded();
-        } catch (error) {
-            console.error('Error adding template:', error);
-        }
     };
 
     const handleDiscard = () => {

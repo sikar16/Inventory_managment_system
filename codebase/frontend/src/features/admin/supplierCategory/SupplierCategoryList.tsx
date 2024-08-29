@@ -57,7 +57,7 @@ export default function SupplierCategoryList() {
                         </DialogActions>
                     </div>
                     <DialogContent>
-                        <AddSupplierCategory />
+                        <AddSupplierCategory handleCloseDialog={handleCloseDialog} />
                     </DialogContent>
                 </Dialog>
             </div>

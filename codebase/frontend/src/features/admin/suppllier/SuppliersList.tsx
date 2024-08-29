@@ -41,7 +41,7 @@ export default function SupplierList() {
                         </DialogActions>
                     </div>
                     <DialogContent>
-                        <AddSuppliers />
+                        <AddSuppliers handleCloseDialog={handleCloseDialog} />
                     </DialogContent>
                 </Dialog>
             </div>

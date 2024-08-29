@@ -41,7 +41,7 @@ export default function WareHouseList() {
                         </DialogActions>
                     </div>
                     <DialogContent>
-                        <AddWareHouse />
+                        <AddWareHouse handleCloseDialog={handleCloseDialog} />
                     </DialogContent>
 
                 </Dialog>

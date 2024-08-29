@@ -26,7 +26,9 @@ const AddCategory: React.FC<AddCategoryProps> = ({ handleCloseDialog }) => {
         await addCategory(formdata)
     };
     if (isSuccess) handleCloseDialog()
-
+    const handleDiscard = () => {
+        handleCloseDialog();
+    };
     return (
         <div className='mx-10 mb-10  w-[400px]'>
             <form className='space-y-2'>
@@ -42,7 +44,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ handleCloseDialog }) => {
                 />
                 <div className='pt-10 '>
                     <div className='flex justify-between gap-5'>
-                        <Button variant="outlined" color="error">
+                        <Button variant="outlined" color="error" onClick={handleDiscard}>
                             Discard
                         </Button>
                         <button

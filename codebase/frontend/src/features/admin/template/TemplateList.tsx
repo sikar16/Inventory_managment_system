@@ -87,7 +87,7 @@ export default function TemplateList() {
                         </DialogActions>
                     </div>
                     <DialogContent>
-                        <AddTemplate />
+                        <AddTemplate handleCloseDialog={handleCloseDialog} />
                     </DialogContent>
                 </Dialog>
             </div>

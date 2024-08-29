@@ -1,93 +1,104 @@
+import React, { useState } from 'react';
+import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import { useAddNewstoreMutation } from '../../../services/store_service';
 
-function AddWareHouse() {
+interface AddSubcategoryProps {
+    handleCloseDialog: () => void;
+}
+
+const AddWareHouse: React.FC<AddSubcategoryProps> = ({ handleCloseDialog }) => {
+    const [warehouseData, setWarehouseData] = useState({
+        name: '',
+        country: '',
+        city: '',
+        subCity: '',
+        wereda: ''
+    });
+    const [addWareHouse, { isSuccess: isAddSuccess }] = useAddNewstoreMutation();
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        setWarehouseData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleAddSubCategory = async () => {
+        console.log(warehouseData);
+        await addWareHouse(warehouseData);
+        handleCloseDialog();
+    };
+
+    const handleDiscard = () => {
+        handleCloseDialog();
+    };
+
     return (
-        <div className="flex items-center justify-center bg-white w-[450px]">
-            <div className="bg-white w-full  ">
-                <div className="">
-                    <div className="">
-                        <table className='w-full '>
-                            <tr className=''>
-                                <td>
-                                    <label htmlFor="fullName" className="block text-sm font-medium text-gray-700"> Name</label>
-                                </td>
-                                <td>
-                                    <div className="w-full ">
-                                        <input
-                                            type="text"
-                                            id="fullName"
-                                            className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                                        />
-                                    </div>
-                                </td>
-                            </tr>
+        <div className='mx-10 mb-10 w-[350px]'>
+            <form className='space-y-2' onSubmit={(e) => e.preventDefault()}>
+                <TextField
+                    label="Name"
+                    name="name"
+                    variant="outlined"
+                    size="small"
+                    className="w-full mt-2"
+                    value={warehouseData.name}
+                    onChange={handleInputChange}
+                />
+                <TextField
+                    label="Country"
+                    name="country"
+                    variant="outlined"
+                    size="small"
+                    className="w-full mt-2"
+                    value={warehouseData.country}
+                    onChange={handleInputChange}
+                />
+                <TextField
+                    label="City"
+                    name="city"
+                    variant="outlined"
+                    size="small"
+                    className="w-full mt-2"
+                    value={warehouseData.city}
+                    onChange={handleInputChange}
+                />
+                <TextField
+                    label="Sub-city"
+                    name="subCity"
+                    variant="outlined"
+                    size="small"
+                    className="w-full mt-2"
+                    value={warehouseData.subCity}
+                    onChange={handleInputChange}
+                />
+                <TextField
+                    label="Wereda"
+                    name="wereda"
+                    variant="outlined"
+                    size="small"
+                    className="w-full mt-2"
+                    value={warehouseData.wereda}
+                    onChange={handleInputChange}
+                />
 
-                            <tr>
-                                <td>
-                                    <label htmlFor="country" className="block text-sm font-medium text-gray-700">Country</label>
-                                </td>
-                                <td><input
-                                    type="text"
-                                    id="country"
-                                    className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                                />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="city" className="block text-sm font-medium text-gray-700">City</label>
-                                </td>
-                                <td>
-                                    <input
-                                        type="text"
-                                        id="city"
-                                        className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                                    />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="subCity" className="block text-sm font-medium text-gray-700">Sub-city</label>
-                                </td>
-                                <td>
-                                    <input
-                                        type="text"
-                                        id="subcity"
-                                        className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                                    />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="wereda" className="block text-sm font-medium text-gray-700">Wereda</label>
-                                </td>
-                                <td>
-                                    <input
-                                        type="text"
-                                        id="wereda"
-                                        className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                                    />
-                                </td>
-                            </tr>
-                        </table>
-
-                    </div>
-                    <div className='pt-10 '>
-                        <div className='flex justify-end gap-5'>
-                            <Button variant="outlined" color="error">
-                                Discard
-                            </Button>
-                            <button
-                                type="button"
-                                className='bg-[#002a47] py-1 px-3 text-white rounded-md'
-                            >
-                                Add
-                            </button>
-                        </div>
+                <div className='pt-10'>
+                    <div className='flex justify-between gap-5'>
+                        <Button variant="outlined" color="error" onClick={handleDiscard}>
+                            Discard
+                        </Button>
+                        <button
+                            className='bg-[#002a47] text-white px-4 py-2 rounded-md'
+                            onClick={handleAddSubCategory}
+                        >
+                            Add Warehouse
+                        </button>
                     </div>
                 </div>
-            </div>
-        </div >
+            </form>
+        </div>
     );
 }
 
