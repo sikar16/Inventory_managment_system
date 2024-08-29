@@ -37,7 +37,11 @@ const productSubCategoryController = {
   },
   getAllproductSubCategory: async (req, res, next) => {
     try {
-      const productSubCategory = await prisma.productSubCategory.findMany({});
+      const productSubCategory = await prisma.productSubCategory.findMany({
+        include: {
+          category: true,
+        },
+      });
       return res.status(200).json({
         success: true,
         message: "Fetching all product subCategory",

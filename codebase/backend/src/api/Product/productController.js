@@ -49,9 +49,14 @@ const productController = {
     try {
       const products = await prisma.product.findMany({
         include: {
+          subcategory: {
+            include: {
+              category: true,
+            },
+          },
           productAttributes: {
             include: {
-              templateAttribute: true,
+              templateAttribute: {},
             },
           },
         },
@@ -88,11 +93,12 @@ const productController = {
       }
 
       for (let i = 0; i < req.body.items.length; i++) {
-        const isTemplateAttributeExist = await prisma.templateAttribute.findFirst({
-          where: {
-            id: +data.items[i].templateAttributeId,
-          },
-        });
+        const isTemplateAttributeExist =
+          await prisma.templateAttribute.findFirst({
+            where: {
+              id: +data.items[i].templateAttributeId,
+            },
+          });
 
         if (!isTemplateAttributeExist) {
           return res.status(404).json({
@@ -110,7 +116,7 @@ const productController = {
       });
 
       for (let i = 0; i < req.body.items.length; i++) {
-       const newproductAttribute= await prisma.productAttribute.create({
+        const newproductAttribute = await prisma.productAttribute.create({
           data: {
             productId: +newProduct.id,
             templateAttributeId: data.items[i].templateAttributeId,
@@ -169,11 +175,12 @@ const productController = {
         });
       }
 
-      const isProductSubcategoryExist = await prisma.productSubCategory.findFirst({
-        where: {
-          id: +data.subcategoryId,
-        },
-      });
+      const isProductSubcategoryExist =
+        await prisma.productSubCategory.findFirst({
+          where: {
+            id: +data.subcategoryId,
+          },
+        });
 
       if (!isProductSubcategoryExist) {
         return res.status(404).json({
@@ -229,11 +236,13 @@ const productController = {
         });
       }
 
-      const isTemplateAttributeExist = await prisma.templateAttribute.findFirst({
-        where: {
-          id: +data.templateAttributeId,
-        },
-      });
+      const isTemplateAttributeExist = await prisma.templateAttribute.findFirst(
+        {
+          where: {
+            id: +data.templateAttributeId,
+          },
+        }
+      );
 
       if (!isTemplateAttributeExist) {
         return res.status(404).json({
