@@ -6,3 +6,5 @@ source /home/huludeig/nodevenv/inventory.huludelala.com/codebase/backend/20/bin/
 
 /usr/bin/flock -n /tmp/mylockenv.lock ${HOME}/nodevenv/inventory.huludelala.com/codebase/backend/20/bin/node ${HOME} inventory.huludelala.com/codebase/backend/app.js>/dev/null 2>&1
 
+ps aux
+kill pid[09876678]
