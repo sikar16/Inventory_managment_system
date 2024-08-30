@@ -3,21 +3,64 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import { useState } from 'react';
+import { useAddNewuserMutation } from '../../../services/user_service';
 function AddUser({ open, onClose }) {
-  const [customUser, setCustomUser] = useState('');
-  const handleCustomUserChange = (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) => {
-    setCustomUser(event.target.value);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    gender: '',
+    country: '',
+    city: '',
+    subcity: '',
+    department: '',
+  });
+  const [adduser, { isError, isSuccess, isLoading, error }] = useAddNewuserMutation();
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { id, value } = event.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [id]: value,
+    }));
   };
-  console.log(customUser)
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log(formData);
+  };
+  const handleAdduser = async () => {
+    const formdata = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      middleName: formData.middleName,
+      phone: formData.phone,
+      email: formData.email, // Corrected to formData.email
+      gender: formData.gender,
+      country: formData.country,
+      city: formData.city,
+      subcity: formData.subcity,
+      department: formData.department,
+    };
+
+    try {
+      console.log(formdata);
+      await adduser(formdata).unwrap();
+
+    } catch (error) {
+      console.error('Failed to add user:', error);
+    }
+  };
+
   return (
     <>
       <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
         <DialogContent>
-          <form action="">
+          <form onSubmit={handleSubmit}>
             <div className="flex items-center justify-center bg-white mt-3">
-              <div className="bg-white w-[90%]  ">
+              <div className="bg-white w-[90%]">
                 <div className="flex justify-between items-center border-b pb-3">
                   <h3 className="text-xl font-medium">User Registration</h3>
                 </div>
@@ -30,8 +73,8 @@ function AddUser({ open, onClose }) {
                           placeholder='first name'
                           type="text"
                           id="firstName"
-                          value={customUser}
-                          onChange={handleCustomUserChange}
+                          value={formData.firstName}
+                          onChange={handleInputChange}
                           className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
                         />
                       </div>
@@ -40,9 +83,9 @@ function AddUser({ open, onClose }) {
                           placeholder='middle name'
                           type="text"
                           id="middleName"
+                          value={formData.middleName}
+                          onChange={handleInputChange}
                           className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                          value={customUser}
-                          onChange={handleCustomUserChange}
                         />
                       </div>
                       <div className="w-full md:w-[30%]">
@@ -50,9 +93,9 @@ function AddUser({ open, onClose }) {
                           placeholder='last name'
                           type="text"
                           id="lastName"
+                          value={formData.lastName}
+                          onChange={handleInputChange}
                           className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                          value={customUser}
-                          onChange={handleCustomUserChange}
                         />
                       </div>
                     </div>
@@ -62,9 +105,9 @@ function AddUser({ open, onClose }) {
                         <input
                           type="email"
                           id="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
                           className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                          value={customUser}
-                          onChange={handleCustomUserChange}
                         />
                       </div>
                       <div className='w-full md:w-[45%] md:my-5'>
@@ -72,19 +115,21 @@ function AddUser({ open, onClose }) {
                         <input
                           type="text"
                           id="phone"
+                          value={formData.phone}
+                          onChange={handleInputChange}
                           className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                          value={customUser}
-                          onChange={handleCustomUserChange}
                         />
                       </div>
                     </div>
                     <div className='w-full md:w-[45%] my-5'>
                       <label htmlFor="gender" className="block text-sm font-medium text-gray-700">Gender</label>
-                      <select id="gender"
-                        value={customUser}
-                        onChange={handleCustomUserChange}
-                        className='bg-slate-100 w-full py-2 rounded-md'>
-                        <option value="" className='text-gray-400 '></option>
+                      <select
+                        id="gender"
+                        value={formData.gender}
+                        onChange={handleInputChange}
+                        className='bg-slate-100 w-full py-2 rounded-md'
+                      >
+                        <option value="" className='text-gray-400'>Select Gender</option>
                         <option value="male" className='py-2'>Man</option>
                         <option value="female" className='py-2'>Woman</option>
                       </select>
@@ -96,9 +141,9 @@ function AddUser({ open, onClose }) {
                           placeholder='Country'
                           type="text"
                           id="country"
+                          value={formData.country}
+                          onChange={handleInputChange}
                           className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                          value={customUser}
-                          onChange={handleCustomUserChange}
                         />
                       </div>
                       <div className="w-full md:w-[30%]">
@@ -106,9 +151,9 @@ function AddUser({ open, onClose }) {
                           placeholder='City'
                           type="text"
                           id="city"
+                          value={formData.city}
+                          onChange={handleInputChange}
                           className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                          value={customUser}
-                          onChange={handleCustomUserChange}
                         />
                       </div>
                       <div className="w-full md:w-[30%]">
@@ -116,18 +161,21 @@ function AddUser({ open, onClose }) {
                           placeholder='Sub-city'
                           type="text"
                           id="subcity"
+                          value={formData.subcity}
+                          onChange={handleInputChange}
                           className="mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
-                          value={customUser}
-                          onChange={handleCustomUserChange}
                         />
                       </div>
                     </div>
                     <div className='w-full md:w-[45%] my-5'>
                       <label htmlFor="department" className="block text-sm font-medium text-gray-700">Department</label>
-                      <select id="department"
-                        value={customUser}
-                        onChange={handleCustomUserChange}
-                        className='bg-slate-100 w-full py-2 rounded-md'>
+                      <select
+                        id="department"
+                        value={formData.department}
+                        onChange={handleInputChange}
+                        className='bg-slate-100 w-full py-2 rounded-md'
+                      >
+                        <option value="" className='text-gray-400'>Select Department</option>
                         <option value="finance">Finance</option>
                         <option value="hr">Human Resource</option>
                         <option value="it">Information Technology</option>
@@ -137,7 +185,9 @@ function AddUser({ open, onClose }) {
                     </div>
                   </div>
                   <div className='flex justify-center mt-10'>
-                    <button className='bg-[#002A47] text-white px-6 py-2 rounded-md w-[40%]'>Submit</button>
+                    <button type="submit"
+                      onClick={handleAdduser}
+                      className='bg-[#002A47] text-white px-6 py-2 rounded-md w-[40%]'>Submit</button>
                   </div>
                 </div>
               </div>

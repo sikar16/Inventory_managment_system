@@ -7,7 +7,7 @@ const baseUrl = import.meta.env.VITE_API_URL;
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}user` }),
-  tagTypes: ['user'], // Define the tags
+  tagTypes: ['user'],
   endpoints: (builder) => ({
     getAllUsers: builder.query({
       query: () => ({
@@ -34,34 +34,18 @@ export const userApi = createApi({
       }),
     }),
 
-    // addUser: builder.mutation({
-    //   query: (userData: UserType) => ({
-    //     url: `/register`,
-    //     method: "POST",
-    //     body: userData,
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       //   Authorization: "token",
-    //     },
-    //   }),
-    // }),  /register
-
-
-
-    addNewUser: builder.mutation({
-      query: (data) => ({
-        url: `/register`,
+    addNewuser: builder.mutation<UserType, Partial<UserType>>({
+      query: (body) => ({
+        url: `http://localhost:8888/api/user/register`,
         method: 'POST',
-        headers: {
-          "Content-Type": "application/json",
-          // Authorization: "token",
-        },
-        body: data,
+        body,
       }),
-      invalidatesTags: ['user'], // Invalidate cache after mutation
+      invalidatesTags: ['user'], // Invalidate 'userType' tag
+
       transformErrorResponse: (response: any) => {
         console.log(response);
-        return extractErrorMessage(response.data.message as string);
+        const message = response?.data?.message || 'Unknown error';
+        return extractErrorMessage(message);
       },
     }),
 
@@ -93,7 +77,7 @@ export const userApi = createApi({
 export const {
   useGetAllUsersQuery,
   useGetSingleUserQuery,
-  useAddUserMutation,
+  useAddNewuserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
 } = userApi;
