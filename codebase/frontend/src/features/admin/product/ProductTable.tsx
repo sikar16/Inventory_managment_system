@@ -1,18 +1,18 @@
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import IconButton from "@mui/material/IconButton";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useState } from "react";
 import { ProductType } from "../../../_types/product_type";
 import { useDeleteProductMutation } from "../../../services/product_service";
+import { IconButton } from '@mui/material';
 
 const columns = [
   { id: "no", label: "No", minWidth: 50 },
@@ -38,6 +38,7 @@ interface Productprops {
   setAnchorEl: any;
   setSelectedProduct: any;
   setOpenDetails: any;
+  selectedProduct: any
 }
 
 const ProductTable: React.FC<Productprops> = ({
@@ -46,6 +47,7 @@ const ProductTable: React.FC<Productprops> = ({
   setAnchorEl,
   setSelectedProduct,
   setOpenDetails,
+  selectedProduct
 }) => {
   const rows = productList.map((i) =>
     createData(
@@ -90,14 +92,29 @@ const ProductTable: React.FC<Productprops> = ({
 
   const [deleteProduct] = useDeleteProductMutation();
 
-  const handleDelete = async (id: string) => {
+  // const handleDelete = async (id: string) => {
+  //   try {
+  //     await deleteProduct(id).unwrap(); // Assuming 'unwrap' is used to handle resolved/rejected state
+  //     console.log("Product deleted successfully");
+  //   } catch (error) {
+  //     console.error("Failed to delete product:", error);
+  //   }
+  // };
+
+  async function handleDelete(id) {
     try {
-      await deleteProduct(id).unwrap(); // Assuming 'unwrap' is used to handle resolved/rejected state
-      console.log("Product deleted successfully");
-    } catch (error) {
-      console.error("Failed to delete product:", error);
+      // await fetch(`https://inventory.huludelala.com/api/product/${id}`, {
+      await fetch(`http://localhost:8888/api/product/${id}`, {
+        method: "DELETE"
+      })
+      setSelectedProduct((selectedProduct) => selectedProduct.filter((selectedProduct) => selectedProduct.id !== id))
+      console.log(id)
     }
-  };
+    catch (error) {
+      throw new Error("Error while deleting user")
+    }
+  }
+
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>

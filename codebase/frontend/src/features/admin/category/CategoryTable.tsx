@@ -8,7 +8,6 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useState } from 'react';
 import { ProductCategoryType } from '../../../_types/productCategory_type';
-import { useDispatch, useSelector } from 'react-redux';
 import { useDeleteProductCategoryMutation } from '../../../services/productCategorySerivce';
 
 const columns = [
@@ -20,13 +19,11 @@ const columns = [
 function createData(no: number, categoryId: string, category: string) {
     return { no, categoryId, category };
 }
-
 interface ProductCategoryProps {
     anchorEl: any;
     setAnchorEl: any;
     productCategorylist?: ProductCategoryType[]; // Optional to handle undefined
 }
-
 const CategoryTable: React.FC<ProductCategoryProps> = ({
     productCategorylist = [] // Default to empty array
 }) => {
@@ -53,6 +50,7 @@ const CategoryTable: React.FC<ProductCategoryProps> = ({
     const [deleteProductCategory] = useDeleteProductCategoryMutation();
 
     const handleDelete = (id: string) => {
+        console.log(id)
         deleteProductCategory(id);
     };
 

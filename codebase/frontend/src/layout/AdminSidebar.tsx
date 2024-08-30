@@ -11,8 +11,8 @@ const AdminSidebar = () => {
             <List className='dark:bg-zinc-950 dark:text-white  h-full'>
                 <nav className="hs-accordion-group p-6 w-full flex flex-col flex-wrap " data-hs-accordion-always-open>
                     <ul className="space-y-1.5">
-                        <li>
-                            <Link to='/admin/dashbord' onClick={() => handleToggleView('dashbord')}>
+                        <li >
+                            <Link to='/admin/dashbord' onClick={() => handleToggleView('dashbord')} >
                                 <a className="flex items-center gap-x-3.5 py-[5px] px-2.5 bg-gray-100 text-sm text-gray-700 rounded-lg hover:bg-[#002A47] hover:text-white dark:bg-neutral-700 dark:text-white" href="#">
                                     <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
                                     Dashboard

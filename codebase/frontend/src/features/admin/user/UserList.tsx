@@ -40,9 +40,9 @@ export default function UserList() {
       <div className="mt-10  ">
         <Title tableName={"User"} action={"Add user"} onClick={handleOpenDialog} />
         <div className="flex">
-          <div className="  dark:bg-[#313131] w-[20%] px-3 py-1 rounded-md mb-4 flex">
+          <div className="    px-3 py-1 rounded-md mb-4 flex">
             <p className="me-3 text-gray-500 ">Role:</p>
-            <select className='bg-[#F5F5F5] text-gray-700'>
+            <select className='bg-[#F5F5F5] dark:bg-[#444444] text-gray-700 dark:text-white px-2 py-2 rounded-md focus:outline-none'>
               {users.map((user) => (
                 <option key={user.id} value={user.id}>
                   {user.name}
@@ -70,7 +70,7 @@ export default function UserList() {
           <input
             type="text"
             placeholder="Search"
-            className="w-[80%] bg-white dark:bg-[#313131] rounded-md py-[5px] px-3"
+            className="w-full bg-white dark:bg-[#313131] rounded-md py-[5px] px-3"
           />
         </div>
         <UsersTable

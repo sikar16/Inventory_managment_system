@@ -39,20 +39,38 @@ export const productApi = createApi({
                 return extractErrorMessage(response.data.message as string);
             },
         }),
+        // deleteProduct: builder.mutation<void, string>({
+        //     query: (id) => ({
+        //         url: `/${id}`,
+        //         method: 'DELETE',
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //             // Authorization: "token",
+        //         },
+        //     }),
+        //     invalidatesTags: ['Product'], // Invalidate cache after mutation
+        //     transformErrorResponse: (response: any) => {
+        //         // Safely handle the error response
+        //         const message = response?.data?.message;
+        //         return extractErrorMessage(message);
+        //     },
+        // }),
         deleteProduct: builder.mutation<void, string>({
             query: (id) => ({
                 url: `/${id}`,
                 method: 'DELETE',
                 headers: {
                     "Content-Type": "application/json",
-                    // Authorization: "token",
                 },
             }),
-            invalidatesTags: ['Product'], // Invalidate cache after mutation
+            invalidatesTags: ['product'],
             transformErrorResponse: (response: any) => {
-                // Safely handle the error response
-                const message = response?.data?.message;
-                return extractErrorMessage(message);
+                try {
+                    const message = response?.data?.message;
+                    return extractErrorMessage(message);
+                } catch (error) {
+                    return 'An unexpected error occurred while processing your request.';
+                }
             },
         }),
     })

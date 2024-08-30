@@ -125,13 +125,14 @@ model Product {
 }
 
 model ProductAttribute {
-  id                  Int               @id @default(autoincrement())
+  id                  Int     @id @default(autoincrement())
   productId           Int
   templateAttributeId Int
   value               String
   // references
-  product             Product           @relation(fields: [productId], references: [id])
-  templateAttribute   TemplateAttribute @relation(fields: [templateAttributeId], references: [id])
+  product             Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  templateAttribute TemplateAttribute @relation(fields: [templateAttributeId], references: [id])
 }
 
 model Address {

@@ -8,7 +8,6 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-
 import { useState } from "react";
 import { UserType } from "../../../_types/user_type";
 

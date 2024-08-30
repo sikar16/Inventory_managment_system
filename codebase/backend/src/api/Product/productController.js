@@ -274,6 +274,46 @@ const productController = {
     }
   },
 
+  // deleteProduct: async (req, res, next) => {
+  //   try {
+  //     const productId = parseInt(req.params.id, 10);
+  //     if (isNaN(productId)) {
+  //       return res.status(404).json({
+  //         success: false,
+  //         message: "Invalid product ID",
+  //       });
+  //     }
+
+  //     const isProductExist = await prisma.product.findFirst({
+  //       where: {
+  //         id: productId,
+  //       },
+  //     });
+
+  //     if (!isProductExist) {
+  //       return res.status(404).json({
+  //         success: false,
+  //         message: "Product not found",
+  //       });
+  //     }
+
+  //     await prisma.product.delete({
+  //       where: {
+  //         id: productId,
+  //       },
+  //     });
+
+  //     return res.status(200).json({
+  //       success: true,
+  //       message: "Product deleted successfully",
+  //     });
+  //   } catch (error) {
+  //     return res.status(500).json({
+  //       success: false,
+  //       message: "Error deleting product",
+  //     });
+  //   }
+  // },
   deleteProduct: async (req, res, next) => {
     try {
       const productId = parseInt(req.params.id, 10);
@@ -283,37 +323,40 @@ const productController = {
           message: "Invalid product ID",
         });
       }
-
+  
       const isProductExist = await prisma.product.findFirst({
         where: {
           id: productId,
         },
       });
-
+  
       if (!isProductExist) {
         return res.status(404).json({
           success: false,
           message: "Product not found",
         });
       }
-
+  
       await prisma.product.delete({
         where: {
           id: productId,
         },
       });
-
+  
       return res.status(200).json({
         success: true,
         message: "Product deleted successfully",
       });
     } catch (error) {
+      console.error("Error deleting product:", error); // Log the actual error
       return res.status(500).json({
         success: false,
         message: "Error deleting product",
+        error: error.message, // Optional: include error message in response for debugging
       });
     }
   },
+  
 };
 
 export default productController;

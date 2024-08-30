@@ -108,6 +108,7 @@ export default function ProductList() {
                     selectedProduct={selectedProduct}
                     setSelectedProduct={setSelectedProduct}
                     setOpenDetails={setOpenDetails}
+                    selectedProduct={selectedProduct}
                 />
                 <Dialog open={openDetails} onClose={handleCloseDetails} className=''>
                     <DialogTitle> <strong>Product Details</strong></DialogTitle>
