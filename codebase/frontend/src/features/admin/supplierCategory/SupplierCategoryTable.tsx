@@ -1,96 +1,107 @@
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import { useState } from 'react';
-import { supplierCategoryType } from '../../../_types/supplierCategory_type';
-const columns = [
-    { id: 'no', label: 'No', minWidth: 50 },
-    { id: 'suppliersid', label: 'Suppliers id', minWidth: 70 },
-    { id: 'category', label: 'Category', minWidth: 70, align: 'left' },
+import React, { useState } from "react";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import { supplierCategoryType } from "../../../_types/supplierCategory_type";
+
+const columns: {
+  id: string;
+  label: string;
+  minWidth: number;
+  align?: "left" | "center" | "right" | "inherit" | "justify"; // Explicit types for align
+}[] = [
+  { id: "no", label: "No", minWidth: 50 },
+  { id: "suppliersid", label: "Suppliers id", minWidth: 70 },
+  { id: "category", label: "Category", minWidth: 70, align: "left" },
 ];
 
 function createData(no: number, suppliersid: string, category: string) {
-    return { no, suppliersid, category };
+  return { no, suppliersid, category };
 }
 
 interface SupplierCategoryProps {
-    suppliersCategorylist: supplierCategoryType;
-}
-const SupplierCategoryTable: React.FC<SupplierCategoryProps> = ({ suppliersCategorylist }) => {
-    const rows = suppliersCategorylist.map((i) =>
-        createData(
-            i.id,
-            `${i.id}`,
-            `${i.name}`,
-        )
-    )
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-
-    const handleChangePage = (event: unknown, newPage: number) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-    };
-    return (
-        <>
-            <div className="flex mx-[7%]">
-                <Paper sx={{ overflow: 'hidden', maxWidth: 800, width: '100%' }}>
-                    <TableContainer sx={{ maxHeight: 440 }}>
-                        <Table stickyHeader aria-label="sticky table">
-                            <TableHead>
-                                <TableRow>
-                                    {columns.map((column) => (
-                                        <TableCell
-                                            key={column.id}
-                                            align={column.align}
-                                            style={{ minWidth: column.minWidth }}
-                                        >
-                                            {column.label}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((row) => (
-                                        <TableRow hover role="checkbox" tabIndex={-1} key={row.productId}>
-                                            {columns.map((column) => {
-                                                const value = row[column.id];
-                                                return (
-                                                    <TableCell key={column.id} align={column.align}>
-                                                        {value}
-                                                    </TableCell>
-                                                );
-                                            })}
-
-                                        </TableRow>
-                                    ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 15]}
-                        component="div"
-                        count={rows.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </Paper>
-            </div>
-        </>
-    )
+  suppliersCategorylist: supplierCategoryType[];
 }
 
-export default SupplierCategoryTable
+const SupplierCategoryTable: React.FC<SupplierCategoryProps> = ({
+  suppliersCategorylist,
+}) => {
+  const rows = suppliersCategorylist.map((i, index) =>
+    createData(index + 1, `${i.id}`, `${i.name}`)
+  );
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
+  return (
+    <div className="flex mx-[7%]">
+      <Paper sx={{ overflow: "hidden", maxWidth: 800, width: "100%" }}>
+        <TableContainer sx={{ maxHeight: 440 }}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align={column.align} // This will now be correctly typed
+                    style={{ minWidth: column.minWidth }}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => (
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={row.suppliersid}
+                  >
+                    {columns.map((column) => {
+                      const value = row[column.id as keyof typeof row]; // Type assertion
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          {value}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 15]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
+    </div>
+  );
+};
+
+export default SupplierCategoryTable;
