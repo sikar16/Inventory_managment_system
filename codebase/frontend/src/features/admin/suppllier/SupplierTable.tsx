@@ -46,19 +46,22 @@ function createData(
 }
 
 interface SuppliersTableProps {
-  supplierslist: SupplierType[];
+  supplierslist: SupplierType[] | undefined;
 }
 
 const SupplierTable: React.FC<SuppliersTableProps> = ({ supplierslist }) => {
-  const rows = supplierslist.map((i) =>
-    createData(
-      i.id,
-      `${i.id}`,
-      `${i.fullName}`,
-      `${i.category.name}`,
-      `${i.address}`
-    )
-  );
+  const rows =
+    supplierslist == undefined
+      ? []
+      : supplierslist.map((i) =>
+          createData(
+            i.id,
+            `${i.id}`,
+            `${i.fullName}`,
+            `${i.category.name}`,
+            `${i.address}`
+          )
+        );
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);

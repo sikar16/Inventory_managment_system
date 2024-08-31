@@ -15,7 +15,7 @@ const AddWareHouse: React.FC<AddSubcategoryProps> = ({ handleCloseDialog }) => {
         subCity: '',
         wereda: ''
     });
-    const [addWareHouse, { isSuccess: isAddSuccess }] = useAddNewstoreMutation();
+    const [addWareHouse] = useAddNewstoreMutation();
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;

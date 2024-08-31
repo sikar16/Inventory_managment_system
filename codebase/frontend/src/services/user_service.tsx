@@ -7,7 +7,7 @@ const baseUrl = import.meta.env.VITE_API_URL;
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}user` }),
-  tagTypes: ['user'],
+  tagTypes: ["user"],
   endpoints: (builder) => ({
     getAllUsers: builder.query({
       query: () => ({
@@ -20,7 +20,7 @@ export const userApi = createApi({
       }),
       transformResponse: (response: any) =>
         response.success ? (response.data as UserType[]) : ([] as UserType[]),
-      providesTags: ['user'],
+      providesTags: ["user"],
     }),
 
     getSingleUser: builder.query({
@@ -35,16 +35,16 @@ export const userApi = createApi({
     }),
 
     addNewuser: builder.mutation<UserType, Partial<UserType>>({
-      query: (body) => ({
+      query: (data) => ({
         url: `http://localhost:8888/api/user/register`,
-        method: 'POST',
-        body,
+        method: "POST",
+        body: data,
       }),
-      invalidatesTags: ['user'], // Invalidate 'userType' tag
+      invalidatesTags: ["user"], // Invalidate 'userType' tag
 
       transformErrorResponse: (response: any) => {
         console.log(response);
-        const message = response?.data?.message || 'Unknown error';
+        const message = response?.data?.message || "Unknown error";
         return extractErrorMessage(message);
       },
     }),

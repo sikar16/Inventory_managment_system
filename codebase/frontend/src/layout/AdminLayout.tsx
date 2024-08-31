@@ -1,4 +1,3 @@
-import Footer from "./Footer"
 import Header from "./Header"
 // mui 
 import Box from '@mui/material/Box';

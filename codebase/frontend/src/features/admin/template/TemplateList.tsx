@@ -8,8 +8,6 @@ import TemplateTable from "./TemplateTable";
 import Title from "../../../component/TablesTitle";
 import { useGetAlltemplateQuery } from "../../../services/template_service";
 import Loader from "../../../component/Loading";
-import { useGetAllproductCategoryQuery } from "../../../services/productCategorySerivce";
-import { useGetAllproductSubCategoryQuery } from "../../../services/productSubcategory_service";
 
 export default function TemplateList() {
   const [openDialog, setOpenDialog] = React.useState(false);
