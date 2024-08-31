@@ -153,9 +153,9 @@ model Users {
   activeStatus                       ActiveStatus
   role                               CompanyRole        @default(EMPLOYEE)
   createdAt                          DateTime           @default(now())
-  departmentId                       Int
+  departmentName                     String
   //reference
-  department                         Department         @relation(fields: [departmentId], references: [id])
+  department                         Department         @relation(fields: [departmentName], references: [name])
   // relation
   password                           Password?
   profile                            Profile?

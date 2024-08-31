@@ -10,17 +10,18 @@ const userSchem = {
     phone: z.string().min(10).max(14),
     country: z.string(),
     city: z.string(),
-    subcity: z.string(),
-    role: z.enum([
-      "ADMIN",
-      "EMPLOYEE",
-      "DEPARTMENT_HEAD",
-      "LOGESTIC_SUPERVISER",
-      "FINANCE",
-      "GENERAL_MANAGER",
-      "STORE_KEEPER",
-    ]),
+    subCity: z.string(),
+    // role: z.enum([
+    //   "ADMIN",
+    //   "EMPLOYEE",
+    //   "DEPARTMENT_HEAD",
+    //   "LOGESTIC_SUPERVISER",
+    //   "FINANCE",
+    //   "GENERAL_MANAGER",
+    //   "STORE_KEEPER",
+    // ]),
     departmentId: z.number(),
+    password: z.string().optional(), 
   }),
 
   login: z.object({
@@ -33,7 +34,6 @@ const userSchem = {
     middleName: z.string().min(3),
     lastName: z.string().min(3),
     gender: z.enum(["MALE", "FEMALE"]),
-
     country: z.string(),
     city: z.string(),
     subcity: z.string(),

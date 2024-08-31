@@ -55,6 +55,20 @@ export default function ProductList() {
         data: templates,
         error: templateError,
     } = useGetAlltemplateQuery();
+    const {
+        isError: isproductError,
+        isLoading: isproductLoading,
+        isSuccess: isproductSuccess,
+        data: product,
+        error: productError,
+    } = useGetAllproductQuery();
+
+    // console.log(product)
+    // product.forEach((product) => {
+    //     product.productAttributes.forEach((attr) => {
+    //         console.log(`Template Attribute Name: ${attr.templateAttribute.name}, Value: ${attr.value}`);
+    //     });
+    // });
 
     const { isError, isLoading, isSuccess, error, data } = useGetAllproductQuery('product')
     console.log(data)
@@ -64,10 +78,10 @@ export default function ProductList() {
         return (
             <div className='mt-10'>
                 <Title tableName='Product' action={"Add product"} onClick={handleOpenDialog} />
-                <div className='flex flex-wrap gap-2 mt-10 mx-10 mb-5'>
+                <div className='flex flex-wrap gap-2 mt-10  mb-5'>
                     <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center '>
                         <p className='me-3 text-gray-500'>Category :</p>
-                        <select className='bg-[#F5F5F5] text-gray-700'>
+                        <select className='bg-[#faf9f9] text-gray-700'>
                             {productCategorys.map((productCategory) => (
                                 <option key={productCategory.id} value={productCategory.id}>
                                     {productCategory.name}
@@ -77,7 +91,7 @@ export default function ProductList() {
                     </div>
                     <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center '>
                         <p className='me-3 text-gray-500'>Sub Category :</p>
-                        <select className='bg-[#F5F5F5] text-gray-700'>
+                        <select className='bg-[#faf9f9] text-gray-700'>
                             {productSubCategorys.map((productSubCategory) => (
                                 <option key={productSubCategory.id} value={productSubCategory.id}>
                                     {productSubCategory.name}
@@ -87,7 +101,7 @@ export default function ProductList() {
                     </div>
                     <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center '>
                         <p className='me-3 text-gray-500'>Template :</p>
-                        <select className='bg-[#F5F5F5] text-gray-700'>
+                        <select className='bg-[#faf9f9] text-gray-700'>
                             {templates.map((template) => (
                                 <option key={template.id} value={template.id}>
                                     {template.name}
@@ -99,7 +113,7 @@ export default function ProductList() {
 
                 <hr className='w-full text-black bg-black' />
                 <div className='my-4'>
-                    <input type="text" placeholder='Search' className='w-[80%] bg-white rounded-xl py-[5px] px-3' />
+                    <input type="text" placeholder='Search' className='w-full bg-white rounded-xl py-[5px] px-3' />
                 </div>
                 <ProductTable
                     productList={data}
@@ -109,6 +123,7 @@ export default function ProductList() {
                     setSelectedProduct={setSelectedProduct}
                     setOpenDetails={setOpenDetails}
                     selectedProduct={selectedProduct}
+
                 />
                 <Dialog open={openDetails} onClose={handleCloseDetails} className=''>
                     <DialogTitle> <strong>Product Details</strong></DialogTitle>
@@ -121,7 +136,6 @@ export default function ProductList() {
                                 <p className='text-md'>Template: <span className='text-sm'>Mobile </span></p>
                                 <p className='text-md '>Attributes:
                                     <div className='grid grid-cols-2 w-full text-sm  gap-2 mt-2 '>
-                                        <p className='ms-3'>RAM  - 8GB</p>
                                         <p className='ms-3'>ROM  - 8GB</p>
                                         <p className='ms-3'>Graphics  - 8GB</p>
                                         <p className='ms-3'>Screen size  - 8GB</p>

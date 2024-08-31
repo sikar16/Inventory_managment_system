@@ -80,8 +80,8 @@ const UsersTable: React.FC<UsersTableProps> = ({
 
   // console.log(rows);
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
+    <Paper sx={{ width: "100%", overflow: "hidden", padding: "30px" }} >
+      <TableContainer sx={{ maxHeight: 440 }} >
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>

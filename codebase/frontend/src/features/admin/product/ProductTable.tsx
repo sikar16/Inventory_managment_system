@@ -101,6 +101,8 @@ const ProductTable: React.FC<Productprops> = ({
   //   }
   // };
 
+
+
   async function handleDelete(id) {
     try {
       // await fetch(`https://inventory.huludelala.com/api/product/${id}`, {

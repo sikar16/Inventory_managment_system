@@ -57,7 +57,7 @@ export const AdminLayout = () => {
                     <Bottem />
                 </Drawer>
 
-                <div className={`mt-24 h-screen ${open ? 'ms-0' : 'ms-10'}`}>
+                <div className={`mt-24 h-screen px-10`}>
                     <Outlet />
                 </div>
             </Box >
