@@ -1,18 +1,29 @@
-import IconButton from '@mui/material/IconButton';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
 import { useState } from 'react';
 import { useAddNewuserMutation } from '../../../services/user_service';
 import { Link } from 'react-router-dom';
 import { useGetAlldepartmentQuery } from '../../../services/department_service';
-import bcrypt from 'bcryptjs';
-function AddUser({ open, onClose }) {
+
+interface FormDataType {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  gender: string;
+  country: string;
+  city: string;
+  subCity: string;
+  departmentId: number;
+  password: string;
+}
+
+
+function AddUser() {
   const {
     data: departments,
-  } = useGetAlldepartmentQuery();
+  } = useGetAlldepartmentQuery("");
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataType>({
     firstName: '',
     middleName: '',
     lastName: '',
@@ -21,12 +32,12 @@ function AddUser({ open, onClose }) {
     gender: '',
     country: '',
     city: '',
-    subcity: '',
-    departmentId: '',
+    subCity: '',
+    departmentId: 0,
     password: '',
   });
 
-  const [adduser, { isError, isSuccess, isLoading, error }] = useAddNewuserMutation();
+  const [adduser] = useAddNewuserMutation();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = event.target;
@@ -41,38 +52,21 @@ function AddUser({ open, onClose }) {
     // console.log(formData);
   };
   const handleAdduser = async () => {
-    const formdata = {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      middleName: formData.middleName,
-      phone: formData.phone,
-      email: formData.email,
-      gender: formData.gender,
-      country: formData.country,
-      city: formData.city,
-      subCity: formData.subcity,
-      departmentId: Number(formData.departmentId),
-      password: formData.password,
-    };
 
-    if (formData.password) {
-      try {
-        const saltRounds = 10;
-        formData.password = await bcrypt.hash(formData.password, saltRounds);
-      } catch (error) {
-        console.error('Error hashing password:', error);
-        return;
-      }
-    }
 
     try {
-      await addUser(formData);
+      // console.log(formData);
+      const data: FormDataType = {
+        ...formData,
+        departmentId: Number(formData.departmentId)
+      };
+      console.log(data);
+      await adduser(data);
     } catch (error) {
       console.error('Error adding user:', error);
     }
 
-    console.log(formdata);
-    await adduser(formdata)
+
   };
 
   return (
@@ -182,8 +176,8 @@ function AddUser({ open, onClose }) {
                     <input
                       placeholder='Sub-city'
                       type="text"
-                      id="subcity"
-                      value={formData.subcity}
+                      id="subCity"
+                      value={formData.subCity}
                       onChange={handleInputChange}
                       className="focus:outline-none mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
                     />
@@ -193,7 +187,7 @@ function AddUser({ open, onClose }) {
                   <label htmlFor="departmentId" className="block text-sm font-medium text-gray-700">Department</label>
                   <select
                     id="departmentId"
-                    value={formData.departmentId}
+                    value={Number(formData.departmentId)}
                     onChange={handleInputChange}
                     className='focus:outline-none bg-slate-100 w-full py-2 rounded-md'
                   >

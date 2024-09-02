@@ -2,101 +2,123 @@ import storeSchem from "./storeScheme.js";
 import prisma from "../../config/prisma.js";
 
 const storeController = {
-  getSingleStore: async (req, res, next) => {
+  getSingleStore: async (req, res) => {
     try {
       const storeId = parseInt(req.params.id, 10);
       if (isNaN(storeId)) {
-        return res.status(403).json({
+        return res.status(400).json({
           success: false,
-          message: "invalid store id",
+          message: "Invalid store ID",
         });
       }
+
       const store = await prisma.store.findUnique({
-        where: {
-          id: storeId,
+        where: { id: storeId },
+        include: {
+          address: {
+            include: {
+              country: true,
+              city: true,
+              subCity: true,
+              wereda: true,
+            },
+          },
         },
       });
 
       if (!store) {
         return res.status(404).json({
           success: false,
-          message: "store not found",
+          message: "Store not found",
         });
       }
 
       return res.status(200).json({
         success: true,
+        message: "Store fetched successfully",
         data: store,
       });
     } catch (error) {
       console.error(error);
       return res.status(500).json({
         success: false,
-        message: "error while fetching single store",
+        message: `Server error: ${error.message}`,
       });
     }
   },
-  getAllStore: async (req, res, next) => {
+
+  getAllStores: async (req, res) => {
     try {
-      const stores = await prisma.store.findMany({});
+      const stores = await prisma.store.findMany({
+        include: {
+          address: {
+            include: {
+              profile: true,
+              suppliers: true,
+              store: true,
+            },
+          },
+        },
+      });
+
       return res.status(200).json({
         success: true,
-        message: "fetching all store",
+        message: "All stores fetched successfully",
         data: stores,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({
         success: false,
-        message: "error while fetching stores",
+        message: `Server error: ${error.message}`,
       });
     }
   },
-  createStore: async (req, res, next) => {
+
+  createStore: async (req, res) => {
     try {
-      const requiredFields = ["name", "country", "city", "subCity"];
+      const requiredFields = ["name", "country", "city", "subCity", "wereda"];
       for (const field of requiredFields) {
         if (!req.body[field]) {
-          return res.status(403).json({
+          return res.status(400).json({
             success: false,
             message: `${field} is required`,
           });
         }
       }
-      const data = storeSchem.registor.parse(req.body);
-      const isstoreExist = await prisma.store.findFirst({
-        where: {
-          name: data.name,
-        },
+
+      const data = storeSchem.register.parse(req.body);
+
+      const existingStore = await prisma.store.findFirst({
+        where: { name: data.name },
       });
 
-      if (isstoreExist) {
-        return res.status(403).json({
+      if (existingStore) {
+        return res.status(400).json({
           success: false,
-          message: "this store is already registered",
+          message: "This store is already registered",
         });
       }
-      // check id the address exist
-      let addressId;
-      const isAdressExist = await prisma.address.findFirst({
+
+      const existingAddress = await prisma.address.findFirst({
         where: {
           country: data.country,
           city: data.city,
           subCity: data.subCity,
+          wereda: data.wereda,
         },
       });
-      if (isAdressExist) {
-        addressId = isAdressExist.id;
-      } else {
-        const newAddress = await prisma.address.create({
-          data: {
-            country: data.country,
-            city: data.city,
-            subCity: data.subCity,
-          },
-        });
-        addressId = newAddress.id;
-      }
+
+      const addressId = existingAddress
+        ? existingAddress.id
+        : (await prisma.address.create({
+            data: {
+              country: data.country,
+              city: data.city,
+              subCity: data.subCity,
+              wereda: data.wereda,
+            },
+          })).id;
 
       const newStore = await prisma.store.create({
         data: {
@@ -104,153 +126,144 @@ const storeController = {
           addressId: +addressId,
         },
       });
-      return res.status(200).json({
+
+      return res.status(201).json({
         success: true,
-        message: "store created successfully",
+        message: "Store created successfully",
         data: newStore,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({
         success: false,
-        message: `error : ${error}`,
+        message: `Server error: ${error.message}`,
       });
     }
   },
-  updateStore: async (req, res, next) => {
+
+  updateStore: async (req, res) => {
     try {
       const storeId = parseInt(req.params.id, 10);
       if (isNaN(storeId)) {
-        return res.status(403).json({
+        return res.status(400).json({
           success: false,
-          message: "invalid store id",
+          message: "Invalid store ID",
         });
       }
+
       const data = storeSchem.update.parse(req.body);
 
-      const isstoreExist = await prisma.store.findFirst({
-        where: {
-          id: +storeId,
-        },
+      const existingStore = await prisma.store.findFirst({
+        where: { id: storeId },
       });
 
-      if (!isstoreExist) {
-        return res.status(403).json({
+      if (!existingStore) {
+        return res.status(404).json({
           success: false,
-          message: "this store is not exist",
+          message: "Store not found",
         });
       }
 
-      // is there name allready taken
-      if (data.name != null) {
-        const isstoreExist2 = await prisma.store.findFirst({
-          where: {
-            name: data.name,
-          },
+      if (data.name) {
+        const storeWithSameName = await prisma.store.findFirst({
+          where: { name: data.name },
         });
 
-        if (isstoreExist2) {
-          return res.status(403).json({
+        if (storeWithSameName && storeWithSameName.id !== storeId) {
+          return res.status(400).json({
             success: false,
-            message: "this store name already registered",
+            message: "This store name is already registered",
           });
         }
       }
 
-      // check id the address exist
-      let addressId;
-      const isAdressExist = await prisma.address.findFirst({
+      const addressId = await prisma.address.findFirst({
         where: {
           country: data.country,
           city: data.city,
           subCity: data.subCity,
+          wereda: data.wereda,
         },
-      });
-      if (isAdressExist) {
-        addressId = isAdressExist.id;
-      } else {
-        const newAddress = await prisma.address.create({
-          data: {
-            country: data.country,
-            city: data.city,
-            subCity: data.subCity,
-          },
-        });
-        addressId = newAddress.id;
-      }
-
-      const updatedstore = await prisma.store.update({
-        where: {
-          id: +storeId,
-        },
+      })?.id || (await prisma.address.create({
         data: {
-          addressId: +addressId,
-          name: data.name != null ? data.name : isstoreExist.name,
+          country: data.country,
+          city: data.city,
+          subCity: data.subCity,
+          wereda: data.wereda,
+        },
+      })).id;
+
+      const updatedStore = await prisma.store.update({
+        where: { id: storeId },
+        data: {
+          name: data.name || existingStore.name,
+          addressId,
         },
       });
+
       return res.status(200).json({
         success: true,
-        message: "store updated successfully",
-        data: updatedstore,
+        message: "Store updated successfully",
+        data: updatedStore,
       });
     } catch (error) {
       if (error.code === "P2025") {
         return res.status(404).json({
           success: false,
-          message: "store not found",
+          message: "Store not found",
         });
       }
 
       console.error(error);
       return res.status(500).json({
         success: false,
-        message: "error while updating store",
+        message: `Server error: ${error.message}`,
       });
     }
   },
-  deleteStore: async (req, res, next) => {
+
+  deleteStore: async (req, res) => {
     try {
       const storeId = parseInt(req.params.id, 10);
       if (isNaN(storeId)) {
-        return res.status(403).json({
+        return res.status(400).json({
           success: false,
-          message: "invalid store id",
+          message: "Invalid store ID",
         });
       }
-      const isstoreExist = await prisma.store.findFirst({
-        where: {
-          id: +storeId,
-        },
+
+      const store = await prisma.store.findFirst({
+        where: { id: storeId },
       });
 
-      if (!isstoreExist) {
-        return res.status(403).json({
+      if (!store) {
+        return res.status(404).json({
           success: false,
-          message: "this store is not exist",
+          message: "Store not found",
         });
       }
-      const deletestore = await prisma.store.delete({
-        where: {
-          id: +storeId,
-        },
+
+      const deletedStore = await prisma.store.delete({
+        where: { id: storeId },
       });
+
       return res.status(200).json({
         success: true,
-        message: "store deleted successfully",
-        data: deletestore,
+        message: "Store deleted successfully",
+        data: deletedStore,
       });
     } catch (error) {
       if (error.code === "P2025") {
         return res.status(404).json({
           success: false,
-          message: "store not found",
+          message: "Store not found",
         });
       }
 
       console.error(error);
       return res.status(500).json({
         success: false,
-        message: "error while deleting store",
+        message: `Server error: ${error.message}`,
       });
     }
   },

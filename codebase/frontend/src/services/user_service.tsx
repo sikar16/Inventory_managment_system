@@ -3,7 +3,19 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { UserType } from "../_types/user_type";
 import extractErrorMessage from "../util/extractErrorMessage";
 const baseUrl = import.meta.env.VITE_API_URL;
-
+interface FormDataType {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  gender: string;
+  country: string;
+  city: string;
+  subCity: string;
+  departmentId: number;
+  password: string;
+}
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}user` }),
@@ -34,17 +46,20 @@ export const userApi = createApi({
       }),
     }),
 
-    addNewuser: builder.mutation<UserType, Partial<UserType>>({
-      query: (body) => ({
-        url: `http://localhost:8888/api/user/register`,
+    addNewuser: builder.mutation({
+      query: (body: FormDataType) => ({
+        url: `http://localhost:8888/api/user/register/`,
         method: 'POST',
         body,
       }),
       invalidatesTags: ['user'], // Invalidate 'userType' tag
-
-      transformErrorResponse: (response: any) => {
+      transformResponse: (response: Response) => {
         console.log(response);
-        const message = response?.data?.message || 'Unknown error';
+        return response.success ? response.message : "something happend";
+      },
+
+      transformErrorResponse: (response: Response) => {
+        const message = response?.data?.message;
         return extractErrorMessage(message);
       },
     }),

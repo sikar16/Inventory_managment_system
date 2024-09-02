@@ -11,6 +11,7 @@ import Loading from '../../../component/Loading';
 
 export default function CategoryList() {
     const [openDialog, setOpenDialog] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const handleOpenDialog = () => setOpenDialog(true);
     const handleCloseDialog = () => setOpenDialog(false);
@@ -20,10 +21,10 @@ export default function CategoryList() {
         isError: isCategoryError,
         isLoading: isCategoryLoading,
         isSuccess: isCategorySuccess,
-        data: categories,
+        data: categories = [], // Default to an empty array
         error: categoryError,
     } = useGetAllproductCategoryQuery();
-    // console.log(data)
+
     if (isError) {
         return (
             <div>
@@ -35,7 +36,12 @@ export default function CategoryList() {
     if (isLoading) {
         return <Loading />;
     }
+
     if (isSuccess) {
+        const filteredCategories = categories?.filter(category =>
+            category.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
         return (
             <div className='mt-10'>
                 <Title tableName="Category" action="Add Category" onClick={handleOpenDialog} />
@@ -44,7 +50,7 @@ export default function CategoryList() {
                     <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
                         <p className='me-3 text-gray-500'>Category :</p>
                         <select className='bg-[#F5F5F5] text-gray-700'>
-                            {categories.map((category) => (
+                            {filteredCategories?.map((category) => (
                                 <option key={category.id} value={category.id}>
                                     {category.name}
                                 </option>
@@ -55,11 +61,17 @@ export default function CategoryList() {
 
                 <hr className='w-full text-black bg-black' />
 
-                <div className='my-4'>
-                    <input type="text" placeholder='Search' className='w-[50%] bg-white rounded-2xl py-[5px] px-3' />
+                <div className='my-4 justify-center flex'>
+                    <input
+                        type="text"
+                        placeholder="Search"
+                        className=" w-[90%] bg-white dark:bg-[#313131] rounded-md py-[5px] px-3 focus:outline-none"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
 
-                <CategoryTable productCategorylist={data} />
+                <CategoryTable productCategorylist={filteredCategories} />
 
                 <Dialog open={openDialog} onClose={handleCloseDialog}>
                     <DialogTitle>

@@ -1,7 +1,12 @@
+import { UserType } from "./user_type";
+
 export interface DepartmentType {
   id: number;
   name: string;
   createdAt: string;
+  _count: {
+    users: UserType;
+  }
 }
 
 

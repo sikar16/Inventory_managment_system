@@ -14,7 +14,7 @@ import LogoContainer from "../component/LogoContainer";
 import AdminSidebar from "./AdminSidebar";
 import Bottem from "./Bottem";
 export const AdminLayout = () => {
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(false);
     const handleDrawerClose = () => {
         setOpen(false);
     };

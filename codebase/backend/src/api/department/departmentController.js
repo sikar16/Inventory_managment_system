@@ -16,6 +16,11 @@ const departmentController = {
         where: {
           id: departmentId,
         },
+        include: {
+          _count: {
+            select: { users: true } 
+          }
+        }
       });
 
       if (!department) {

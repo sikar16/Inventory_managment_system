@@ -4,7 +4,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
 import { useAddNewProductCategoryMutation } from '../../../services/productCategorySerivce';
 interface AddCategoryProps {
-    handleCloseDialog: any
+    handleCloseDialog: boolean
 }
 
 const AddCategory: React.FC<AddCategoryProps> = ({ handleCloseDialog }) => {
@@ -14,7 +14,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ handleCloseDialog }) => {
     const handleCustomCategoryChange = (
         event: React.MouseEvent<HTMLButtonElement>,
     ) => {
-        setCustomCategory(event.target.value);
+        setCustomCategory((event.target as HTMLInputElement).value);
     };
 
 

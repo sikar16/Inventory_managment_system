@@ -80,8 +80,9 @@ const userController = {
 
   createUser: async (req, res, next) => {
     try {
+      console.log(req.body);
       const data = userSchema.register.parse(req.body);
-  
+      
       // Ensure departmentName is present
       // if (!data.departmentName) {
       //   return res.status(400).json({

@@ -3,5 +3,6 @@ export interface AddressType {
   country: string;
   city: string;
   subCity: string;
+  wereda: string;
   createdAt: string;
 }

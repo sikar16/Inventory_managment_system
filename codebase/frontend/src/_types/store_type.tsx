@@ -31,3 +31,9 @@ export interface StoreInventoryRecordType {
     user: UserType;
     store: StoreType;
 }
+
+export interface StoreType {
+    id: number;
+    name: string;
+    addressId: number;
+}

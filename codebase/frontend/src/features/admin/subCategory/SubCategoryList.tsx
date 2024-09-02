@@ -12,8 +12,11 @@ import { useGetAllproductSubCategoryQuery } from '../../../services/productSubca
 
 export default function SubCategoryList() {
     const [openDialog, setOpenDialog] = React.useState(false);
+    const [searchTerm, setSearchTerm] = React.useState('');
+
     const handleOpenDialog = () => setOpenDialog(true);
     const handleCloseDialog = () => setOpenDialog(false);
+
     // Fetch categories and subcategories data
     const {
         isError: isCategoryError,
@@ -39,6 +42,11 @@ export default function SubCategoryList() {
         return <Loader />;
     }
 
+    // Filter subCategories based on searchTerm
+    const filteredSubCategories = subCategories?.filter(subCategory =>
+        subCategory.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     if (isCategorySuccess && isSubCategorySuccess) {
         return (
             <div className='mt-10'>
@@ -48,7 +56,7 @@ export default function SubCategoryList() {
                     <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
                         <p className='me-3 text-gray-500'>Category:</p>
                         <select className='bg-[#F5F5F5] text-gray-700'>
-                            {categories.map((category) => (
+                            {categories?.map((category) => (
                                 <option key={category.id} value={category.id}>
                                     {category.name}
                                 </option>
@@ -58,7 +66,7 @@ export default function SubCategoryList() {
                     <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
                         <p className='me-3 text-gray-500'>Sub Category:</p>
                         <select className='bg-[#F5F5F5] text-gray-700'>
-                            {subCategories.map((subCategory) => (
+                            {filteredSubCategories?.map((subCategory) => (
                                 <option key={subCategory.id} value={subCategory.id}>
                                     {subCategory.name}
                                 </option>
@@ -68,14 +76,16 @@ export default function SubCategoryList() {
                 </div>
 
                 <hr className='w-full text-black bg-black' />
-                <div className='my-4 w-full mx-[5%] md:w-1/2 md:mx-[10%]'>
+                <div className='my-4 justify-center flex'>
                     <input
                         type="text"
-                        placeholder='Search'
-                        className='w-full bg-[#f5f5f5] rounded-2xl py-[5px] px-3'
+                        placeholder="Search"
+                        className=" w-[90%] bg-white dark:bg-[#313131] rounded-md py-[5px] px-3 focus:outline-none"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <SubCategoryTable subcategoryList={subCategories} />
+                <SubCategoryTable subcategoryList={filteredSubCategories} />
                 <Dialog open={openDialog} onClose={handleCloseDialog}>
                     <div className='flex justify-between me-5'>
                         <DialogTitle>Add new sub category</DialogTitle>

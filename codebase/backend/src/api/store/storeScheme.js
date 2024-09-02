@@ -1,17 +1,19 @@
-import z from "zod"
-const storeSchem={
-registor:z.object({
-    name:z.string().min(3),
-    country:z.string().min(5),
-    city:z.string().min(5),
-    subCity:z.string().min(3),
-}),
-update:z.object({
-    name:z.string().min(3),
-    country:z.string().min(5),
-    city:z.string().min(5),
-    subCity:z.string().min(5),
-})
-}
+import { z } from 'zod';
 
-export default storeSchem;
+const registor = z.object({
+  name: z.string().nonempty(),
+  country: z.string().nonempty(),
+  city: z.string().nonempty(),
+  subCity: z.string().nonempty(),
+  wereda: z.string().nonempty(),
+});
+
+const update = z.object({
+  name: z.string().optional(),
+  country: z.string().optional(),
+  city: z.string().optional(),
+  subCity: z.string().optional(),
+  wereda: z.string().optional(),
+});
+
+export default { registor, update };

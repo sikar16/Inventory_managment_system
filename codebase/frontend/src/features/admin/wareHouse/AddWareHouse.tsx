@@ -3,11 +3,11 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useAddNewstoreMutation } from '../../../services/store_service';
 
-interface AddSubcategoryProps {
+interface AddWareHouseProps {
     handleCloseDialog: () => void;
 }
 
-const AddWareHouse: React.FC<AddSubcategoryProps> = ({ handleCloseDialog }) => {
+const AddWareHouse: React.FC<AddWareHouseProps> = ({ handleCloseDialog }) => {
     const [warehouseData, setWarehouseData] = useState({
         name: '',
         country: '',
@@ -15,7 +15,8 @@ const AddWareHouse: React.FC<AddSubcategoryProps> = ({ handleCloseDialog }) => {
         subCity: '',
         wereda: ''
     });
-    const [addWareHouse, { isSuccess: isAddSuccess }] = useAddNewstoreMutation();
+
+    const [addWareHouse, { isSuccess: isAddSuccess, isLoading, error }] = useAddNewstoreMutation();
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -25,10 +26,16 @@ const AddWareHouse: React.FC<AddSubcategoryProps> = ({ handleCloseDialog }) => {
         }));
     };
 
-    const handleAddSubCategory = async () => {
-        console.log(warehouseData);
-        await addWareHouse(warehouseData);
-        handleCloseDialog();
+    const handleAddWareHouse = async (event: React.FormEvent) => {
+        event.preventDefault(); // Prevent default form submission
+        try {
+            await addWareHouse(warehouseData).unwrap(); // Await the result and unwrap any errors
+            if (isAddSuccess) {
+                handleCloseDialog(); // Close the dialog on success
+            }
+        } catch (err) {
+            console.error('Failed to add warehouse:', err);
+        }
     };
 
     const handleDiscard = () => {
@@ -37,7 +44,7 @@ const AddWareHouse: React.FC<AddSubcategoryProps> = ({ handleCloseDialog }) => {
 
     return (
         <div className='mx-10 mb-10 w-[350px]'>
-            <form className='space-y-2' onSubmit={(e) => e.preventDefault()}>
+            <form className='space-y-2' onSubmit={handleAddWareHouse}>
                 <TextField
                     label="Name"
                     name="name"
@@ -89,12 +96,14 @@ const AddWareHouse: React.FC<AddSubcategoryProps> = ({ handleCloseDialog }) => {
                         <Button variant="outlined" color="error" onClick={handleDiscard}>
                             Discard
                         </Button>
-                        <button
-                            className='bg-[#002a47] text-white px-4 py-2 rounded-md'
-                            onClick={handleAddSubCategory}
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            disabled={isLoading}
                         >
-                            Add Warehouse
-                        </button>
+                            {isLoading ? 'Adding...' : 'Add Warehouse'}
+                        </Button>
                     </div>
                 </div>
             </form>

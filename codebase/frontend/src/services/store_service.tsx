@@ -8,39 +8,37 @@ export const storeApi = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}store` }),
     tagTypes: ['store'],
     endpoints: (builder) => ({
-        getAllstore: builder.query({
+        getAllstore: builder.query<StoreType[], void>({
             query: () => ({
                 url: `/`,
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    // Authorization: "token",
                 },
             }),
             transformResponse: (response: any) =>
                 response.success ? (response.data as StoreType[]) : ([] as StoreType[]),
             providesTags: ['store'],
-
         }),
-        addNewstore: builder.mutation({
+        addNewstore: builder.mutation<void, Partial<StoreType>>({
             query: (data) => ({
                 url: `/`,
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
-                    // Authorization: "token",
                 },
                 body: data,
             }),
-            invalidatesTags: ['store'], // Invalidate cache after mutation
+            invalidatesTags: ['store'],
             transformErrorResponse: (response: any) => {
-                console.log(response);
-                return extractErrorMessage(response.data.message as string);
+                console.error(response);
+                return {
+                    message: response.data.message || 'An error occurred',
+                    status: response.status
+                };
             },
         }),
-
     })
 })
 
-
-export const { useGetAllstoreQuery, useAddNewstoreMutation } = storeApi
+export const { useGetAllstoreQuery, useAddNewstoreMutation } = storeApi;
