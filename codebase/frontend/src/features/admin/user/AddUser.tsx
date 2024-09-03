@@ -52,20 +52,12 @@ function AddUser() {
     // console.log(formData);
   };
   const handleAdduser = async () => {
-
-
-    try {
-      // console.log(formData);
-      const data: FormDataType = {
-        ...formData,
-        departmentId: Number(formData.departmentId)
-      };
-      console.log(data);
-      await adduser(data);
-    } catch (error) {
-      console.error('Error adding user:', error);
-    }
-
+    const data: FormDataType = {
+      ...formData,
+      departmentId: Number(formData.departmentId)
+    };
+    console.log(data);
+    await adduser(data);
 
   };
 

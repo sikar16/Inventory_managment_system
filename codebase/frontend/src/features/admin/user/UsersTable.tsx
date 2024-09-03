@@ -18,7 +18,7 @@ const columns = [
   { id: "email", label: "Email", minWidth: 80, align: "left" },
   { id: "phone", label: "Phone", minWidth: 80, align: "left" },
   { id: "gender", label: "Gender", minWidth: 50, align: "left" },
-  { id: "address", label: "Address", minWidth: 120, align: "left" },
+  { id: "address", label: "Address", minWidth: 250, align: "left" },
   { id: "actions", label: "Actions", minWidth: 30, align: "center" },
 ];
 
@@ -80,9 +80,9 @@ const UsersTable: React.FC<UsersTableProps> = ({
 
   // console.log(rows);
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden", padding: "30px" }} >
+    <Paper sx={{ width: "100%", overflow: "hidden", padding: "30px", }} className="bg-green-900">
       <TableContainer sx={{ maxHeight: 440 }} >
-        <Table stickyHeader aria-label="sticky table">
+        <Table >
           <TableHead>
             <TableRow>
               {columns.map((column) => (
@@ -112,9 +112,9 @@ const UsersTable: React.FC<UsersTableProps> = ({
                         key={column.id}
                         align={column.align}
                       // sx={{
-                      //     backgroundColor: '#313131', // Dark background color
-                      //     color: 'white',
-                      //     fontWeight: 'bold',
+                      //   backgroundColor: '#313131', // Dark background color
+                      //   color: 'white',
+                      //   fontWeight: 'bold',
                       // }}
                       >
                         {column.id === "actions" ? (

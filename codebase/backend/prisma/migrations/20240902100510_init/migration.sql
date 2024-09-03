@@ -81,6 +81,7 @@ CREATE TABLE `Address` (
     `country` VARCHAR(191) NOT NULL DEFAULT 'Ethiopia',
     `city` VARCHAR(191) NOT NULL,
     `subCity` VARCHAR(191) NOT NULL,
+    `wereda` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
@@ -93,7 +94,7 @@ CREATE TABLE `Users` (
     `activeStatus` ENUM('ACTIVE', 'INACTIVE', 'BLOCKED') NOT NULL,
     `role` ENUM('ADMIN', 'EMPLOYEE', 'DEPARTMENT_HEAD', 'LOGESTIC_SUPERVISER', 'FINANCE', 'GENERAL_MANAGER', 'STORE_KEEPER') NOT NULL DEFAULT 'EMPLOYEE',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `departmentId` INTEGER NOT NULL,
+    `departmentName` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `Users_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -198,6 +199,7 @@ CREATE TABLE `PurchasedRequest` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `isApproviedByGM` BOOLEAN NOT NULL DEFAULT false,
     `isApproviedByFinance` BOOLEAN NOT NULL DEFAULT false,
+    `totalPrice` DECIMAL(65, 30) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -209,6 +211,7 @@ CREATE TABLE `PurceasedRequestedItem` (
     `purchasedRequestId` INTEGER NOT NULL,
     `quantityToBePurchased` DECIMAL(65, 30) NOT NULL,
     `remark` VARCHAR(191) NOT NULL,
+    `unitPrice` DECIMAL(65, 30) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -352,13 +355,13 @@ ALTER TABLE `TemplateAttribute` ADD CONSTRAINT `TemplateAttribute_templateId_fke
 ALTER TABLE `Product` ADD CONSTRAINT `Product_subcategoryId_fkey` FOREIGN KEY (`subcategoryId`) REFERENCES `ProductSubCategory`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ProductAttribute` ADD CONSTRAINT `ProductAttribute_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ProductAttribute` ADD CONSTRAINT `ProductAttribute_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `ProductAttribute` ADD CONSTRAINT `ProductAttribute_templateAttributeId_fkey` FOREIGN KEY (`templateAttributeId`) REFERENCES `TemplateAttribute`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Users` ADD CONSTRAINT `Users_departmentId_fkey` FOREIGN KEY (`departmentId`) REFERENCES `Department`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Users` ADD CONSTRAINT `Users_departmentName_fkey` FOREIGN KEY (`departmentName`) REFERENCES `Department`(`name`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Password` ADD CONSTRAINT `Password_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

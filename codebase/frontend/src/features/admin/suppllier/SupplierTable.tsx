@@ -35,10 +35,16 @@ interface SuppliersTableProps {
 const SupplierTable: React.FC<SuppliersTableProps> = ({ supplierslist }) => {
     const rows = supplierslist.map((i) =>
         createData(
-            i.id, `${i.id}`, `${i.fullName}`, `${i.category.name}`, ` ${i.address} `
+            i.id,
+            `${i.id}`,
+            `${i.fullName}`,
+            `${i.category?.name}`,
+            // `${i.profile.address.city} ${i.profile.address.subCity}`
+            `${i.address?.country}, ${i.address?.city}, ${i.address?.subCity}, ${i.address?.wereda}`.trim().replace(/, +$/, '') // Combine and clean up address
         )
     );
 
+    console.log(rows)
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [anchorEl, setAnchorEl] = useState(null);

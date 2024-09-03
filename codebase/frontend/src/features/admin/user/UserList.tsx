@@ -35,18 +35,22 @@ export default function UserList() {
   if (isLoading) return <Loading />;
 
   const filteredUsers = data?.filter((user) => {
+    if (!user || !user.profile || !user.department) {
+      return false; // Skip if user or its nested properties are undefined or null
+    }
+
     const lowercasedSearchTerm = searchTerm.toLowerCase();
     const matchesSearch =
-      user.profile.firstName.toLowerCase().includes(lowercasedSearchTerm) ||
-      user.profile.lastName.toLowerCase().includes(lowercasedSearchTerm) ||
-      user.profile.middleName?.toLowerCase().includes(lowercasedSearchTerm) ||
-      user.email.toLowerCase().includes(lowercasedSearchTerm) ||
-      user.profile.phone.toLowerCase().includes(lowercasedSearchTerm) ||
-      user.department.name.toLowerCase().includes(lowercasedSearchTerm);
+      (user.profile.firstName && user.profile.firstName.toLowerCase().includes(lowercasedSearchTerm)) ||
+      (user.profile.lastName && user.profile.lastName.toLowerCase().includes(lowercasedSearchTerm)) ||
+      (user.profile.middleName && user.profile.middleName.toLowerCase().includes(lowercasedSearchTerm)) ||
+      (user.email && user.email.toLowerCase().includes(lowercasedSearchTerm)) ||
+      (user.profile.phone && user.profile.phone.toLowerCase().includes(lowercasedSearchTerm)) ||
+      (user.department.name && user.department.name.toLowerCase().includes(lowercasedSearchTerm));
 
     const matchesDepartment =
       !selectedDepartment ||
-      user.department.id === selectedDepartment;
+      (user.department.id && user.department.id === selectedDepartment);
 
     return matchesSearch && matchesDepartment;
   });
@@ -102,7 +106,7 @@ export default function UserList() {
           <UsersTable userList={filteredUsers} />
         </>
       ) : (
-        <AddUser open={true} handleCloseDialog={handleCloseDialog} departments={departments} />
+        <AddUser departments={departments} />
       )}
     </div>
   );

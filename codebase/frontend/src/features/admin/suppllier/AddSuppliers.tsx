@@ -21,6 +21,7 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
         country: '',
         city: '',
         subCity: '',
+        wereda: '',
     });
 
     const { isError, isLoading, isSuccess, data, error } = useGetAllsupplierCategoryQuery();
@@ -45,6 +46,7 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
 
     const handleAddSupplier = async () => {
         try {
+            console.log(formData)
             await addSupplier(formData);
             handleCloseDialog();
         } catch (error) {
@@ -148,6 +150,17 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
                         size="small"
                         className="w-full mt-2"
                         value={formData.subCity}
+                        onChange={handleInputChange}
+                    />
+                </div>
+                <div>
+                    <TextField
+                        label="Wereda"
+                        name="wereda"
+                        variant="outlined"
+                        size="small"
+                        className="w-full mt-2"
+                        value={formData.wereda}
                         onChange={handleInputChange}
                     />
                 </div>

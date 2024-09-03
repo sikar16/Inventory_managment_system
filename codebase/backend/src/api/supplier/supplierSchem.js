@@ -8,6 +8,7 @@ const supplierSchem={
         country:z.string().min(5),
         city:z.string().min(5),
         subCity:z.string().min(3),
+        wereda:z.string().min(3),
         categoryId:z.number()
     }),
     updateSupplier:z.object({
@@ -16,6 +17,7 @@ const supplierSchem={
         country:z.string().min(5),
         city:z.string().min(5),
         subCity:z.string().min(3),
+        wereda:z.string().min(3),
         categoryId:z.number()
     })
 }

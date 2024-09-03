@@ -6,7 +6,7 @@ const productCategoryController = {
     try {
       const productCategoryId = parseInt(req.params.id, 10);
       if (isNaN(productCategoryId)) {
-        return res.status(400).json({
+         return res.status(400).json({
           success: false,
           message: "invalid product category id",
         });

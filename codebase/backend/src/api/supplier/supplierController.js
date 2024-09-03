@@ -8,6 +8,14 @@ const supplierController = {
       const suppliers = await prisma.suppliers.findMany({
         include: {
           category: true,
+          // address:{
+          //   include:{
+          //     country:true,
+          //     city:true,
+          //     subCity:true,
+          //     wereda:true
+          //   }
+          // }
         },
       });
       res.status(200).json({
@@ -69,6 +77,7 @@ const supplierController = {
         "phone",
         "subCity",
         "categoryId",
+        "wereda",
       ];
       for (const field of requiredField) {
         if (!req.body[field]) {
@@ -102,7 +111,7 @@ const supplierController = {
         return res.status(400).json({
           success: false,
           message: "this supplier category is not exist",
-        });
+        });z
       }
       // check if the phone number exist befor
       const isPhoneExist = await prisma.suppliers.findFirst({
@@ -123,6 +132,7 @@ const supplierController = {
           country: data.country,
           city: data.city,
           subCity: data.subCity,
+          wereda: data.wereda,
         },
       });
       if (isAdressExist) {
@@ -133,6 +143,7 @@ const supplierController = {
             country: data.country,
             city: data.city,
             subCity: data.subCity,
+            wereda: data.wereda,
           },
         });
         addressId = newAddress.id;
@@ -217,6 +228,7 @@ const supplierController = {
           country: data.country,
           city: data.city,
           subCity: data.subCity,
+          wereda: data.wereda,
         },
       });
       if (isAdressExist) {
@@ -227,6 +239,7 @@ const supplierController = {
             country: data.country,
             city: data.city,
             subCity: data.subCity,
+            wereda: data.wereda,
           },
         });
         addressId = newAddress.id;

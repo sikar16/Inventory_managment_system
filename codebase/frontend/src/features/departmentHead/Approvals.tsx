@@ -17,7 +17,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import MaterialRequistForm from '../MaterialRequistForm';
+// import MaterialRequistForm from '../MaterialRequistForm';
 
 const columns = [
     { id: 'no', label: 'No', minWidth: 50 },
@@ -76,10 +76,10 @@ export default function Approvals() {
     };
 
     return (
-        <div className='mt-10 mx-7'>
+        <div className='pt-10 mx-7'>
             <div className='flex justify-between mb-3 mx-2'>
-                <p className='text-[#002a47] text-4xl font-medium'>Incoming request</p>
-                <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Add Product</button>
+                <p className='text-[#002a47] text-4xl font-medium'>Approval request</p>
+                {/* <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Add Product</button> */}
             </div>
             <hr className='w-full text-black bg-black' />
             <div className='my-4'>
@@ -160,18 +160,9 @@ export default function Approvals() {
                 className="relative mx-auto"
             >
                 <div className='flex justify-between me-5'>
-                    <DialogTitle>
-                        <p className='bg-[#002a47] text-white rounded-e-full pe-20 ps-2 py-[5px] '>
-                            Material Request Form
-                        </p>
-                    </DialogTitle>
-                    <DialogActions>
-                        <svg onClick={handleCloseDialog} xmlns="http://www.w3.org/2000/svg" width={30} height={30} viewBox="0 0 24 24" ><path fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"></path></svg>
-                    </DialogActions>
+
                 </div>
-                <DialogContent>
-                    <MaterialRequistForm />
-                </DialogContent>
+
             </Dialog>
         </div>
     );

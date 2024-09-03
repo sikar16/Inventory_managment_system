@@ -48,8 +48,9 @@ const templateController = {
         take,
         skip,
         include: {
-          attributes: true,
-          _count: true,
+          // attributes: true,
+          // _count: true,
+          
         },
       });
       return res.status(200).json({

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
 import { useAddNewstoreMutation } from '../../../services/store_service';
 
@@ -15,8 +16,7 @@ const AddWareHouse: React.FC<AddWareHouseProps> = ({ handleCloseDialog }) => {
         subCity: '',
         wereda: ''
     });
-
-    const [addWareHouse, { isSuccess: isAddSuccess, isLoading, error }] = useAddNewstoreMutation();
+    const [addWareHouse, { isError, isSuccess, isLoading, error }] = useAddNewstoreMutation();
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -30,7 +30,7 @@ const AddWareHouse: React.FC<AddWareHouseProps> = ({ handleCloseDialog }) => {
         event.preventDefault(); // Prevent default form submission
         try {
             await addWareHouse(warehouseData).unwrap(); // Await the result and unwrap any errors
-            if (isAddSuccess) {
+            if (isSuccess) {
                 handleCloseDialog(); // Close the dialog on success
             }
         } catch (err) {
@@ -45,6 +45,8 @@ const AddWareHouse: React.FC<AddWareHouseProps> = ({ handleCloseDialog }) => {
     return (
         <div className='mx-10 mb-10 w-[350px]'>
             <form className='space-y-2' onSubmit={handleAddWareHouse}>
+                <InputLabel id="warehouse-name">Name</InputLabel>
+                {isError && <p className='text-red-500'>{error?.message || 'An error occurred'}</p>}
                 <TextField
                     label="Name"
                     name="name"
@@ -54,6 +56,7 @@ const AddWareHouse: React.FC<AddWareHouseProps> = ({ handleCloseDialog }) => {
                     value={warehouseData.name}
                     onChange={handleInputChange}
                 />
+                <InputLabel id="warehouse-country">Country</InputLabel>
                 <TextField
                     label="Country"
                     name="country"
@@ -63,6 +66,7 @@ const AddWareHouse: React.FC<AddWareHouseProps> = ({ handleCloseDialog }) => {
                     value={warehouseData.country}
                     onChange={handleInputChange}
                 />
+                <InputLabel id="warehouse-city">City</InputLabel>
                 <TextField
                     label="City"
                     name="city"
@@ -72,6 +76,7 @@ const AddWareHouse: React.FC<AddWareHouseProps> = ({ handleCloseDialog }) => {
                     value={warehouseData.city}
                     onChange={handleInputChange}
                 />
+                <InputLabel id="warehouse-subCity">Sub-city</InputLabel>
                 <TextField
                     label="Sub-city"
                     name="subCity"
@@ -81,6 +86,7 @@ const AddWareHouse: React.FC<AddWareHouseProps> = ({ handleCloseDialog }) => {
                     value={warehouseData.subCity}
                     onChange={handleInputChange}
                 />
+                <InputLabel id="warehouse-wereda">Wereda</InputLabel>
                 <TextField
                     label="Wereda"
                     name="wereda"

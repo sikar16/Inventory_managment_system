@@ -19,7 +19,7 @@ const userSchem = {
     //   "FINANCE",
     //   "GENERAL_MANAGER",
     //   "STORE_KEEPER",
-    // ]),
+    // ]), 
     departmentId: z.number(),
     password: z.string().optional(), 
   }),

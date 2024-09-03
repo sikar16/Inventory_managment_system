@@ -11,7 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import logo from "../../assets/logo.png"
+import logo from "../../../../public/vite.svg"
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -79,13 +79,13 @@ export default function RequiestesList() {
     };
     return (
         <div>
-            <div className='w-full bg-[#002a47]'>
+            {/* <div className='w-full bg-[#002a47]'>
                 <div className='ms-10 pt-5 flex justify-between'>
                     <img src={logo} alt="" className='w-24 md:w-40' />
                     <svg className='me-10' xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 20 20"><path fill="#ffffff" d="M8.6 3.4L14.2 9H2v2h12.2l-5.6 5.6L10 18l8-8l-8-8z"></path></svg>
                 </div>
-            </div>
-            <div className='mx-10 mt-6'>
+            </div> */}
+            <div className='mx-10 pt-6'>
                 <div>
                     <div className='flex justify-between mb-3 mx-2'>
                         <p className='text-[#002a47] text-4xl font-medium'>Requests</p>
@@ -165,8 +165,7 @@ export default function RequiestesList() {
                             width: '70vw',
                             maxWidth: '70vw',
                         }
-                    }
-                    className="relative mx-auto"
+                    }} className="relative mx-auto"
                 >
                     <div className='flex justify-between p-4'>
                         <DialogTitle

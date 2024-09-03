@@ -5,9 +5,9 @@ import {
     MdLightMode,
     MdBrightnessAuto,
 } from "react-icons/md";
-import IconContainer from "../component/icon/Icon_container";
-import { useThemeData } from "../context/them_context";
-import LogoContainer from "../component/LogoContainer";
+import IconContainer from "../../component/icon/Icon_container";
+import { useThemeData } from "../../context/them_context";
+import LogoContainer from "../../component/LogoContainer";
 import { AppBar } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import React from "react";
@@ -47,9 +47,14 @@ const Header: React.FC<ChildComponentProps> = ({ setOpen }) => {
         <AppBar className='bg-[#002A47] text-white dark:bg-slate-900 dark:text-white'>
             <div className=' ps-4 p-3 flex justify-between w-full pe-14 bg-[#002A47] dark:bg-zinc-950 dark:text-white'>
                 <div className='flex gap-5 align-middle items-center text-center '>
-                    <MenuIcon onClick={handleDrawerOpen} />  <LogoContainer />
+                    {/* <MenuIcon onClick={handleDrawerOpen} />   */}
+                    <LogoContainer />
                 </div>
                 <div className='flex gap-3 me-5 align-middle items-center '>
+                    <div className="flex justify-center gap-10 me-6">
+                        <Link to='/'>Home</Link>
+                        <Link to='/employee/requests-list' onClick={() => handleToggleView('requests')}>Setting</Link>
+                    </div>
                     <IconContainer
                         handler={toggleThemeData}
                         Icon={getThemeIcon()}

@@ -1,33 +1,27 @@
-import Footer from "./Footer"
-import Header from "./Header"
-// mui 
+import Header from "../Header"
 import Box from '@mui/material/Box';
+import MenuIcon from '@mui/icons-material/Menu';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 const drawerWidth = 240;
-import { Outlet } from "react-router-dom"
+import Divider from '@mui/material/Divider';
+import LogoContainer from "../../component/LogoContainer";
+import Bottem from "../Bottem";
 import { useState } from "react";
-import LogoContainer from "../component/LogoContainer";
-import AdminSidebar from "./AdminSidebar";
-import Bottem from "./Bottem";
-export const AdminLayout = () => {
+import { Outlet } from "react-router-dom";
+import DepartmentHeader from "./DepartmnetHeader";
+const DepartmentHeadLayout = () => {
     const [open, setOpen] = useState(false);
     const handleDrawerClose = () => {
         setOpen(false);
     };
     return (
         <>
-            <Box sx={{
-                marginLeft: open ? '20%' : '0',
-
-            }}>
+            <Box sx={{ display: open ? 'flex' : 'block ' }}>
                 <CssBaseline />
-                <MenuIcon />
-                <Header setOpen={setOpen} />
-                <Divider />
+                {/* <MenuIcon /> */}
+                <DepartmentHeader />
                 <Drawer
                     sx={{
                         width: drawerWidth,
@@ -41,7 +35,7 @@ export const AdminLayout = () => {
                     anchor="left"
                     open={open}
                 >
-                    <div className='bg-[#002A47] dark:bg-zinc-950 dark:text-white py-3 flex justify-between px-2 text-center align-middle items-center'>
+                    <div className='bg-[#002A47] py-3 flex justify-between px-2 text-center align-middle items-center'>
                         <div className='w-full '>
                             <LogoContainer />
                         </div>
@@ -52,16 +46,15 @@ export const AdminLayout = () => {
                         </div>
                     </div>
                     <Divider />
-                    <AdminSidebar />
-                    <Divider />
+                    {/* <DepartmentHeadSidebar /> */}
                     <Bottem />
                 </Drawer>
-
-                <div className={`mt-24 h-screen px-10`}>
+                <div className={`mt-24 ${open ? 'ps-0' : 'ps-10'}`}>
                     <Outlet />
                 </div>
-            </Box >
+            </Box>
 
-        </>
-    );
+        </>)
 }
+
+export default DepartmentHeadLayout

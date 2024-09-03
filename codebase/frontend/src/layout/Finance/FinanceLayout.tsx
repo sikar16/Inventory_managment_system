@@ -1,27 +1,34 @@
-import Header from "./Header"
+import Footer from "../Footer"
+import Header from "../Header"
+// mui 
 import Box from '@mui/material/Box';
-import MenuIcon from '@mui/icons-material/Menu';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
-import IconButton from '@mui/material/IconButton';
-const drawerWidth = 240;
 import Divider from '@mui/material/Divider';
-import LogoContainer from "../component/LogoContainer";
-import Bottem from "./Bottem";
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+const drawerWidth = 240;
+import { Outlet } from "react-router-dom"
 import { useState } from "react";
-import EmployeeSidebar from "./EmployeeSidebar";
-import { Outlet } from "react-router-dom";
-const EmployeeLayout = () => {
+import LogoContainer from "../../component/LogoContainer";
+import Bottem from "../Bottem";
+import LogesticsSidebar from "./FinanceSidebar";
+import FinanceSidebar from "./FinanceSidebar";
+export const FinanceLayout = () => {
     const [open, setOpen] = useState(false);
     const handleDrawerClose = () => {
         setOpen(false);
     };
     return (
         <>
-            <Box sx={{ display: open ? 'flex' : 'block ' }}>
+            <Box sx={{
+                marginLeft: open ? '20%' : '0',
+
+            }}>
                 <CssBaseline />
-                <MenuIcon />
+                {/* <MenuIcon /> */}
                 <Header setOpen={setOpen} />
+                <Divider />
                 <Drawer
                     sx={{
                         width: drawerWidth,
@@ -35,7 +42,7 @@ const EmployeeLayout = () => {
                     anchor="left"
                     open={open}
                 >
-                    <div className='bg-[#002A47] py-3 flex justify-between px-2 text-center align-middle items-center'>
+                    <div className='bg-[#002A47] dark:bg-zinc-950 dark:text-white py-3 flex justify-between px-2 text-center align-middle items-center'>
                         <div className='w-full '>
                             <LogoContainer />
                         </div>
@@ -46,16 +53,15 @@ const EmployeeLayout = () => {
                         </div>
                     </div>
                     <Divider />
-                    <EmployeeSidebar />
-                    <Divider />
+                    <FinanceSidebar />
                     <Bottem />
                 </Drawer>
-                <div className={`mt-24 ${open ? 'ps-0' : 'ps-10'}`}>
+
+                <div className={`mt-24 h-screen px-10`}>
                     <Outlet />
                 </div>
-            </Box>
+            </Box >
 
-        </>)
+        </>
+    );
 }
-
-export default EmployeeLayout

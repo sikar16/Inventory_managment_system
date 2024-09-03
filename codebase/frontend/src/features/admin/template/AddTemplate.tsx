@@ -1,48 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
-import Button from '@mui/material/Button';
 import { useAddNewtemplateMutation, useGetAlltemplateQuery } from '../../../services/template_service';
 
 interface AddTemplateProps {
     handleCloseDialog: () => void;
 }
 
+const dataTypeOptions = ['STRING', 'DOUBLE', 'INT', 'DATE_TIME'];
+
 const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog }) => {
-    const [selectedTemplate, setSelectedTemplate] = useState('');
     const [customTemplate, setCustomTemplate] = useState('');
-    const [attributes, setAttributes] = useState<{ key: string; value: string }[]>([]);
+    const [attributes, setAttributes] = useState<{ name: string; dataType: string }[]>([]);
     const [addTemplate, { isSuccess: isAddSuccess }] = useAddNewtemplateMutation();
 
-    const { isError: isTemplateError, isLoading: isTemplateLoading, data: templates = [] } = useGetAlltemplateQuery();
-
-    useEffect(() => {
-        if (selectedTemplate && selectedTemplate !== 'Other') {
-            const selectedTemplateData = templates.find(t => t.name === selectedTemplate);
-            if (selectedTemplateData && selectedTemplateData.attributes) {
-                console.log("Attribute Names:", selectedTemplateData.attributes.map(attr => attr.name));
-                setAttributes(selectedTemplateData.attributes.map(attr => ({ key: attr.name, value: '' })));
-            }
-        } else {
-            setAttributes([]);
-        }
-    }, [selectedTemplate, templates]);
+    const { isError: isTemplateError, isLoading: isTemplateLoading } = useGetAlltemplateQuery();
 
     const handleAddAttribute = () => {
-        setAttributes([...attributes, { key: '', value: '' }]);
-    };
-
-    const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setSelectedTemplate(event.target.value as string);
+        setAttributes([...attributes, { name: '', dataType: 'STRING' }]); // Default dataType is STRING
     };
 
     const handleCustomTemplateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setCustomTemplate(event.target.value);
     };
 
-    const handleAttributeChange = (index: number, field: 'key' | 'value', value: string) => {
+    const handleAttributeChange = (index: number, field: 'name' | 'dataType', value: string) => {
         const updatedAttributes = attributes.map((attr, i) =>
             i === index ? { ...attr, [field]: value } : attr
         );
@@ -50,15 +35,24 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog }) => {
     };
 
     const handleAddTemplate = async () => {
-        const templateToAdd = selectedTemplate === 'Other' && customTemplate ? customTemplate : selectedTemplate;
+        if (!customTemplate) {
+            alert("Please enter a template name.");
+            return;
+        }
+
+        // Validate that all attributes have required fields
+        if (attributes.some(attr => !attr.name || !attr.dataType)) {
+            alert("Please ensure all attributes have both name and data type.");
+            return;
+        }
+
         const formData = {
-            name: templateToAdd,
+            name: customTemplate,
             attributes: attributes
         };
         console.log(formData);
-        await addTemplate(formData)
+        await addTemplate(formData);
         handleCloseDialog();
-
     };
 
     const handleDiscard = () => {
@@ -66,38 +60,19 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog }) => {
     };
 
     if (isTemplateLoading) return <div>Loading templates...</div>;
-    if (isTemplateError) return <div>Error loading templates: {isTemplateError.message}</div>;
+    if (isTemplateError) return <div>Error loading templates</div>;
 
     return (
         <div className='mx-10 mb-10'>
             <form className='space-y-2'>
-                <InputLabel id="template-label">Template</InputLabel>
-                <Select
-                    labelId="template-label"
+                <TextField
+                    label="Template Name"
                     variant="outlined"
                     size="small"
                     className="w-full mt-2"
-                    value={selectedTemplate}
-                    onChange={handleSelectChange}
-                >
-                    {templates.map((template) => (
-                        <MenuItem key={template.id} value={template.name}>
-                            {template.name}
-                        </MenuItem>
-                    ))}
-                    <MenuItem value="Other">Other</MenuItem>
-                </Select>
-
-                {selectedTemplate === 'Other' && (
-                    <TextField
-                        label="New Template"
-                        variant="outlined"
-                        size="small"
-                        className="w-full mt-2"
-                        value={customTemplate}
-                        onChange={handleCustomTemplateChange}
-                    />
-                )}
+                    value={customTemplate}
+                    onChange={handleCustomTemplateChange}
+                />
 
                 <div className='w-full'>
                     <p className='mt-4 mb-2'>Attributes</p>
@@ -107,18 +82,24 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog }) => {
                                 label="Name"
                                 variant="outlined"
                                 size="small"
-                                value={attr.key}
-                                onChange={(e) => handleAttributeChange(index, 'key', e.target.value)}
+                                value={attr.name}
+                                onChange={(e) => handleAttributeChange(index, 'name', e.target.value)}
                                 className="w-full"
                             />
-                            <TextField
-                                label="Value"
+                            <Select
+                                label="Data Type"
                                 variant="outlined"
                                 size="small"
-                                value={attr.value}
-                                onChange={(e) => handleAttributeChange(index, 'value', e.target.value)}
+                                value={attr.dataType}
+                                onChange={(e) => handleAttributeChange(index, 'dataType', e.target.value as string)}
                                 className="w-full"
-                            />
+                            >
+                                {dataTypeOptions.map(option => (
+                                    <MenuItem key={option} value={option}>
+                                        {option}
+                                    </MenuItem>
+                                ))}
+                            </Select>
                         </div>
                     ))}
                     <Button onClick={handleAddAttribute} variant="outlined">
