@@ -9,6 +9,7 @@ import productSubCategoryRoute from "../api/ProductSubCategory/productSubCategor
 import temeplateRouter from "../api/template/templeteRouter.js";
 import productRouter from "../api/Product/producRouter.js";
 import materialRequiestRoute from "../api/matreialRequiest/materialRequiestRouter.js";
+import purchasedReqRouter from "../api/PurchaseReq/purchaseReqRouter.js";
 const appRouter = express.Router();
 appRouter.use("/user", userRouter);
 appRouter.use("/department", departmentRouter);
@@ -20,4 +21,5 @@ appRouter.use("/productSubCategory", productSubCategoryRoute);
 appRouter.use("/temeplate", temeplateRouter);
 appRouter.use("/product", productRouter);
 appRouter.use("/materialReq", materialRequiestRoute);
+appRouter.use("/purchasedReq", purchasedReqRouter);
 export default appRouter;

@@ -151,7 +151,7 @@ const materialRequiestController = {
         "subCategoryid",
         "quantity",
         "desireDate",
-        // "remark",
+        "remark",
       ];
       for (const field of requiredField) {
         if (!req.body[field]) {
@@ -235,6 +235,7 @@ const materialRequiestController = {
       const newMaterialRequest = await prisma.materialRequest.create({
         data: {
           requesterId: data.requesterId,
+          employeeId:data.requesterId,
           departmentHeadId: data.departmentHeadId,
           reason: data.reason, 
           desireDate: data.desireDate, 

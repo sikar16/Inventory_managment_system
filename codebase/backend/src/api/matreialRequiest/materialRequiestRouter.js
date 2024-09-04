@@ -2,7 +2,7 @@ import express from "express";
 import materialRequiestController from "./materialRequiestController.js";
 const materialRequiestRoute = express.Router();
 materialRequiestRoute.get(
-  "/:id",
+  "/:id", 
   materialRequiestController.getSinglematerialRequiest
 ),
   materialRequiestRoute.get(
