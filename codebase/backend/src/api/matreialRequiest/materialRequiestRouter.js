@@ -1,8 +1,8 @@
 import express from "express";
-import materialRequiestController from "./materialRequiestController";
+import materialRequiestController from "./materialRequiestController.js";
 const materialRequiestRoute = express.Router();
 materialRequiestRoute.get(
-  ":/id",
+  "/:id",
   materialRequiestController.getSinglematerialRequiest
 ),
   materialRequiestRoute.get(
@@ -14,11 +14,11 @@ materialRequiestRoute.get(
     materialRequiestController.createMaterialRequest
   ),
   materialRequiestRoute.put(
-    ":/id",
+    "/:id",
     materialRequiestController.updatematerialRequiest
   ),
   materialRequiestRoute.delete(
-    ":/id",
+    "/:id",
     materialRequiestController.deletematerialRequiest
   );
 export default materialRequiestRoute;

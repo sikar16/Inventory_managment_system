@@ -1,13 +1,12 @@
 import z from "zod"
-import productSchema from "../Product/productSchem";
 
 const materialRequiestSchem={
     create:z.object({
-    requesterId: z.string().int(),
-    departmentHeadId: z.string().int(),
+    requesterId: z.number(),
+    departmentHeadId: z.number(),
     items:z.array(
       z.object({
-        productId:z.string(),
+        productId:z.number(),
         quantityRequested:z.number(),
         remark:z.string()
       })
@@ -15,11 +14,11 @@ const materialRequiestSchem={
     }),
     
     update:z.object({
-    requesterId: z.string().int(),
-    departmentHeadId: z.string().int(),
+    requesterId: z.number(),
+    departmentHeadId: z.number(),
     items:z.array(
       z.object({
-        productId:z.string(),
+        productId:z.number(),
         quantityRequested:z.number(),
         remark:z.string()
       })

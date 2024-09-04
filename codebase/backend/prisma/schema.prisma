@@ -133,6 +133,8 @@ model ProductAttribute {
   product             Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   templateAttribute TemplateAttribute @relation(fields: [templateAttributeId], references: [id])
+
+  MaterialRequestItem MaterialRequestItem[]
 }
 
 model Address {
@@ -257,7 +259,7 @@ model MaterialRequest {
 }
 
 model MaterialRequestItem {
-  id                    Int             @id @default(autoincrement())
+  id                    Int                @id @default(autoincrement())
   materialRequestId     Int
   productId             Int
   quantityRequested     Decimal
@@ -265,8 +267,9 @@ model MaterialRequestItem {
   quantityToBePurchased Decimal?
   remark                String
   //reference
-  materialRequest       MaterialRequest @relation(fields: [materialRequestId], references: [id])
-  products              Product[]
+  productAttributes     ProductAttribute[]
+  materialRequest       MaterialRequest    @relation(fields: [materialRequestId], references: [id])
+  product               Product            @relation(fields: [productId], references: [id])
 }
 
 model PurchasedRequest {
