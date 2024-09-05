@@ -1,3 +1,4 @@
+import { date } from "zod";
 import prisma from "../../config/prisma.js";
 import materialRequiestSchem from "./materialRequiestSchem.js";
 
@@ -12,54 +13,35 @@ const materialRequiestController = {
         });
       }
 
-      const materialReq = await prisma.materialRequest.findUnique({
+      const materialReq = await prisma.materialRequest.findFirst({
         where: {
           id: materialReqId,
         },
-        include: {
-          _count: true,
-          employee: {
-            include: {
-              profile: true,
-            },
+        include:{
+          _count:true,
+          employee:{
+            include:{
+              profile:true
+            }
           },
-          departmentHead: {
-            include: {
-              profile: true,
-            },
+          departmentHead:{
+            include:{
+              profile:true,
+              department:true
+            }
           },
-          logisticSupervisor: {
-            include: {
-              profile: true,
-            },
-          },
-          items: {
-            include: {
-              products: {
-                include: {
-                  productAttributes: {
-                    include: {
-                      templateAttribute: {
-                        include: {
-                          template: {
-                            include: {
-                              attributes: true,
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                  subcategory: {
-                    include: {
-                      category: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
+          items:{
+            include:{
+              _count:true,
+              products:{
+                include:{
+                  productAttributes:true,
+                  
+                }
+              }
+            }
+          }
+        }   
       });
 
       if (!materialReq) {
@@ -85,50 +67,31 @@ const materialRequiestController = {
   getAllMaterialRequests: async (req, res, next) => {
     try {
       const materialReqs = await prisma.materialRequest.findMany({
-        include: {
-          _count: true,
-          employee: {
-            include: {
-              profile: true,
-            },
+        include:{
+          _count:true,
+          employee:{
+            include:{
+              profile:true
+            }
           },
-          departmentHead: {
-            include: {
-              profile: true,
-            },
+          departmentHead:{
+            include:{
+              profile:true,
+              department:true
+            }
           },
-          logisticSupervisor: {
-            include: {
-              profile: true,
-            },
-          },
-          items: {
-            include: {
-              products: {
-                include: {
-                  productAttributes: {
-                    include: {
-                      templateAttribute: {
-                        include: {
-                          template: {
-                            include: {
-                              attributes: true,
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                  subcategory: {
-                    include: {
-                      category: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
+          items:{
+            include:{
+              _count:true,
+              products:{
+                include:{
+                  productAttributes:true,
+                  
+                }
+              }
+            }
+          }
+        }  
       });
 
       return res.status(200).json({
@@ -147,11 +110,9 @@ const materialRequiestController = {
   createMaterialRequest: async (req, res, next) => {
     try {
       const requiredField = [
-        "categoryId",
-        "subCategoryid",
-        "quantity",
-        "desireDate",
-        "remark",
+        "requesterId",
+        "departmentHeadId",
+        
       ];
       for (const field of requiredField) {
         if (!req.body[field]) {
@@ -166,7 +127,7 @@ const materialRequiestController = {
 
       const isUserExist = await prisma.users.findFirst({
         where: {
-          id: data.requesterId,
+          id: +data.requesterId,
         },
       });
       if (!isUserExist) {
@@ -178,7 +139,8 @@ const materialRequiestController = {
 
       const isDepartmentHeadExist = await prisma.users.findFirst({
         where: {
-          id: data.departmentHeadId,
+          id: +data.departmentHeadId,
+          role:"DEPARTMENT_HEAD",
         },
       });
       if (!isDepartmentHeadExist) {
@@ -188,64 +150,36 @@ const materialRequiestController = {
         });
       }
 
-      const isProductExist = await prisma.product.findFirst({
-        where: {
-          id: data.productId,
-        },
-        include: {
-          productAttributes: {
-            include: {
-              templateAttribute: true,
-            },
-          },
-        },
-      });
-      if (!isProductExist) {
-        return res.status(404).json({
-          success: false,
-          message: "Product not found",
-        });
-      }
+      
 
-      const isProductCategoryExist = await prisma.productCategory.findFirst({
-        where: {
-          id:data.categoryId
-        },
-      });
-      if (!isProductCategoryExist) {
-        return res.status(400).json({
-          success: false,
-          message: "Category does not exist",
-        });
-      }
+    
 
-      const isProductSubCategoryExist =
-        await prisma.productSubCategory.findFirst({
+      for (let index = 0; index < data.items.length; index++) {
+        const element = data.items[index];
+        const isProductExist = await prisma.product.findFirst({
           where: {
-            id:data.subcategoryid,
-            categoryId: data.categoryId,
+            id: element.productId,
           },
         });
-      if (!isProductSubCategoryExist) {
-        return res.status(400).json({
-          success: false,
-          message: "Subcategory does not exist",
-        });
+        if (!isProductExist) {
+          return res.status(404).json({
+            success: false,
+            message: "Product not found",
+          });
+        }
       }
+
       const newMaterialRequest = await prisma.materialRequest.create({
         data: {
-          requesterId: data.requesterId,
-          employeeId:data.requesterId,
-          departmentHeadId: data.departmentHeadId,
-          reason: data.reason, 
-          desireDate: data.desireDate, 
-          items: {
-            create: data.items.map((item) => ({
-              productId: item.productId,
-              quantityRequested: item.quantityRequested,
-              remark: item.remark,
-            })),
-          },
+          departmentHeadId:+data.departmentHeadId,
+          requesterId:+data.requesterId,
+          items:{
+            create:data.items.map((item)=>({
+                    productId:+item.productId,
+                    quantityRequested:+item.quantityRequested,
+                    remark:item.remark
+            }))
+          }
         },
       });
 
@@ -261,58 +195,114 @@ const materialRequiestController = {
       });
     }
   },
-  updatematerialRequiest: async (req, res, next) => {
-    try {
+  updatedDepartmentHead:async (req,res,next)=>{
+  try {
       const materialReqId = parseInt(req.params.id, 10);
+
       if (isNaN(materialReqId)) {
         return res.status(400).json({
           success: false,
-          message: "Invalid material request ID",
+          message: "invalid material requiest id ",
         });
       }
-      const data = materialRequiestSchem.update.parse(req.body);
-      const items = Array.isArray(data.items) ? data.items : [];
-      const isMaterialReqExist = await prisma.materialRequest.findUnique({
+      const data= materialRequiestSchem.updateDepartmentHead.parse(req.body)
+      const isMaterialReqExist=await prisma.materialRequest.findFirst({
+        where:{
+          id:+materialReqId
+        }
+      })
+
+      if(!isMaterialReqExist){
+        return res.status(404).json({
+          success:false,
+          message:"This materail request is not found"
+        })
+      }
+      const requiredField = [
+        "requesterId",
+        "departmentHeadId",
+      ];
+      for (const field of requiredField) {
+        if (!req.body[field]) {
+          return res.status(403).json({
+            success: false,
+            message: `${field} is required`,
+          });
+        }
+      }
+      const isDepartmentHeadExist = await prisma.users.findFirst({
         where: {
-          id: materialReqId,
+          id: +data.departmentHeadId,
+          role:"DEPARTMENT_HEAD",
         },
       });
-      if (!isMaterialReqExist) {
+      if (!isDepartmentHeadExist) {
+        return res.status(400).json({
+          success: false,
+          message: "Department head not found",
+        });
+      }
+      const updatematerialRequiest=await prisma.materialRequest.update({
+        where:{
+          id:+materialReqId
+        },
+        data:{
+          departmentHeadId:+data.departmentHeadId
+        }
+      })
+      return res.status(200).json({
+        success:true,
+        message:"updated successfully",
+        data:updatematerialRequiest
+      })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Error - ${error.message}`,
+    });
+  }
+  },
+
+  updatematerialRequiestItem: async (req, res, next) => {
+    try {
+      const materialReqItemId = parseInt(req.params.id, 10);
+      if (isNaN(materialReqItemId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid material request item  ID",
+        });
+      }
+      const data = materialRequiestSchem.updateMeterialReqItem.parse(req.body);
+
+      const isProductExist = await prisma.product.findFirst({
+        where: {
+          id: +data.productId,
+        },
+      });
+      if (!isProductExist) {
         return res.status(404).json({
           success: false,
-          message: "Material request not found",
+          message: "Product not found",
         });
       }
-  
-      const updatedMaterialReq = await prisma.materialRequest.update({
-        where: {
-          id: materialReqId,
+
+      const updatematerialRequiestItem=await prisma.materialRequestItem.update({
+        where:{
+          id:+materialReqItemId
         },
-        data: {
-          requesterId: data.requesterId,
-          departmentHeadId: data.departmentHeadId,
-          reason: data.reason,
-          items: {
-            create: items.map((item) => ({
-              productId: item.productId,
-              quantityRequested: item.quantityRequested,
-              remark: item.remark,
-              attributes: {
-                create: item.attributes.map((attr) => ({
-                  templateAttributeId: attr.templateAttributeId,
-                  value: attr.value,
-                })),
-              },
-            })),
-          },
-        },
-      });
-  
-      return res.status(200).json({
-        success: true,
-        message: "Material request updated successfully",
-        data: updatedMaterialReq,
-      });
+        data:{
+          productId:data.productId,
+          remark:data.remark,
+          quantityRequested:data.quantityRequested,
+        }
+      })
+
+      return res.status(404).json({
+        success:true,
+        message:"successfully update material request item",
+        data:updatematerialRequiestItem,
+      })
+
     } catch (error) {
       return res.status(500).json({
         success: false,
@@ -333,7 +323,7 @@ const materialRequiestController = {
       }
   
       const isMaterialReqExist = await prisma.materialRequest.findUnique({
-        where: { id: materialReqId },
+        where: { id: +materialReqId },
       });
       if (!isMaterialReqExist) {
         return res.status(404).json({

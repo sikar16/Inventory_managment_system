@@ -15,7 +15,7 @@ import Bottem from "../Bottem";
 import LogesticsSidebar from "./FinanceSidebar";
 import FinanceSidebar from "./FinanceSidebar";
 export const FinanceLayout = () => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
     const handleDrawerClose = () => {
         setOpen(false);
     };

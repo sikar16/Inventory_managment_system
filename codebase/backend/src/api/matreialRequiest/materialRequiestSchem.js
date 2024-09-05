@@ -12,17 +12,17 @@ const materialRequiestSchem={
       })
     )
     }),
+
+    updateDepartmentHead:z.object({
+      requesterId: z.number(),
+      departmentHeadId: z.number(),
+  
+    }),
     
-    update:z.object({
-    requesterId: z.number(),
-    departmentHeadId: z.number(),
-    items:z.array(
-      z.object({
+    updateMeterialReqItem:z.object({
         productId:z.number(),
         quantityRequested:z.number(),
         remark:z.string()
-      })
-    )
     })
 }
 

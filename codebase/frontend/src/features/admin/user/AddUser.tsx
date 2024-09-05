@@ -17,7 +17,6 @@ interface FormDataType {
   password: string;
 }
 
-
 function AddUser() {
   const {
     data: departments,

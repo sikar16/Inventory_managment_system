@@ -16,7 +16,7 @@ import LogesticsSidebar from "./GeneralManagerSidebar";
 import FinanceSidebar from "./GeneralManagerSidebar";
 import GeneralManagerSidebar from "./GeneralManagerSidebar";
 export const GeneralManagerLayout = () => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
     const handleDrawerClose = () => {
         setOpen(false);
     };

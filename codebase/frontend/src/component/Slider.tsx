@@ -1,5 +1,5 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, A11y } from "swiper/modules";
+import { Navigation, A11y } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -18,14 +18,13 @@ function Slider() {
     return (
         <>
             <Swiper
-                modules={[Navigation, Pagination, A11y]}
+                modules={[Navigation, A11y]}
                 spaceBetween={1}
                 slidesPerView={10}
                 navigation={{
                     nextEl: ".swiper-button-next",
                     prevEl: ".swiper-button-prev",
                 }}
-                pagination={{ clickable: true, el: ".swiper-pagination" }}
                 onSwiper={() => { }}
                 onSlideChange={() => { }}
                 breakpoints={{

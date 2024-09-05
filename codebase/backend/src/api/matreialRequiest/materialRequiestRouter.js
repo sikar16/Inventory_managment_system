@@ -14,8 +14,12 @@ materialRequiestRoute.get(
     materialRequiestController.createMaterialRequest
   ),
   materialRequiestRoute.put(
-    "/:id",
-    materialRequiestController.updatematerialRequiest
+    "/item/:id",
+    materialRequiestController.updatematerialRequiestItem
+  ),
+  materialRequiestRoute.put(
+    "/departement/:id",
+    materialRequiestController.updatedDepartmentHead
   ),
   materialRequiestRoute.delete(
     "/:id",

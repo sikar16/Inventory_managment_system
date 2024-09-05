@@ -14,7 +14,7 @@ import LogoContainer from "../../component/LogoContainer";
 import Bottem from "../Bottem";
 import LogesticsSidebar from "./LogesticsSidebar";
 export const LogesticsLayout = () => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
     const handleDrawerClose = () => {
         setOpen(false);
     };
