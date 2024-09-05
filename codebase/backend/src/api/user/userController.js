@@ -78,158 +78,43 @@ const userController = {
     }
   },
 
-createUser:async (req,res,next)=>{
-  try {
-    const data = userSchema.register.parse(req.body);
-const isUserExist=await prisma.users.findFirst({
-  where:{
-    email:data.email
-  }
-})
-    if(isUserExist){
-    return res.status(400).json({
-              success: false,
-              message: "This email is already registered",
-            }); 
-  } 
-
-const isPhoneExist=await prisma.users.findFirst({
-  where:{
-    phone:data.phone
-  }
-})
-if(isPhoneExist){
-  return res.status(400).json({
-            success: false,
-            message: "This phone is already registered",
-          }); 
-} 
-
-let addressId;
-    const isAddressExist = await prisma.address.findFirst({
-      where:{
-        country:data.country,
-        city:data.city,
-        subCity:data.subCity
-      }
-    });
-
-    if (isAddressExist) {
-            addressId = isAddressExist.id;
-          } else {
-            const newAddress = await prisma.address.create({
-              data: {
-                country: data.country,
-                city: data.city,
-                subCity:data.subCity,
-              },
-            });
-            addressId = newAddress.id;
-          }
-
-
-          const department=await prisma.department.findFirst({
-            where:{
-              departmentId:data.departmentId,
-            }
-          })
-          if(!department){
-            return res.status(400).json({
-              success:false,
-              message:`Error - ${error}`,
-            });
-          }
-       const hashedPassword = await bcrypt.hashSync(data.password, 10);
- const newUser=await prisma.users.create({
-        data: {
-          activeStatus:"ACTIVE",
-          email:data.email,
-          departmentId:data.departmentId,
-          password: {
-                      create: {
-                        password: hashedPassword,
-                      },
-                    },
-                    profile: {
-                                  create: {
-                                  firstName: data.firstName,
-                                  lastName: data.lastName,
-                                  middleName: data.middleName,
-                                  gender: data.gender,
-                                  phone: data.phone,
-                                  addressId: addressId,
-                                },
-                              }, 
-                              
-                              
-
-        }
- })
- return res.status(200).json({
-        success: true,
-        message: "User created successfully",
-        data: registeredUser,
-      });
-
-  } catch (error) {
-        return res.status(500).json({
-          success: false,
-          message: `${error}`,
-        });
-      }
-},
-
   // createUser: async (req, res, next) => {
   //   try {
-  //     console.log(req.body);
   //     const data = userSchema.register.parse(req.body);
-      
-  //     // Ensure departmentName is present
-  //     // if (!data.departmentName) {
-  //     //   return res.status(400).json({
-  //     //     success: false,
-  //     //     message: "Department name is required",
-  //     //   });
-  //     // }
-  
-  //     // Check if the email is already registered
   //     const isUserExist = await prisma.users.findFirst({
   //       where: {
   //         email: data.email,
   //       },
   //     });
-  
   //     if (isUserExist) {
   //       return res.status(400).json({
   //         success: false,
   //         message: "This email is already registered",
   //       });
   //     }
-  
-  //     // Check if the phone is already registered
+
   //     const isPhoneExist = await prisma.profile.findFirst({
   //       where: {
   //         phone: data.phone,
   //       },
   //     });
-  
   //     if (isPhoneExist) {
   //       return res.status(400).json({
   //         success: false,
   //         message: "This phone is already registered",
   //       });
   //     }
-  
-  //     // Check if the address exists
+
   //     let addressId;
   //     const isAddressExist = await prisma.address.findFirst({
   //       where: {
   //         country: data.country,
   //         city: data.city,
   //         subCity: data.subCity,
+  //         wereda: data.wereda,
   //       },
   //     });
-  
+
   //     if (isAddressExist) {
   //       addressId = isAddressExist.id;
   //     } else {
@@ -237,42 +122,62 @@ let addressId;
   //         data: {
   //           country: data.country,
   //           city: data.city,
-  //           subCity:data.subCity,
+  //           subCity: data.subCity,
+  //           wereda: data.wereda,
   //         },
   //       });
   //       addressId = newAddress.id;
   //     }
-  
-  //     // Check if the department exists
-  //     // const department = await prisma.department.findUnique({
-  //     //   where: { id: data.departmentId },
-  //     // });
-  
-  //     // if (!department) {
-  //     //   return res.status(400).json({
-  //     //     success: false,
-  //     //     message: "Department not found",
-  //     //   });
-  //     // }
-  
-  //     // Hash the password
+
+  //     const department = await prisma.department.findFirst({
+  //       where: {
+  //         id: +data.departmentId,
+  //       },
+  //     });
+  //     console.log(department == null);
+
+  //     if (department == null) {
+  //       return res.status(400).json({
+  //         success: false,
+  //         message: `Error - ${error}`,
+  //       });
+  //     }
+  //     console.log(department);
+  //     return;
+
   //     const hashedPassword = await bcrypt.hashSync(data.password, 10);
-  
-  //     // Create the user
+
+  //     console.log({
+  //       activeStatus: "ACTIVE",
+  //       email: data.email,
+  //       departmentId: data.departmentId,
+  //       password: {
+  //         create: {
+  //           password: hashedPassword,
+  //         },
+  //       },
+  //       profile: {
+  //         create: {
+  //           firstName: data.firstName,
+  //           lastName: data.lastName,
+  //           middleName: data.middleName,
+  //           gender: data.gender,
+  //           phone: data.phone,
+  //           addressId: addressId,
+  //         },
+  //       },
+  //     });
+  //     return;
   //     const newUser = await prisma.users.create({
   //       data: {
-         
   //         activeStatus: "ACTIVE",
   //         email: data.email,
-  //         // role: data.role,
-  //         departmentId: +data.departmentId,
-
-  //         // departmentName:data.departmentName,
-  //         // password: {
-  //         //   create: {
-  //         //     password: hashedPassword,
-  //         //   },
-  //         // },
+  //         departmentId: data.departmentId,
+  //         password: {
+  //           create: {
+  //             password: hashedPassword,
+  //           },
+  //         },
   //         profile: {
   //           create: {
   //             firstName: data.firstName,
@@ -285,22 +190,6 @@ let addressId;
   //         },
   //       },
   //     });
-  
-  //     // Fetch the registered user with related data
-  //     const registeredUser = await prisma.users.findFirst({
-  //       where: {
-  //         id: newUser.id,
-  //       },
-  //       include: {
-  //         profile: {
-  //           include: {
-  //             address: true,
-  //           },
-  //         },
-  //         // departmentName: true,
-  //       },
-  //     });
-  
   //     return res.status(200).json({
   //       success: true,
   //       message: "User created successfully",
@@ -313,7 +202,134 @@ let addressId;
   //     });
   //   }
   // },
-  
+
+  createUser: async (req, res, next) => {
+    try {
+      console.log(req.body);
+      const data = userSchema.register.parse(req.body);
+
+      // Check if the email is already registered
+      const isUserExist = await prisma.users.findFirst({
+        where: {
+          email: data.email,
+        },
+      });
+
+      if (isUserExist) {
+        return res.status(400).json({
+          success: false,
+          message: "This email is already registered",
+        });
+      }
+
+      // Check if the phone is already registered
+      const isPhoneExist = await prisma.profile.findFirst({
+        where: {
+          phone: data.phone,
+        },
+      });
+
+      if (isPhoneExist) {
+        return res.status(400).json({
+          success: false,
+          message: "This phone is already registered",
+        });
+      }
+
+      // Check if the address exists
+      let addressId;
+      const isAddressExist = await prisma.address.findFirst({
+        where: {
+          country: data.country,
+          city: data.city,
+          subCity: data.subCity,
+          wereda: data.wereda,
+        },
+      });
+
+      if (isAddressExist) {
+        addressId = isAddressExist.id;
+      } else {
+        const newAddress = await prisma.address.create({
+          data: {
+            country: data.country,
+            city: data.city,
+            subCity: data.subCity,
+            wereda: data.wereda,
+          },
+        });
+        addressId = newAddress.id;
+      }
+
+      // Check if the department exists
+      const department = await prisma.department.findUnique({
+        where: { id: data.departmentId },
+      });
+
+      if (!department) {
+        return res.status(400).json({
+          success: false,
+          message: "Department not found",
+        });
+      }
+
+      // Hash the password
+      const hashedPassword = await bcrypt.hashSync(data.password, 10);
+
+      // Create the user
+      const newUser = await prisma.users.create({
+        data: {
+          activeStatus: "ACTIVE",
+          email: data.email,
+          // role: data.role,
+          departmentId: +data.departmentId,
+
+          // departmentName:data.departmentName,
+          // password: {
+          //   create: {
+          //     password: hashedPassword,
+          //   },
+          // },
+          profile: {
+            create: {
+              firstName: data.firstName,
+              lastName: data.lastName,
+              middleName: data.middleName,
+              gender: data.gender,
+              phone: data.phone,
+              addressId: addressId,
+            },
+          },
+        },
+      });
+
+      // Fetch the registered user with related data
+      const registeredUser = await prisma.users.findFirst({
+        where: {
+          id: newUser.id,
+        },
+        include: {
+          profile: {
+            include: {
+              address: true,
+            },
+          },
+          // departmentName: true,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "User created successfully",
+        data: registeredUser,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: `${error}`,
+      });
+    }
+  },
 
   updateUser: async (req, res, next) => {
     try {

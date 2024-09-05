@@ -94,7 +94,7 @@ CREATE TABLE `Users` (
     `activeStatus` ENUM('ACTIVE', 'INACTIVE', 'BLOCKED') NOT NULL,
     `role` ENUM('ADMIN', 'EMPLOYEE', 'DEPARTMENT_HEAD', 'LOGESTIC_SUPERVISER', 'FINANCE', 'GENERAL_MANAGER', 'STORE_KEEPER') NOT NULL DEFAULT 'EMPLOYEE',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `departmentName` VARCHAR(191) NOT NULL,
+    `departmentId` INTEGER NOT NULL,
 
     UNIQUE INDEX `Users_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -310,12 +310,12 @@ CREATE TABLE `_ProductToPurchasedOrderItem` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `_MaterialRequestItemToProduct` (
+CREATE TABLE `_MaterialRequestItemToProductAttribute` (
     `A` INTEGER NOT NULL,
     `B` INTEGER NOT NULL,
 
-    UNIQUE INDEX `_MaterialRequestItemToProduct_AB_unique`(`A`, `B`),
-    INDEX `_MaterialRequestItemToProduct_B_index`(`B`)
+    UNIQUE INDEX `_MaterialRequestItemToProductAttribute_AB_unique`(`A`, `B`),
+    INDEX `_MaterialRequestItemToProductAttribute_B_index`(`B`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -361,7 +361,7 @@ ALTER TABLE `ProductAttribute` ADD CONSTRAINT `ProductAttribute_productId_fkey` 
 ALTER TABLE `ProductAttribute` ADD CONSTRAINT `ProductAttribute_templateAttributeId_fkey` FOREIGN KEY (`templateAttributeId`) REFERENCES `TemplateAttribute`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Users` ADD CONSTRAINT `Users_departmentName_fkey` FOREIGN KEY (`departmentName`) REFERENCES `Department`(`name`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Users` ADD CONSTRAINT `Users_departmentId_fkey` FOREIGN KEY (`departmentId`) REFERENCES `Department`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Password` ADD CONSTRAINT `Password_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -401,6 +401,9 @@ ALTER TABLE `MaterialRequest` ADD CONSTRAINT `MaterialRequest_logisticSuperViser
 
 -- AddForeignKey
 ALTER TABLE `MaterialRequestItem` ADD CONSTRAINT `MaterialRequestItem_materialRequestId_fkey` FOREIGN KEY (`materialRequestId`) REFERENCES `MaterialRequest`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `MaterialRequestItem` ADD CONSTRAINT `MaterialRequestItem_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `PurchasedRequest` ADD CONSTRAINT `PurchasedRequest_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -457,10 +460,10 @@ ALTER TABLE `_ProductToPurchasedOrderItem` ADD CONSTRAINT `_ProductToPurchasedOr
 ALTER TABLE `_ProductToPurchasedOrderItem` ADD CONSTRAINT `_ProductToPurchasedOrderItem_B_fkey` FOREIGN KEY (`B`) REFERENCES `PurchasedOrderItem`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `_MaterialRequestItemToProduct` ADD CONSTRAINT `_MaterialRequestItemToProduct_A_fkey` FOREIGN KEY (`A`) REFERENCES `MaterialRequestItem`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `_MaterialRequestItemToProductAttribute` ADD CONSTRAINT `_MaterialRequestItemToProductAttribute_A_fkey` FOREIGN KEY (`A`) REFERENCES `MaterialRequestItem`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `_MaterialRequestItemToProduct` ADD CONSTRAINT `_MaterialRequestItemToProduct_B_fkey` FOREIGN KEY (`B`) REFERENCES `Product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `_MaterialRequestItemToProductAttribute` ADD CONSTRAINT `_MaterialRequestItemToProductAttribute_B_fkey` FOREIGN KEY (`B`) REFERENCES `ProductAttribute`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_PurceasedRequestedItemToPurchasedRequest` ADD CONSTRAINT `_PurceasedRequestedItemToPurchasedRequest_A_fkey` FOREIGN KEY (`A`) REFERENCES `PurceasedRequestedItem`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

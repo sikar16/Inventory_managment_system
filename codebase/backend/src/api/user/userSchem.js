@@ -11,17 +11,9 @@ const userSchem = {
     country: z.string(),
     city: z.string(),
     subCity: z.string(),
-    // role: z.enum([
-    //   "ADMIN",
-    //   "EMPLOYEE",
-    //   "DEPARTMENT_HEAD",
-    //   "LOGESTIC_SUPERVISER",
-    //   "FINANCE",
-    //   "GENERAL_MANAGER",
-    //   "STORE_KEEPER",
-    // ]), 
+    wereda: z.string(),
     departmentId: z.number(),
-    password: z.string().optional(), 
+    password: z.string().optional(),
   }),
 
   login: z.object({
