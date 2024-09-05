@@ -102,14 +102,12 @@ const AddWareHouse: React.FC<AddWareHouseProps> = ({ handleCloseDialog }) => {
                         <Button variant="outlined" color="error" onClick={handleDiscard}>
                             Discard
                         </Button>
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            color="primary"
+                        <button
+                            className='bg-[#002a47] py-1 px-3 text-white rounded-md'
                             disabled={isLoading}
                         >
                             {isLoading ? 'Adding...' : 'Add Warehouse'}
-                        </Button>
+                        </button>
                     </div>
                 </div>
             </form>

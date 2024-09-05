@@ -4,8 +4,8 @@ const purchasedReqRouter=express.Router();
 
 purchasedReqRouter.get("/:id",purchasedReqConntroller.getSinglepurchasedReq),
 purchasedReqRouter.get("/",purchasedReqConntroller.getAllpurchasedReq),
-purchasedReqRouter.post("/",purchasedReqConntroller.createpurchasedReq),
-purchasedReqRouter.put("/:id",purchasedReqConntroller.updatepurchasedReq),
+purchasedReqRouter.post("/create",purchasedReqConntroller.createpurchasedReq),
+purchasedReqRouter.put("/item/:id",purchasedReqConntroller.updatepurchasedReqItem),
 purchasedReqRouter.delete("/:id",purchasedReqConntroller.deletepurchasedReq)
 
 export default purchasedReqRouter

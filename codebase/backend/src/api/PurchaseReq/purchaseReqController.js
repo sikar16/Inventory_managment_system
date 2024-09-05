@@ -5,38 +5,38 @@ const purchasedReqConntroller={
     getSinglepurchasedReq: async (req, res, next) => {
         try {
           const purchasedReqId = parseInt(req.params.id, 10);
-                if (isNaN(purchasedReqId)) {
+          if (isNaN(purchasedReqId)) {
             return res.status(400).json({
               success: false,
               message: "Invalid purchase request ID",
             });
           }
-      
-          const purchasedReq = await prisma.purchasedRequest.findUnique({
+          const purchasedReq = await prisma.purchasedRequest.findFirst({
             where: {
-              id: purchasedReqId,
+              id: +purchasedReqId,
             },
-            include: { 
-              _count: true,
-              user: {
-                include: {
-                  profile: true,
-                },
-              },
-              items: {
-                include: {
-                  products: {
-                    include: {
-                      subcategory: {
-                        include: {
-                          category: true,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
+            include:{
+              user:true,
+              _count:true,
+              items:{
+                include:{
+                  _count:true,
+                  products:{
+                    include:{
+                      materialRequestItem:{
+                        include:{
+                          product:{
+                            include:{
+                              productAttributes:true
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }  
           });
       
           if (!purchasedReq) {
@@ -62,31 +62,31 @@ const purchasedReqConntroller={
     getAllpurchasedReq:async (req,res,next)=>{
         try {
             const purchaseReq=await prisma.purchasedRequest.findMany({
-                include:{
-                    _count: true,
-                    user:{
-                        include:{
-                            profile:true
-                        }
-                    },
-                    items:{
-                        include:{
-                            products:{
-                                include:{
-                                    subcategory:{
-                                        include:{
-                                            category:true 
-                                        }
-                                    }
-                                }
+              include:{
+                user:true,
+                _count:true,
+                items:{
+                  include:{
+                    products:{
+                      include:{
+                        materialRequestItem:{
+                          include:{
+                            product:{
+                              include:{
+                                productAttributes:true
+                              }
                             }
+                          }
                         }
-                    }  
+                      }
+                    }
                   }
+                }
+              }  
             });
             return res.status(200).json({
                 success: true,
-                message: "Fetched all material requests",
+                message: "Fetched all purchase requests",
                 data: purchaseReq,
               });
             
@@ -98,87 +98,160 @@ const purchasedReqConntroller={
         }
     },
 
+
     createpurchasedReq: async (req, res, next) => {
-        try {
-            const requiredFields = ["productId", "purchasedReqId", "totalPrice", "unitPrice", "quantityToBePurchased"];
-            for (const field of requiredFields) {
-                if (!req.body[field]) {
-                    return res.status(400).json({
-                        success: false,
-                        message: `${field} is required`,
-                    });
-                }
-            }
-    
-            if (!req.body.items || !Array.isArray(req.body.items) || req.body.items.length === 0) {
-                return res.status(400).json({
-                    success: false,
-                    message: "items array is required and should not be empty",
-                });
-            }
-    
-            const data = purchasedReqSchema.create.parse(req.body);
-            const isUserExist = await prisma.users.findUnique({
-                where: {
-                    id: data.userId,
-                },
+      try {
+        const requiredFields = ["userId", "totalPrice", "items"];
+        for (const field of requiredFields) {
+          if (!req.body[field]) {
+            return res.status(400).json({
+              success: false,
+              message: `${field} is required`,
             });
-            if (!isUserExist) {
-                return res.status(404).json({
-                    success: false,
-                    message: "User not found",
-                });
-            }
-    
-            const isProductExist = await prisma.product.findUnique({
-                where: {
-                    id: data.productId,
-                },
-                include: {
-                    productAttributes: {
-                        include: {
-                            templateAttribute: true,
-                        },
-                    },
-                },
-            });
-            if (!isProductExist) {
-                return res.status(404).json({
-                    success: false,
-                    message: "Product not found",
-                });
-            }
-                const newPurchaseReq = await prisma.purchasedRequest.create({
-                data: {
-                    totalPrice: data.totalPrice,
-                    userId: data.userId,
-                    purchasedReqId: data.purchasedReqId,
-                    items: {
-                        create: data.items.map(item => ({
-                            remark: item.remark,
-                            unitPrice: item.unitPrice,
-                            quantityToBePurchased: item.quantityToBePurchased,
-                        })),
-                    },
-                },
-            });
-    
-            return res.status(201).json({
-                success: true,
-                message: "Purchase request created successfully",
-                data: newPurchaseReq,
-            });
-    
-        } catch (error) {
-            return res.status(500).json({
-                success: false,
-                message: `Error - ${error.message}`,
-            });
+          }
         }
+    
+        const data = purchasedReqSchema.create.parse(req.body);
+    
+        const isUserExist = await prisma.users.findFirst({
+          where: {
+            id: data.userId,
+            role: "LOGESTIC_SUPERVISER",
+          },
+        });
+        if (!isUserExist) {
+          return res.status(404).json({
+            success: false,
+            message: "User not found",
+          });
+        }
+    
+        // Check if the material request exists
+        const isMaterialReqExist = await prisma.materialRequest.findFirst({
+          where: {
+            id: data.materialReqId,
+          },
+        });
+        if (!isMaterialReqExist) {
+          return res.status(400).json({
+            success: false,
+            message: "Material request not found",
+          });
+        }
+    
+        // Loop through the items to validate each product
+        for (const item of data.items) {
+          const isProductExist = await prisma.product.findFirst({
+            where: {
+              id: item.productId,
+            },
+          });
+          if (!isProductExist) {
+            return res.status(404).json({
+              success: false,
+              message: `Product with id ${item.productId} not found`,
+            });
+          }
+        }
+    
+        // Create the purchase request
+        const newPurchaseReq = await prisma.purchasedRequest.create({
+          data: {
+            totalPrice: data.totalPrice,
+            userId: data.userId,
+            items: {
+              create: data.items.map((item) => ({
+                productId: item.productId,
+                purchasedRequestId: item.purchasedRequestId,
+                quantityToBePurchased: item.quantityToBePurchased,
+                remark: item.remark,
+                unitPrice: item.unitPrice,
+              })),
+            },
+          },
+        });
+    
+        return res.status(201).json({
+          success: true,
+          message: "Purchase request created successfully",
+          data: newPurchaseReq,
+        });
+      } catch (error) {
+        return res.status(500).json({
+          success: false,
+          message: `Error - ${error.message}`,
+        });
+      }
     },
     
+    updatepurchasedReqItem: async (req, res, next) => {
+      try {
+        const purceasedRequestItemId = parseInt(req.params.id, 10);
+        if (isNaN(purceasedRequestItemId)) {
+          return res.status(400).json({
+            success: false,
+            message: "Invalid purchase request item id",
+          });
+        }
     
-    updatepurchasedReq:(req,res,next)=>{},
+        // Validate the request body
+        const data = purchasedReqSchema.updateItems.parse(req.body);
+    
+        // Check if the product exists
+        const isProductExist = await prisma.product.findFirst({
+          where: {
+            id: +data.productId,
+          },
+        });
+    
+        if (!isProductExist) {
+          return res.status(404).json({
+            success: false,
+            message: "Product not found",
+          });
+        }
+    
+        // Check if the purceasedRequestedItem exists
+        // const isRequestItemExist = await prisma.purceasedRequestedItem.findUnique({
+        //   where: {
+        //     id: +purceasedRequestItemId,
+        //   },
+        // });
+    
+        // if (!isRequestItemExist) {
+        //   return res.status(404).json({
+        //     success: false,
+        //     message: "Purchase request item not found",
+        //   });
+        // }
+    
+        // Update purchase request item
+        const updatepurchasedReqItem = await prisma.purceasedRequestedItem.update({
+          where: {
+            id: +purceasedRequestItemId,
+          },
+          data: {
+            productId: data.productId,
+            remark: data.remark,
+            quantityToBePurchased: data.quantityToBePurchased,
+          },
+        });
+    
+        return res.status(200).json({
+          success: true,
+          message: "Successfully updated purchase request item",
+          data: updatepurchasedReqItem,
+        });
+      } catch (error) {
+        return res.status(500).json({
+          success: false,
+          message: `Error - ${error.message}`,
+        });
+      }
+    },
+    
+
+
     deletepurchasedReq:async (req,res,next)=>{
         try {
             const purchaseReqId = parseInt(req.params.id, 10);

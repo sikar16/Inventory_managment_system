@@ -80,14 +80,12 @@ const AddSubCategory: React.FC<AddSubcategoryProps> = ({ handleCloseDialog }) =>
                         <Button variant="outlined" color="error" onClick={handleDiscard}>
                             Discard
                         </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            className="bg-[#002a47]"
+                        <button
+                            className='bg-[#002a47] py-1 px-3 text-white rounded-md'
                             onClick={handleAddSubCategory}
                         >
                             Add Sub Category
-                        </Button>
+                        </button>
                     </div>
                 </div>
             </form>

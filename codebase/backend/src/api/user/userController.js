@@ -78,130 +78,6 @@ const userController = {
     }
   },
 
-  // createUser: async (req, res, next) => {
-  //   try {
-  //     const data = userSchema.register.parse(req.body);
-  //     const isUserExist = await prisma.users.findFirst({
-  //       where: {
-  //         email: data.email,
-  //       },
-  //     });
-  //     if (isUserExist) {
-  //       return res.status(400).json({
-  //         success: false,
-  //         message: "This email is already registered",
-  //       });
-  //     }
-
-  //     const isPhoneExist = await prisma.profile.findFirst({
-  //       where: {
-  //         phone: data.phone,
-  //       },
-  //     });
-  //     if (isPhoneExist) {
-  //       return res.status(400).json({
-  //         success: false,
-  //         message: "This phone is already registered",
-  //       });
-  //     }
-
-  //     let addressId;
-  //     const isAddressExist = await prisma.address.findFirst({
-  //       where: {
-  //         country: data.country,
-  //         city: data.city,
-  //         subCity: data.subCity,
-  //         wereda: data.wereda,
-  //       },
-  //     });
-
-  //     if (isAddressExist) {
-  //       addressId = isAddressExist.id;
-  //     } else {
-  //       const newAddress = await prisma.address.create({
-  //         data: {
-  //           country: data.country,
-  //           city: data.city,
-  //           subCity: data.subCity,
-  //           wereda: data.wereda,
-  //         },
-  //       });
-  //       addressId = newAddress.id;
-  //     }
-
-  //     const department = await prisma.department.findFirst({
-  //       where: {
-  //         id: +data.departmentId,
-  //       },
-  //     });
-  //     console.log(department == null);
-
-  //     if (department == null) {
-  //       return res.status(400).json({
-  //         success: false,
-  //         message: `Error - ${error}`,
-  //       });
-  //     }
-  //     console.log(department);
-  //     return;
-
-  //     const hashedPassword = await bcrypt.hashSync(data.password, 10);
-
-  //     console.log({
-  //       activeStatus: "ACTIVE",
-  //       email: data.email,
-  //       departmentId: data.departmentId,
-  //       password: {
-  //         create: {
-  //           password: hashedPassword,
-  //         },
-  //       },
-  //       profile: {
-  //         create: {
-  //           firstName: data.firstName,
-  //           lastName: data.lastName,
-  //           middleName: data.middleName,
-  //           gender: data.gender,
-  //           phone: data.phone,
-  //           addressId: addressId,
-  //         },
-  //       },
-  //     });
-  //     return;
-  //     const newUser = await prisma.users.create({
-  //       data: {
-  //         activeStatus: "ACTIVE",
-  //         email: data.email,
-  //         departmentId: data.departmentId,
-  //         password: {
-  //           create: {
-  //             password: hashedPassword,
-  //           },
-  //         },
-  //         profile: {
-  //           create: {
-  //             firstName: data.firstName,
-  //             lastName: data.lastName,
-  //             middleName: data.middleName,
-  //             gender: data.gender,
-  //             phone: data.phone,
-  //             addressId: addressId,
-  //           },
-  //         },
-  //       },
-  //     });
-  //     return res.status(200).json({
-  //       success: true,
-  //       message: "User created successfully",
-  //       data: registeredUser,
-  //     });
-  //   } catch (error) {
-  //     return res.status(500).json({
-  //       success: false,
-  //       message: `${error}`,
-  //     });
-  //   }
-  // },
 
   createUser: async (req, res, next) => {
     try {
@@ -380,12 +256,14 @@ const userController = {
         },
         data: {
           departmentId: +data.departmentId,
+          email:data.email,
           profile: {
             update: {
               firstName: data.firstName,
               middleName: data.middleName,
               lastName: data.lastName,
               gender: data.gender,
+
             },
           },
         },
@@ -400,46 +278,12 @@ const userController = {
       console.error(error);
       return res.status(500).json({
         success: false,
-        message: "Error while updating user",
+        message: `Error- ${error}`,
       });
     }
   },
 
-  // updateUser: async (req, res, next) => {
-  //   try {
-  //     const userId = parseInt(req.params.id, 10);
-  //     if (isNaN(userId)) {
-  //       return res.status(400).json({
-  //         success: false,
-  //         message: "invalid user id",
-  //       });
-  //     }
-  //     const updatedUser = await prisma.users.update({
-  //       where: {
-  //         id: userId,
-  //       },
-  //       data: req.body,
-  //     });
-  //     return res.status(200).json({
-  //       success: true,
-  //       message: "user updated successfully",
-  //       data: updatedUser,
-  //     });
-  //   } catch (error) {
-  //     if (error.code === "P2025") {
-  //       return res.status(404).json({
-  //         success: false,
-  //         message: "user not found",
-  //       });
-  //     }
 
-  //     console.error(error);
-  //     return res.status(500).json({
-  //       success: false,
-  //       message: "error while updating user",
-  //     });
-  //   }
-  // },
 
   login: async (req, res, next) => {
     try {

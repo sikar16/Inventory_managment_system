@@ -26,9 +26,11 @@ const userSchem = {
     middleName: z.string().min(3),
     lastName: z.string().min(3),
     gender: z.enum(["MALE", "FEMALE"]),
+    email:z.string(),
     country: z.string(),
     city: z.string(),
-    subcity: z.string(),
+    subCity: z.string(),
+    wereda:z.string(),
     departmentId: z.number(),
   }),
 

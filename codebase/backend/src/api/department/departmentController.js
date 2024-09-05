@@ -123,7 +123,7 @@ const isDepartementExist=await prisma.department.findFirst({
         }
       })
 
-      if(isDepartementExist){
+      if(!isDepartementExist){
         return res.status(404).json({
           success: false,
           message: "department is already exist",

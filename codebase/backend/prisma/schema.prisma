@@ -278,7 +278,7 @@ model PurchasedRequest {
   createdAt            DateTime @default(now())
   isApproviedByGM      Boolean  @default(false)
   isApproviedByFinance Boolean  @default(false)
-  totalPrice           Decimal
+  totalPrice           Decimal  
   // reference
   user                 Users    @relation(fields: [userId], references: [id])
 

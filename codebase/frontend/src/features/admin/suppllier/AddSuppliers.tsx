@@ -170,14 +170,12 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
                         <Button variant="outlined" color="error" onClick={handleDiscard}>
                             Discard
                         </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            className="bg-[#002a47]"
+                        <button
+                            className='bg-[#002a47] py-1 px-3 text-white rounded-md'
                             onClick={handleAddSupplier}
                         >
                             Add Supplier
-                        </Button>
+                        </button>
                     </div>
                 </div>
             </form>

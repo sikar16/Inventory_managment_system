@@ -11,28 +11,21 @@ const storeController = {
           message: "Invalid store ID",
         });
       }
-
-      const store = await prisma.store.findUnique({
+  
+      const store = await prisma.store.findFirst({
         where: { id: storeId },
         include: {
-          address: {
-            include: {
-              country: true,
-              city: true,
-              subCity: true,
-              wereda: true,
-            },
-          },
+          address: true, 
         },
       });
-
+  
       if (!store) {
         return res.status(404).json({
           success: false,
           message: "Store not found",
         });
       }
-
+  
       return res.status(200).json({
         success: true,
         message: "Store fetched successfully",
@@ -46,6 +39,8 @@ const storeController = {
       });
     }
   },
+  
+  
 
   getAllStores: async (req, res) => {
     try {
@@ -53,9 +48,9 @@ const storeController = {
         include: {
           address: {
             include: {
-              profile: true,
-              suppliers: true,
-              store: true,
+              // profile: true,
+              // suppliers: true,
+              // store: true,
             },
           },
         },
@@ -87,7 +82,7 @@ const storeController = {
         }
       }
 
-      const data = storeSchem.register.parse(req.body);
+      const data = storeSchem.registor.parse(req.body);
 
       const existingStore = await prisma.store.findFirst({
         where: { name: data.name },

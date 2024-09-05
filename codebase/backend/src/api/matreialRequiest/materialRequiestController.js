@@ -1,4 +1,3 @@
-import { date } from "zod";
 import prisma from "../../config/prisma.js";
 import materialRequiestSchem from "./materialRequiestSchem.js";
 
@@ -12,7 +11,6 @@ const materialRequiestController = {
           message: "Invalid material request ID",
         });
       }
-
       const materialReq = await prisma.materialRequest.findFirst({
         where: {
           id: materialReqId,
@@ -33,7 +31,7 @@ const materialRequiestController = {
           items:{
             include:{
               _count:true,
-              products:{
+              product:{
                 include:{
                   productAttributes:true,
                   
@@ -63,7 +61,7 @@ const materialRequiestController = {
       });
     }
   },
-
+  
   getAllMaterialRequests: async (req, res, next) => {
     try {
       const materialReqs = await prisma.materialRequest.findMany({
@@ -83,7 +81,7 @@ const materialRequiestController = {
           items:{
             include:{
               _count:true,
-              products:{
+              product:{
                 include:{
                   productAttributes:true,
                   
@@ -91,7 +89,7 @@ const materialRequiestController = {
               }
             }
           }
-        }  
+        } 
       });
 
       return res.status(200).json({
@@ -149,11 +147,7 @@ const materialRequiestController = {
           message: "Department head not found",
         });
       }
-
       
-
-    
-
       for (let index = 0; index < data.items.length; index++) {
         const element = data.items[index];
         const isProductExist = await prisma.product.findFirst({
@@ -195,6 +189,10 @@ const materialRequiestController = {
       });
     }
   },
+
+ 
+
+
   updatedDepartmentHead:async (req,res,next)=>{
   try {
       const materialReqId = parseInt(req.params.id, 10);
