@@ -18,9 +18,9 @@ const departmentController = {
         },
         include: {
           _count: {
-            select: { users: true } 
-          }
-        }
+            select: { users: true },
+          },
+        },
       });
 
       if (!department) {
@@ -38,7 +38,7 @@ const departmentController = {
       console.error(error);
       return res.status(500).json({
         success: false,
-        message:` ${error}`,
+        message: ` ${error}`,
       });
     }
   },
@@ -56,33 +56,33 @@ const departmentController = {
       console.log(error);
       return res.status(500).json({
         success: false,
-        message:`${error}`,
+        message: `${error}`,
       });
     }
   },
 
   createDepartment: async (req, res, next) => {
     try {
-      const requiredField=["name"]
-      for(const field of requiredField){
-        if(!req.body[field]){
+      const requiredField = ["name"];
+      for (const field of requiredField) {
+        if (!req.body[field]) {
           return res.status(403).json({
-             success:false,
-             message:`${field} is required`
-          })
+            success: false,
+            message: `${field} is required`,
+          });
         }
       }
       const data = departmentSchema.createDepartment.parse(req.body);
-      const isdepartmentExist=await prisma.department.findFirst({
-      where:{
-      name:data.name
-      }
-   })
-      if(isdepartmentExist){
+      const isdepartmentExist = await prisma.department.findFirst({
+        where: {
+          name: data.name,
+        },
+      });
+      if (isdepartmentExist) {
         return res.status(400).json({
-          success:false,
-          message:"this department is already exist "
-      })
+          success: false,
+          message: "this department is already exist ",
+        });
       }
 
       const newDepartment = await prisma.department.create({
@@ -99,7 +99,7 @@ const departmentController = {
     } catch (error) {
       return res.status(500).json({
         success: false,
-        message:` error:- ${error}`,
+        message: ` error:- ${error}`,
       });
     }
   },
@@ -113,17 +113,15 @@ const departmentController = {
           message: "invalid department id",
         });
       }
-      
-
 
       const data = departmentSchema.updateDepartment.parse(req.body);
-const isDepartementExist=await prisma.department.findFirst({
-        where:{
-          name:data.name
-        }
-      })
+      const isDepartementExist = await prisma.department.findFirst({
+        where: {
+          name: data.name,
+        },
+      });
 
-      if(!isDepartementExist){
+      if (isDepartementExist) {
         return res.status(404).json({
           success: false,
           message: "department is already exist",
@@ -175,7 +173,7 @@ const isDepartementExist=await prisma.department.findFirst({
         });
       }
 
-    const deleteDepartment=  await prisma.department.delete({
+      const deleteDepartment = await prisma.department.delete({
         where: {
           id: departmentId,
         },
@@ -184,7 +182,7 @@ const isDepartementExist=await prisma.department.findFirst({
       return res.status(200).json({
         success: true,
         message: "Department deleted successfully",
-        data:deleteDepartment
+        data: deleteDepartment,
       });
     } catch (error) {
       console.error(error);

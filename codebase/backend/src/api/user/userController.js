@@ -78,12 +78,9 @@ const userController = {
     }
   },
 
-
   createUser: async (req, res, next) => {
     try {
-      console.log(req.body);
       const data = userSchema.register.parse(req.body);
-
       // Check if the email is already registered
       const isUserExist = await prisma.users.findFirst({
         where: {
@@ -112,32 +109,9 @@ const userController = {
         });
       }
 
-      // Check if the address exists
-      let addressId;
-      const isAddressExist = await prisma.address.findFirst({
-        where: {
-          country: data.country,
-          city: data.city,
-          subCity: data.subCity,
-        },
-      });
-
-      if (isAddressExist) {
-        addressId = isAddressExist.id;
-      } else {
-        const newAddress = await prisma.address.create({
-          data: {
-            country: data.country,
-            city: data.city,
-            subCity: data.subCity,
-          },
-        });
-        addressId = newAddress.id;
-      }
-
       // Check if the department exists
-      const department = await prisma.department.findUnique({
-        where: { id: data.departmentId },
+      const department = await prisma.department.findFirst({
+        where: { id: +data.departmentId },
       });
 
       if (!department) {
@@ -147,23 +121,52 @@ const userController = {
         });
       }
 
+      // Check if the address exists
+      let addressId;
+      const isAddressExist = await prisma.address.findFirst({
+        where: {
+          country: data.country,
+          city: data.city,
+          subCity: data.subCity,
+          wereda: data.wereda,
+        },
+      });
+      // if address exist
+      if (isAddressExist) {
+        addressId = isAddressExist.id;
+      }
+      // create new
+      else {
+        const newAddress = await prisma.address.create({
+          data: {
+            country: data.country,
+            city: data.city,
+            subCity: data.subCity,
+            wereda: data.wereda,
+          },
+        });
+        addressId = newAddress.id;
+      }
+
       // Hash the password
       const hashedPassword = await bcrypt.hashSync(data.password, 10);
 
       // Create the user
       const newUser = await prisma.users.create({
+        include: {
+          profile: true,
+          department: true,
+        },
         data: {
           activeStatus: "ACTIVE",
           email: data.email,
-          role: 'EMPLOYEE',
+          role: "EMPLOYEE",
           departmentId: +data.departmentId,
-
-          // departmentName:data.departmentName,
-          // password: {
-          //   create: {
-          //     password: hashedPassword,
-          //   },
-          // },
+          password: {
+            create: {
+              password: hashedPassword,
+            },
+          },
           profile: {
             create: {
               firstName: data.firstName,
@@ -177,25 +180,10 @@ const userController = {
         },
       });
 
-      // Fetch the registered user with related data
-      const registeredUser = await prisma.users.findFirst({
-        where: {
-          id: newUser.id,
-        },
-        include: {
-          profile: {
-            include: {
-              address: true,
-            },
-          },
-          // departmentName: true,
-        },
-      });
-
       return res.status(200).json({
         success: true,
         message: "User created successfully",
-        data: registeredUser,
+        data: newUser,
       });
     } catch (error) {
       return res.status(500).json({
@@ -254,14 +242,13 @@ const userController = {
         },
         data: {
           departmentId: +data.departmentId,
-          email:data.email,
+          email: data.email,
           profile: {
             update: {
               firstName: data.firstName,
               middleName: data.middleName,
               lastName: data.lastName,
               gender: data.gender,
-
             },
           },
         },
@@ -280,8 +267,6 @@ const userController = {
       });
     }
   },
-
-
 
   login: async (req, res, next) => {
     try {

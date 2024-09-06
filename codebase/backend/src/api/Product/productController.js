@@ -323,26 +323,26 @@ const productController = {
           message: "Invalid product ID",
         });
       }
-  
+
       const isProductExist = await prisma.product.findFirst({
         where: {
           id: productId,
         },
       });
-  
+
       if (!isProductExist) {
         return res.status(404).json({
           success: false,
           message: "Product not found",
         });
       }
-  
+
       await prisma.product.delete({
         where: {
           id: productId,
         },
       });
-  
+
       return res.status(200).json({
         success: true,
         message: "Product deleted successfully",
@@ -356,7 +356,6 @@ const productController = {
       });
     }
   },
-  
 };
 
 export default productController;
