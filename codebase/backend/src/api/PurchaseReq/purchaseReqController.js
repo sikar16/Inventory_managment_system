@@ -262,7 +262,7 @@ const purchasedReqConntroller={
         });
       }
 
-      const ispurchaseReqExist = await prisma.purchasedRequest.findUnique({
+      const ispurchaseReqExist = await prisma.purchasedRequest.findFirst({
         where: { id: purchaseReqId },
       });
       if (!ispurchaseReqExist) {

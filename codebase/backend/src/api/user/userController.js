@@ -119,7 +119,6 @@ const userController = {
           country: data.country,
           city: data.city,
           subCity: data.subCity,
-          wereda: data.wereda,
         },
       });
 
@@ -131,7 +130,6 @@ const userController = {
             country: data.country,
             city: data.city,
             subCity: data.subCity,
-            wereda: data.wereda,
           },
         });
         addressId = newAddress.id;
@@ -157,7 +155,7 @@ const userController = {
         data: {
           activeStatus: "ACTIVE",
           email: data.email,
-          // role: data.role,
+          role: 'EMPLOYEE',
           departmentId: +data.departmentId,
 
           // departmentName:data.departmentName,

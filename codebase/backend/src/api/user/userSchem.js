@@ -11,7 +11,6 @@ const userSchem = {
     country: z.string(),
     city: z.string(),
     subCity: z.string(),
-    wereda: z.string(),
     departmentId: z.number(),
     password: z.string().optional(),
   }),

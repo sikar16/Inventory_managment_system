@@ -33,7 +33,8 @@ function AddUser() {
     city: '',
     subCity: '',
     departmentId: 0,
-    password: '',
+    password: "",
+    role: 'EMPLOYEE'
   });
 
   const [adduser] = useAddNewuserMutation();
