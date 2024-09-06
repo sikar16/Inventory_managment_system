@@ -6,7 +6,7 @@ import "swiper/css/pagination";
 import CardList from "./CardList";
 import { useGetAlldepartmentQuery } from "../services/department_service";
 
-function Slider() {
+function Slider({ usersByDepartment }) {
     const {
         isError,
         isLoading,
@@ -48,8 +48,9 @@ function Slider() {
             >
                 <SwiperSlide className="gap-1 mx-2 rounded-xl">
                     <CardList
+
                         name="All users"
-                        detaile="100"
+                        detaile={Object.values(usersByDepartment).reduce((acc, count) => acc + count, 0)} // Sum of all users
                     />
                 </SwiperSlide>
                 {isLoading && <SwiperSlide>Loading...</SwiperSlide>}
@@ -58,7 +59,7 @@ function Slider() {
                     <SwiperSlide key={department.id} className="mx-6 rounded-xl ">
                         <CardList
                             name={department.name}
-                            detaile={department._count?.users}
+                            detaile={usersByDepartment[department.id] || 0} // Get the count for each department or 0 if none
                         />
                     </SwiperSlide>
                 ))}

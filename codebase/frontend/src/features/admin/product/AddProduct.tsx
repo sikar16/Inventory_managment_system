@@ -63,7 +63,9 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+    };
 
+    const handleAddProduct = async () => {
         const subCategoryId = Number(selectedSubCategory);
 
         if (isNaN(subCategoryId)) {
@@ -71,13 +73,17 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
             return;
         }
 
+        const items = attributes.map(attr => ({
+            templateAttributeId: attr.templateAttributeId,
+            value: attr.value,
+        }));
+
         const formData = {
             name: productName,
             category: selectedCategory,
-            subCategoryId: Number(selectedSubCategory),
-            // subCategoryId: subCategoryId,
+            subcategoryId: subCategoryId,
             template: selectedTemplate === 'Other' ? customTemplate : selectedTemplate,
-            attributes,
+            items,
         };
 
         try {
@@ -85,10 +91,12 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
             if (isAddSuccess) {
                 handleCloseDialog();
             }
+            console.log(formData);
         } catch (error) {
             console.error('Error adding product:', error);
         }
     };
+
 
     const handleAttributeChange = (index: number, field: 'key' | 'value', newValue: string) => {
         setAttributes(prevAttributes =>
@@ -135,9 +143,9 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
                     onChange={handleSubCategoryChange}
                 >
                     {filteredSubCategories.length > 0 ? (
-                        filteredSubCategories.map(subCategory => (
-                            <MenuItem key={subCategory.id} value={subCategory.id}>
-                                {subCategory.name}
+                        filteredSubCategories.map(subcategory => (
+                            <MenuItem key={subcategory.id} value={subcategory.id}>
+                                {subcategory.name}
                             </MenuItem>
                         ))
                     ) : (
@@ -197,7 +205,8 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
                 )}
                 <div className='pt-10'>
                     <div className='flex justify-end'>
-                        <button
+                        <button onClick={handleAddProduct}
+
                             className='bg-[#002a47] py-1 px-3 text-white rounded-md'>Add Product</button>
                     </div>
                 </div>

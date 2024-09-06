@@ -34,9 +34,20 @@ export default function UserList() {
   if (isError) return <h1>Error: {error.toString()}</h1>;
   if (isLoading) return <Loading />;
 
+  const usersByDepartment = data?.reduce((acc, user) => {
+    const departmentId = user?.department?.id;
+    if (departmentId) {
+      if (!acc[departmentId]) {
+        acc[departmentId] = 0;
+      }
+      acc[departmentId] += 1;
+    }
+    return acc;
+  }, {});
+
   const filteredUsers = data?.filter((user) => {
     if (!user || !user.profile || !user.department) {
-      return false; // Skip if user or its nested properties are undefined or null
+      return false;
     }
 
     const lowercasedSearchTerm = searchTerm.toLowerCase();
@@ -71,7 +82,7 @@ export default function UserList() {
               </button>
             </Link>
           </div>
-          <Slider />
+          <Slider usersByDepartment={usersByDepartment} /> {/* Pass usersByDepartment to Slider */}
           <div className="my-4 px-5">
             <div className="text-gray-500">
               <ul className="flex gap-5">

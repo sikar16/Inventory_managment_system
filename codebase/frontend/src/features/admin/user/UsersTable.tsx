@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -10,8 +11,8 @@ import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useState } from "react";
 import { UserType } from "../../../_types/user_type";
+import { useDeleteUserMutation } from "../../../services/user_service";
 
 const columns = [
   { id: "no", label: "No", maxWidth: 10 },
@@ -20,8 +21,8 @@ const columns = [
   { id: "email", label: "Email", minWidth: 80, align: "left" },
   { id: "phone", label: "Phone", minWidth: 80, align: "left" },
   { id: "gender", label: "Gender", minWidth: 50, align: "left" },
-  { id: "address", label: "Address", minWidth: 250, align: "left" },
-  { id: "actions", label: "Actions", minWidth: 30, align: "center" },
+  { id: "address", label: "Address", minWidth: 180, align: "left" },
+  { id: "actions", label: "Actions", minWidth: 30, align: "left" },
 ];
 
 function createData(
@@ -31,9 +32,10 @@ function createData(
   email: string,
   phone: string,
   gender: string,
-  address: string
+  address: string,
+  isActive: boolean
 ) {
-  return { no, fullName, department, email, phone, gender, address };
+  return { no, fullName, department, email, phone, gender, address, isActive };
 }
 
 interface UsersTableProps {
@@ -45,8 +47,11 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedRow, setSelectedRow] = useState<any>(null);
-  const [rows, setRows] = useState(
-    userList.map((i) =>
+  const [rows, setRows] = useState<any[]>([]);
+
+  // Update the rows state whenever userList changes
+  useEffect(() => {
+    const newRows = userList.map((i) =>
       createData(
         i.id,
         `${i.profile.firstName} ${i.profile.middleName} ${i.profile.lastName}`,
@@ -54,10 +59,12 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
         `${i.email}`,
         `${i.profile.phone}`,
         `${i.profile.gender}`,
-        `${i.profile.address.city} ${i.profile.address.subCity}`
+        `${i.profile.address.city} ${i.profile.address.subCity}`,
+        true
       )
-    )
-  );
+    );
+    setRows(newRows);
+  }, [userList]); // <-- This ensures rows are updated whenever userList changes
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => {
     setPage(newPage);
@@ -70,7 +77,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>, row: any) => {
     setMenuAnchorEl(event.currentTarget);
-    setSelectedRow(row); // Store the selected row
+    setSelectedRow(row);
   };
 
   const handleCloseMenu = () => {
@@ -78,23 +85,48 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
     setSelectedRow(null);
   };
 
-  const handleDelete = async (id: number) => {
+  const [deleteuser] = useDeleteUserMutation()
+
+
+  async function handleDelete(id) {
     try {
+      // await fetch(`https://inventory.huludelala.com/api/product/${id}`, {
       await fetch(`http://localhost:8888/api/user/${id}`, {
-        method: "DELETE",
-
-      });
-      console.log(`User with id ${id} deleted`);
-
+        method: "DELETE"
+      })
       setRows((prevRows) => prevRows.filter((row) => row.no !== id));
-      setMenuAnchorEl(null);
-    } catch (error) {
-      console.error("Error deleting user:", error);
+      console.log(id)
     }
+    catch (error) {
+      throw new Error("Error while deleting user")
+    }
+  }
+
+  // const handleDelete = async (id: number) => {
+  //   try {
+  //     await fetch(`http://localhost:8888/api/user/${id}`, {
+  //       method: "DELETE",
+  //     });
+  //     console.log(`User with id ${id} deleted`);
+
+  //     setRows((prevRows) => prevRows.filter((row) => row.no !== id));
+  //     setMenuAnchorEl(null);
+  //   } catch (error) {
+  //     console.error("Error deleting user:", error);
+  //   }
+  // };
+
+  const activeStatus = (id: number) => {
+    setRows((prevRows) =>
+      prevRows.map((row) =>
+        row.no === id ? { ...row, isActive: !row.isActive } : row
+      )
+    );
+    setMenuAnchorEl(null);
   };
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden", padding: "30px" }} className="bg-green-900">
+    <Paper sx={{ width: "100%", overflow: "hidden", padding: "30px" }}>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table>
           <TableHead>
@@ -104,7 +136,6 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
                   key={column.id}
                   align={column.align}
                   style={{ minWidth: column.minWidth }}
-                  sx={{ color: "gray" }} // Dark mode text color
                 >
                   {column.label}
                 </TableCell>
@@ -128,14 +159,18 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
                           >
                             <MoreVertIcon />
                           </IconButton>
-
-                          <Menu
-                            anchorEl={menuAnchorEl}
-                            open={Boolean(menuAnchorEl)}
-                            onClose={handleCloseMenu}
-                          >
+                          <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
                             <MenuItem>Edit</MenuItem>
                             <MenuItem onClick={() => handleDelete(row.no)}>Delete</MenuItem>
+                            {row.isActive ? (
+                              <MenuItem onClick={() => activeStatus(row.no)}>
+                                <button className="text-red-600">Deactivate</button>
+                              </MenuItem>
+                            ) : (
+                              <MenuItem onClick={() => activeStatus(row.no)}>
+                                <button className="text-green-600">Activate</button>
+                              </MenuItem>
+                            )}
                           </Menu>
                         </>
                       ) : (

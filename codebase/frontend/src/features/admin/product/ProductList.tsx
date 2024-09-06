@@ -137,7 +137,7 @@ export default function ProductList() {
                             <p className='text-md'> Product ID: <span className='text-sm'>{selectedProduct.productId}</span> </p>
                             <p className='text-md'>Product: <span className='text-sm'>{selectedProduct.product} </span></p>
                             <p className='text-md'>Category: <span className='text-sm'>{selectedProduct.category} </span></p>
-                            <p className='text-md'>Template: <span className='text-sm'>Mobile </span></p>
+                            <p className='text-md'>Template: <span className='text-sm'> </span></p>
                             <p className='text-md'>Attributes:
                                 <div className='grid grid-cols-2 w-full text-sm gap-2 mt-2'>
                                     <p className='ms-3'>ROM  - 8GB</p>

@@ -85,6 +85,15 @@ export const userApi = createApi({
           //   Authorization: "token",
         },
       }),
+      invalidatesTags: ['user'],
+      transformErrorResponse: (response: any) => {
+        try {
+          const message = response?.data?.message;
+          return extractErrorMessage(message);
+        } catch (error) {
+          return 'An unexpected error occurred while processing your request.';
+        }
+      },
     }),
   }),
 });
