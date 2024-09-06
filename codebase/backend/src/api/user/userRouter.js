@@ -1,11 +1,18 @@
-import express from 'express'
-import userController from './userController.js'
-import {isAdmin, isAuth} from '../../middleware/auth.js'
-const userRouter=express.Router()
-userRouter.get("/:id",userController.getSingleUser)
-userRouter.get("/",userController.getAllUsers)
-userRouter.post("/register",userController.createUser)//[isAuth,isAdmin]
-userRouter.put("/:id",userController.updateUser)
-userRouter.delete("/:id",userController.deleteUser)
+import express from "express";
+import userController from "./userController.js";
+import { isAdmin, isAuth } from "../../middleware/auth.js";
+const userRouter = express.Router();
+userRouter.get("/:id", userController.getSingleUser);
+userRouter.get("/", [isAdmin], userController.getAllUsers);
+userRouter.post("/register", [isAdmin], userController.createUser);
 
-export default userRouter; 
+userRouter.put("/change-password", userController.changePassword);
+userRouter.put("/change-phone-email", userController.changePhoneEmail);
+
+userRouter.put("/assignRole/:id", [isAdmin], userController.assignRole);
+userRouter.put("/changeStatus/:id", [isAdmin], userController.changeStatus);
+
+userRouter.put("/:id", [isAdmin], userController.updateUser);
+userRouter.delete("/:id", [isAdmin], userController.deleteUser);
+
+export default userRouter;

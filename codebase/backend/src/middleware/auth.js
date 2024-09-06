@@ -5,7 +5,7 @@ import { CompanyRole } from "@prisma/client";
 
 export const isAuth = async (req, res, next) => {
   const token = req.headers.authorization;
-  console.log(token);
+
   if (!token) {
     return res.status(401).json({
       success: false,
@@ -14,9 +14,10 @@ export const isAuth = async (req, res, next) => {
   }
   try {
     const payLoad = jws.verify(token, SECRET);
+
     const user = await prisma.users.findFirst({
       where: {
-        id: payLoad.userId,
+        id: +payLoad.userId,
       },
     });
     if (!user) {
@@ -25,6 +26,7 @@ export const isAuth = async (req, res, next) => {
         message: "user not found",
       });
     }
+
     req.user = user;
     next();
   } catch (error) {

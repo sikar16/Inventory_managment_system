@@ -20,13 +20,30 @@ const userSchem = {
     password: z.string().min(6),
     email: z.string().email(),
   }),
-
+  assignRole: z.object({
+    role: z.enum([
+      "ADMIN",
+      "EMPLOYEE",
+      "DEPARTMENT_HEAD",
+      "LOGESTIC_SUPERVISER",
+      "FINANCE",
+      "GENERAL_MANAGER",
+      "STORE_KEEPER",
+    ]),
+  }),
+  changeStatus: z.object({
+    activeStatus: z.enum(["ACTIVE", "INACTIVE", "BLOCKED"]),
+  }),
+  changePassword: z.object({
+    oldPassword: z.string().min(6),
+    newPassword: z.string().min(6),
+    confirmPassword: z.string().min(6),
+  }),
   updateProfile: z.object({
     firstName: z.string().min(3),
     middleName: z.string().min(3),
     lastName: z.string().min(3),
     gender: z.enum(["MALE", "FEMALE"]),
-    email: z.string(),
     country: z.string(),
     city: z.string(),
     subCity: z.string(),
@@ -34,11 +51,9 @@ const userSchem = {
     departmentId: z.number(),
   }),
 
-  changePhone: z.object({
-    phone: z.string().min(10).max(14),
-  }),
-  changeEmail: z.object({
+  changeEmailPhone: z.object({
     email: z.string().email(),
+    phone: z.string().min(10).max(14),
   }),
 
   changePassword: z.object({

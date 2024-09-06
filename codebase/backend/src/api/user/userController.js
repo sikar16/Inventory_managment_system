@@ -236,21 +236,51 @@ const userController = {
           message: "department not found",
         });
       }
+      // Check if the address exists
+      let addressId;
+      const isAddressExist = await prisma.address.findFirst({
+        where: {
+          country: data.country,
+          city: data.city,
+          subCity: data.subCity,
+          wereda: data.wereda,
+        },
+      });
+      // if address exist
+      if (isAddressExist) {
+        addressId = isAddressExist.id;
+      }
+      // create new
+      else {
+        const newAddress = await prisma.address.create({
+          data: {
+            country: data.country,
+            city: data.city,
+            subCity: data.subCity,
+            wereda: data.wereda,
+          },
+        });
+        addressId = newAddress.id;
+      }
       const updatedUser = await prisma.users.update({
         where: {
           id: +userId,
         },
         data: {
           departmentId: +data.departmentId,
-          email: data.email,
           profile: {
             update: {
               firstName: data.firstName,
               middleName: data.middleName,
               lastName: data.lastName,
               gender: data.gender,
+              addressId: +addressId,
             },
           },
+        },
+        include: {
+          profile: true,
+          department: true,
         },
       });
 
@@ -332,6 +362,26 @@ const userController = {
           message: "invalid user id",
         });
       }
+      const user = await prisma.users.findFirst({
+        where: {
+          id: +userId,
+        },
+        include: {
+          profile: {
+            include: {
+              address: true,
+            },
+          },
+        },
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+      // start deleting
       await prisma.password.delete({
         where: {
           userId: +userId,
@@ -364,6 +414,212 @@ const userController = {
       return res.status(500).json({
         success: false,
         message: "error while deleting user",
+      });
+    }
+  },
+
+  assignRole: async (req, res, next) => {
+    try {
+      const userId = parseInt(req.params.id, 10);
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid user ID",
+        });
+      }
+      const data = userSchem.assignRole.parse(req.body);
+      //check if user exist with the id
+      const user = await prisma.users.findFirst({
+        where: {
+          id: +userId,
+        },
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      const updatedUser = await prisma.users.update({
+        where: {
+          id: +userId,
+        },
+        data: {
+          role: data.role,
+        },
+        include: {
+          profile: true,
+          department: true,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "User updated successfully",
+        data: updatedUser,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: `Error- ${error}`,
+      });
+    }
+  },
+
+  changeStatus: async (req, res, next) => {
+    try {
+      const userId = parseInt(req.params.id, 10);
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid user ID",
+        });
+      }
+      const data = userSchem.changeStatus.parse(req.body);
+      //check if user exist with the id
+      const user = await prisma.users.findFirst({
+        where: {
+          id: +userId,
+        },
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      const updatedUser = await prisma.users.update({
+        where: {
+          id: +userId,
+        },
+        data: {
+          activeStatus: data.activeStatus,
+        },
+        include: {
+          profile: true,
+          department: true,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: `User ${data.activeStatus} successfully`,
+        data: updatedUser,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: `Error- ${error}`,
+      });
+    }
+  },
+
+  changePassword: async (req, res, next) => {
+    const user = req.user;
+    const data = userSchem.changePassword.parse(req.body);
+    //confirm and new password the same
+    if (data.newPassword != data.confirmPassword) {
+      return res.status(403).json({
+        success: false,
+        message: `password does not much`,
+      });
+    }
+    // previes password check
+    const dbPassword = await prisma.password.findFirst({
+      where: {
+        id: +user.id,
+      },
+    });
+
+    if (!bcrypt.compareSync(data.oldPassword, dbPassword.password)) {
+      return res.status(404).json({
+        success: false,
+        message: "old password is incorrect",
+      });
+    }
+    // Hash the password
+    const hashedPassword = await bcrypt.hashSync(data.newPassword, 10);
+    // update
+    const updatedPassword = await prisma.password.update({
+      where: {
+        id: +user.id,
+      },
+      data: {
+        password: hashedPassword,
+      },
+    });
+    return res.status(200).json({
+      success: true,
+      message: "password changed sucessfully",
+    });
+  },
+
+  changePhoneEmail: async (req, res, next) => {
+    try {
+      const user = req.user;
+      const data = userSchema.changeEmailPhone.parse(req.body);
+      // Check if the email is already registered
+      const isUserExist = await prisma.users.findFirst({
+        where: {
+          email: data.email,
+        },
+      });
+
+      if (isUserExist) {
+        return res.status(400).json({
+          success: false,
+          message: "This email is already registered",
+        });
+      }
+
+      // Check if the phone is already registered
+      const isPhoneExist = await prisma.profile.findFirst({
+        where: {
+          phone: data.phone,
+        },
+      });
+
+      if (isPhoneExist) {
+        return res.status(400).json({
+          success: false,
+          message: "This phone is already registered",
+        });
+      }
+
+      // update the user
+      const updatedUser = await prisma.users.update({
+        include: {
+          profile: true,
+          department: true,
+        },
+        data: {
+          email: data.email,
+          profile: {
+            update: {
+              phone: data.phone,
+            },
+          },
+        },
+        where: {
+          id: +user.id,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "User email and phone updated sucessfully successfully",
+        data: updatedUser,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: `${error}`,
       });
     }
   },

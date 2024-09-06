@@ -283,7 +283,7 @@ model PurchasedRequest {
   user                 Users    @relation(fields: [userId], references: [id])
 
   // relation
-  items PurceasedRequestedItem[] @relation(onDelete: Cascade)
+  items PurceasedRequestedItem[] @relation()
 }
 
 model PurceasedRequestedItem {
