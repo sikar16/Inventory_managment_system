@@ -8,14 +8,7 @@ const supplierController = {
       const suppliers = await prisma.suppliers.findMany({
         include: {
           category: true,
-          // address:{
-          //   include:{
-          //     country:true,
-          //     city:true,
-          //     subCity:true,
-          //     wereda:true
-          //   }
-          // }
+          address: true,
         },
       });
       res.status(200).json({
@@ -31,6 +24,7 @@ const supplierController = {
       });
     }
   },
+
   getSingleSupplier: async (req, res, next) => {
     try {
       const supplierId = parseInt(req.params.id, 10);
@@ -46,6 +40,7 @@ const supplierController = {
         },
         include: {
           category: true,
+          address: true,
         },
       });
 
@@ -67,6 +62,7 @@ const supplierController = {
       });
     }
   },
+
   createSupplier: async (req, res, next) => {
     try {
       const requiredField = [
@@ -111,7 +107,8 @@ const supplierController = {
         return res.status(400).json({
           success: false,
           message: "this supplier category is not exist",
-        });z
+        });
+        z;
       }
       // check if the phone number exist befor
       const isPhoneExist = await prisma.suppliers.findFirst({
