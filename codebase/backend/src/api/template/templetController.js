@@ -50,7 +50,6 @@ const templateController = {
         include: {
           attributes: true,
           _count: true,
-          
         },
       });
       return res.status(200).json({
@@ -162,6 +161,9 @@ const templateController = {
         },
         data: {
           name: data.name,
+        },
+        include: {
+          attributes: true,
         },
       });
 
