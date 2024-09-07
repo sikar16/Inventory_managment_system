@@ -11,6 +11,7 @@ import productRouter from "../api/Product/producRouter.js";
 import materialRequiestRoute from "../api/matreialRequiest/materialRequiestRouter.js";
 import purchasedReqRouter from "../api/PurchaseReq/purchaseReqRouter.js";
 import purchasedOrderRouter from "../api/purchaseOrder/purchaseOrderRouter.js";
+import grnRoute from "../api/grn/grnRouter.js";
 const appRouter = express.Router();
 appRouter.use("/user", userRouter);
 appRouter.use("/department", departmentRouter);
@@ -24,6 +25,7 @@ appRouter.use("/product", productRouter);
 appRouter.use("/materialReq", materialRequiestRoute);
 appRouter.use("/purchasedReq", purchasedReqRouter);
 appRouter.use("/purchasedOrder", purchasedOrderRouter);
+appRouter.use("/grn", grnRoute);
 
 
 export default appRouter;

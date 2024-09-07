@@ -307,7 +307,7 @@ const materialRequiestController = {
         });
       }
 
-      const isMaterialReqExist = await prisma.materialRequest.findUnique({
+      const isMaterialReqExist = await prisma.materialRequest.findFirst({
         where: { id: +materialReqId },
       });
       if (!isMaterialReqExist) {

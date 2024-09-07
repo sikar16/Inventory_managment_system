@@ -14,6 +14,7 @@ interface FormDataType {
   city: string;
   subCity: string;
   departmentId: number;
+  wereda: string;
   password: string;
 }
 
@@ -34,7 +35,8 @@ function AddUser() {
     subCity: '',
     departmentId: 0,
     password: "",
-    role: 'EMPLOYEE'
+    role: 'EMPLOYEE',
+    wereda: '07 kalite'
   });
 
   const [adduser] = useAddNewuserMutation();
