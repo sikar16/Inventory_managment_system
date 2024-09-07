@@ -105,7 +105,7 @@ const materialRequiestController = {
 
   createMaterialRequest: async (req, res, next) => {
     try {
-      const requiredField = ["requesterId", "departmentHeadId"];
+      const requiredField = ["departmentHeadId", "items"];
       for (const field of requiredField) {
         if (!req.body[field]) {
           return res.status(403).json({
@@ -114,21 +114,8 @@ const materialRequiestController = {
           });
         }
       }
-
+      // zod validation
       const data = materialRequiestSchem.create.parse(req.body);
-
-      const isUserExist = await prisma.users.findFirst({
-        where: {
-          id: +data.requesterId,
-        },
-      });
-      if (!isUserExist) {
-        return res.status(400).json({
-          success: false,
-          message: "User not found",
-        });
-      }
-
       const isDepartmentHeadExist = await prisma.users.findFirst({
         where: {
           id: +data.departmentHeadId,
@@ -141,12 +128,12 @@ const materialRequiestController = {
           message: "Department head not found",
         });
       }
-
+      // product exist
       for (let index = 0; index < data.items.length; index++) {
-        const element = data.items[index];
+        const item = data.items[index];
         const isProductExist = await prisma.product.findFirst({
           where: {
-            id: element.productId,
+            id: +item.productId,
           },
         });
         if (!isProductExist) {
@@ -156,11 +143,23 @@ const materialRequiestController = {
           });
         }
       }
+      // create
 
       const newMaterialRequest = await prisma.materialRequest.create({
+        include: {
+          items: {
+            include: {
+              product: {
+                include: {
+                  productAttributes: true,
+                },
+              },
+            },
+          },
+        },
         data: {
           departmentHeadId: +data.departmentHeadId,
-          requesterId: +data.requesterId,
+          requesterId: +req.user.id,
           items: {
             create: data.items.map((item) => ({
               productId: +item.productId,
@@ -194,10 +193,22 @@ const materialRequiestController = {
           message: "invalid material requiest id ",
         });
       }
+
+      const requiredField = ["departmentHeadId"];
+      for (const field of requiredField) {
+        if (!req.body[field]) {
+          return res.status(403).json({
+            success: false,
+            message: `${field} is required`,
+          });
+        }
+      }
+
       const data = materialRequiestSchem.updateDepartmentHead.parse(req.body);
       const isMaterialReqExist = await prisma.materialRequest.findFirst({
         where: {
           id: +materialReqId,
+          requesterId: +req.user.id,
         },
       });
 
@@ -207,15 +218,7 @@ const materialRequiestController = {
           message: "This materail request is not found",
         });
       }
-      const requiredField = ["requesterId", "departmentHeadId"];
-      for (const field of requiredField) {
-        if (!req.body[field]) {
-          return res.status(403).json({
-            success: false,
-            message: `${field} is required`,
-          });
-        }
-      }
+
       const isDepartmentHeadExist = await prisma.users.findFirst({
         where: {
           id: +data.departmentHeadId,
@@ -234,6 +237,17 @@ const materialRequiestController = {
         },
         data: {
           departmentHeadId: +data.departmentHeadId,
+        },
+        include: {
+          items: {
+            include: {
+              product: {
+                include: {
+                  productAttributes: true,
+                },
+              },
+            },
+          },
         },
       });
       return res.status(200).json({
@@ -259,6 +273,32 @@ const materialRequiestController = {
         });
       }
       const data = materialRequiestSchem.updateMeterialReqItem.parse(req.body);
+      const isMaterialReqItemExist = await prisma.materialRequestItem.findFirst(
+        {
+          where: {
+            id: +materialReqItemId,
+          },
+        }
+      );
+      if (!isMaterialReqItemExist) {
+        return res.status(404).json({
+          success: false,
+          message: "Material Req Item  not found",
+        });
+      }
+      const isMaterialReqExist = await prisma.materialRequest.findFirst({
+        where: {
+          id: +isMaterialReqItemExist.materialRequestId,
+          requesterId: +req.user.id,
+        },
+      });
+
+      if (!isMaterialReqExist) {
+        return res.status(404).json({
+          success: false,
+          message: "This materail request is not found",
+        });
+      }
 
       const isProductExist = await prisma.product.findFirst({
         where: {
@@ -278,13 +318,13 @@ const materialRequiestController = {
             id: +materialReqItemId,
           },
           data: {
-            productId: data.productId,
+            productId: +data.productId,
             remark: data.remark,
             quantityRequested: data.quantityRequested,
           },
         });
 
-      return res.status(404).json({
+      return res.status(200).json({
         success: true,
         message: "successfully update material request item",
         data: updatematerialRequiestItem,
@@ -308,7 +348,7 @@ const materialRequiestController = {
       }
 
       const isMaterialReqExist = await prisma.materialRequest.findFirst({
-        where: { id: +materialReqId },
+        where: { id: +materialReqId, requesterId: +req.user.id },
       });
       if (!isMaterialReqExist) {
         return res.status(404).json({
@@ -318,17 +358,98 @@ const materialRequiestController = {
       }
 
       await prisma.materialRequestItem.deleteMany({
-        where: { materialRequestId: materialReqId },
+        where: { materialRequestId: +materialReqId },
       });
 
       const deletedMaterialReq = await prisma.materialRequest.delete({
-        where: { id: materialReqId },
+        where: { id: +materialReqId },
       });
 
       return res.status(200).json({
         success: true,
         message: "Material request deleted successfully",
         data: deletedMaterialReq,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: `Error - ${error.message}`,
+      });
+    }
+  },
+
+  approveMaterialRequiest: async (req, res, next) => {
+    try {
+      const materialReqId = parseInt(req.params.id, 10);
+      if (isNaN(materialReqId)) {
+        return res.status(400).json({
+          success: false,
+          message: "invalid material requiest id ",
+        });
+      }
+      const requiredField = ["logisticSuperViserId", "isApproviedByDH"];
+      for (const field of requiredField) {
+        if (!req.body[field]) {
+          return res.status(403).json({
+            success: false,
+            message: `${field} is required`,
+          });
+        }
+      }
+      // zod validation
+      const data = materialRequiestSchem.approveMeterialReqItem.parse(req.body);
+      const isMaterialReqExist = await prisma.materialRequest.findFirst({
+        where: {
+          id: +materialReqId,
+          departmentHeadId: +req.user.id,
+        },
+      });
+
+      if (!isMaterialReqExist) {
+        return res.status(404).json({
+          success: false,
+          message: "This materail request is not found",
+        });
+      }
+      // check if the logestic supervisor
+      const isLogesticSuperviserExist = await prisma.users.findFirst({
+        where: {
+          id: +data.logisticSuperViserId,
+          role: "LOGESTIC_SUPERVISER",
+        },
+      });
+      if (!isLogesticSuperviserExist) {
+        return res.status(400).json({
+          success: false,
+          message: "LOGESTIC_SUPERVISER not found",
+        });
+      }
+      // update
+      const updatematerialRequiest = await prisma.materialRequest.update({
+        where: {
+          id: +materialReqId,
+        },
+        data: {
+          logisticSuperViserId: data.logisticSuperViserId,
+          isApproviedByDH: data.isApproviedByDH,
+        },
+        include: {
+          items: {
+            include: {
+              product: {
+                include: {
+                  productAttributes: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return res.status(201).json({
+        success: true,
+        message: "Material request approved successfully",
+        data: updatematerialRequiest,
       });
     } catch (error) {
       return res.status(500).json({

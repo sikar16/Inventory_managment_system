@@ -1,6 +1,8 @@
 import express from "express";
+import { isAdmin, isDH } from "../../middleware/auth.js";
 import materialRequiestController from "./materialRequiestController.js";
 const materialRequiestRoute = express.Router();
+
 materialRequiestRoute.get(
   "/:id",
   materialRequiestController.getSinglematerialRequiest
@@ -20,6 +22,11 @@ materialRequiestRoute.get(
   materialRequiestRoute.put(
     "/departement/:id",
     materialRequiestController.updatedDepartmentHead
+  ),
+  materialRequiestRoute.put(
+    "/approve/:id",
+    [isDH],
+    materialRequiestController.approveMaterialRequiest
   ),
   materialRequiestRoute.delete(
     "/:id",

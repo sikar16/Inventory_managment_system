@@ -2,7 +2,6 @@ import z from "zod";
 
 const materialRequiestSchem = {
   create: z.object({
-    requesterId: z.number(),
     departmentHeadId: z.number(),
     items: z.array(
       z.object({
@@ -12,9 +11,8 @@ const materialRequiestSchem = {
       })
     ),
   }),
- 
+
   updateDepartmentHead: z.object({
-    requesterId: z.number(),
     departmentHeadId: z.number(),
   }),
 
@@ -22,6 +20,10 @@ const materialRequiestSchem = {
     productId: z.number(),
     quantityRequested: z.number(),
     remark: z.string(),
+  }),
+  approveMeterialReqItem: z.object({
+    isApproviedByDH: z.boolean(),
+    logisticSuperViserId: z.number(),
   }),
 };
 
