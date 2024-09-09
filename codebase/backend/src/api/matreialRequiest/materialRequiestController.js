@@ -290,6 +290,7 @@ const materialRequiestController = {
         where: {
           id: +isMaterialReqItemExist.materialRequestId,
           requesterId: +req.user.id,
+
         },
       });
 

@@ -261,7 +261,7 @@ model MaterialRequest {
 model MaterialRequestItem {
   id                    Int                @id @default(autoincrement())
   materialRequestId     Int
-  productId             Int
+  productId             Int 
   quantityRequested     Decimal
   quantityInStock       Decimal?
   quantityToBePurchased Decimal?
@@ -274,15 +274,15 @@ model MaterialRequestItem {
 
 model PurchasedRequest {
   id                   Int      @id @default(autoincrement())
-  userId               Int
+  userId               Int         
   createdAt            DateTime @default(now())
   isApproviedByGM      Boolean  @default(false)
   isApproviedByFinance Boolean  @default(false)
   totalPrice           Decimal  
-  // reference
+     // reference
   user                 Users    @relation(fields: [userId], references: [id])
 
-  // relation
+    // relation
   items PurceasedRequestedItem[] @relation()
 }
 
@@ -293,7 +293,7 @@ model PurceasedRequestedItem {
   quantityToBePurchased Decimal
   remark                String
   unitPrice             Decimal
-  //reference
+  //reference           
   purchasedRequest      MaterialRequest    @relation(fields: [purchasedRequestId], references: [id])
   // relation
   products              Product[]

@@ -13,7 +13,7 @@ const purchasedOrderController={
             }
             const purchaseOrder=await prisma.purchasedOrder.findFirst({
                 where:{
-                    id:purchaseOrderId
+                    id:purchaseOrderId 
                 },
                 include:{
                     _count:true,
@@ -22,7 +22,11 @@ const purchasedOrderController={
                             profile:true,
                         }
                     },
-                    SupplayerOffer:true,
+                    SupplayerOffer:{
+                        include:{
+                            supplayer:true
+                        }
+                    },
                     winner:{
                         include:{
                             supplayer:true,
@@ -56,6 +60,13 @@ const purchasedOrderController={
                 }
             })
 
+            if (!purchaseOrder) {
+                return res.status(404).json({
+                  success: false,
+                  message: "Purchase order not found",
+                });
+              }
+          
             return res.status(200).json({
                 success:true,
                 message:`Fetch single purchased order ${purchaseOrderId}`,
@@ -128,7 +139,7 @@ const purchasedOrderController={
     },
     createPurchasedOrder:async (req,res,next)=>{
         try {
-            const requiredFields = ["userId", "items"];
+            const requiredFields = ["items"];
             for(const field of requiredFields){
                 if(!req.body[field]){
                     return res.status(400).json({
@@ -139,15 +150,15 @@ const purchasedOrderController={
             }
             const data=purchaseOrderSchema.create.parse(req.body);
 
-            const isUserExist=await prisma.users.findFirst({
+            const isPurchasedOrderExist=await prisma.purchasedOrder.findFirst({
                 where: {
-                    id: data.userId,
+                    id: data.purchasOrderId,
                   },
             })
-            if (!isUserExist) {
+            if (!isPurchasedOrderExist) {
                 return res.status(404).json({
                   success: false,
-                  message: "User not found",
+                  message: "purchased order not found",
                 });
               }
 
@@ -167,13 +178,13 @@ const purchasedOrderController={
 
               const newPurchaseOrder = await prisma.purchasedOrder.create({
                 data: {
-                  userId: data.userId,
+                  userId: req.body.id,
                   items: {
                     create: data.items.map((item) => ({
-                      productId: item.productId,
                       purchasOrderId: item.purchasOrderId,
                       quantityToBePurchased: item.quantityToBePurchased,
-                      remark:item.remark
+                      remark:item.remark,
+                      
                     })),
                   },
                 },

@@ -16,27 +16,35 @@ const purchasedReqConntroller={
               id: +purchasedReqId,
             },
             include:{
-              user:true,
               _count:true,
               items:{
                 include:{
-                  _count:true,
-                  products:{
-                    include:{
-                      materialRequestItem:{
-                        include:{
-                          product:{
-                            include:{
-                              productAttributes:true
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
+                  products:true
                 }
               }
-            }  
+            }
+            // include:{
+            //   user:true,
+            //   _count:true,
+            //   items:{
+            //     include:{
+            //       _count:true,
+            //       products:{
+            //         include:{
+            //           materialRequestItem:{
+            //             include:{
+            //               product:{
+            //                 include:{
+            //                   productAttributes:true
+            //                 }
+            //               }
+            //             }
+            //           }
+            //         }
+            //       }
+            //     }
+            //   }
+            // }  
           });
       
           if (!purchasedReq) {
@@ -48,6 +56,7 @@ const purchasedReqConntroller={
       
           return res.status(200).json({
             success: true,
+            message: "Purchase request fetched successfully",
             data: purchasedReq,
           });
       
@@ -63,26 +72,34 @@ const purchasedReqConntroller={
         try {
             const purchaseReq=await prisma.purchasedRequest.findMany({
               include:{
-                user:true,
                 _count:true,
                 items:{
                   include:{
-                    products:{
-                      include:{
-                        materialRequestItem:{
-                          include:{
-                            product:{
-                              include:{
-                                productAttributes:true
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
+                    products:true
                   }
                 }
-              }  
+              }
+              // include:{
+              //   user:true,
+              //   _count:true,
+              //   items:{
+              //     include:{
+              //       products:{
+              //         include:{
+              //           materialRequestItem:{
+              //             include:{
+              //               product:{
+              //                 include:{
+              //                   productAttributes:true
+              //                 }
+              //               }
+              //             }
+              //           }
+              //         }
+              //       }
+              //     }
+              //   }
+              // }  
             });
             return res.status(200).json({
                 success: true,
@@ -101,7 +118,7 @@ const purchasedReqConntroller={
 
     createpurchasedReq: async (req, res, next) => {
       try {
-        const requiredFields = ["userId", "totalPrice", "items"];
+        const requiredFields = ["totalPrice", "items"];
         for (const field of requiredFields) {
           if (!req.body[field]) {
             return res.status(400).json({
@@ -112,20 +129,7 @@ const purchasedReqConntroller={
         }
     
         const data = purchasedReqSchema.create.parse(req.body);
-    
-        const isUserExist = await prisma.users.findFirst({
-          where: {
-            id: data.userId,
-            role: "LOGESTIC_SUPERVISER",
-          },
-        });
-        if (!isUserExist) {
-          return res.status(404).json({
-            success: false,
-            message: "User not found",
-          });
-        }
-    
+
         // Check if the material request exists
         const isMaterialReqExist = await prisma.materialRequest.findFirst({
           where: {
@@ -138,8 +142,9 @@ const purchasedReqConntroller={
             message: "Material request not found",
           });
         }
-    
-        // Loop through the items to validate each product
+
+        // Loop through the items to validate each product       
+
         for (const item of data.items) {
           const isProductExist = await prisma.product.findFirst({
             where: {
@@ -158,11 +163,10 @@ const purchasedReqConntroller={
         const newPurchaseReq = await prisma.purchasedRequest.create({
           data: {
             totalPrice: data.totalPrice,
-            userId: data.userId,
+            userId:+req.user.id,
             items: {
               create: data.items.map((item) => ({
-                productId: item.productId,
-                purchasedRequestId: item.purchasedRequestId,
+                productId: +item.productId,
                 quantityToBePurchased: item.quantityToBePurchased,
                 remark: item.remark,
                 unitPrice: item.unitPrice,
@@ -196,7 +200,36 @@ const purchasedReqConntroller={
     
         // Validate the request body
         const data = purchasedReqSchema.updateItems.parse(req.body);
+
+    // Check if the purceasedRequestedItem exists
+        const isPurchsedReqItemsExist = await prisma.purceasedRequestedItem.findFirst({
+          where: {
+            id: +purceasedRequestItemId,
+          },
+        });
     
+        if (!isPurchsedReqItemsExist) {
+          return res.status(404).json({
+            success: false,
+            message: "Purchase request item not found",
+          });
+        }
+
+        const ispurchaseReqExist=await prisma.purchasedRequest.findFirst({
+          where:{
+            id:+isPurchsedReqItemsExist.purchasedRequestId,
+            userId:+req.user.id
+          }
+        })
+        if(!ispurchaseReqExist){
+          return res.status(404).json({
+            success: false,
+            message: "This purchased request is not found",
+          });
+        }
+
+
+
         // Check if the product exists
         const isProductExist = await prisma.product.findFirst({
           where: {
@@ -211,19 +244,7 @@ const purchasedReqConntroller={
           });
         }
     
-        // Check if the purceasedRequestedItem exists
-        // const isRequestItemExist = await prisma.purceasedRequestedItem.findUnique({
-        //   where: {
-        //     id: +purceasedRequestItemId,
-        //   },
-        // });
-    
-        // if (!isRequestItemExist) {
-        //   return res.status(404).json({
-        //     success: false,
-        //     message: "Purchase request item not found",
-        //   });
-        // }
+        
     
         // Update purchase request item
         const updatepurchasedReqItem = await prisma.purceasedRequestedItem.update({
@@ -249,8 +270,190 @@ const purchasedReqConntroller={
         });
       }
     },
-    
+    updateFinace: async (req, res, next) => {
+      try {
+        const purceasedRequestId = parseInt(req.params.id, 10);
+        if (isNaN(purceasedRequestId)) {
+          return res.status(400).json({
+            success: false,
+            message: "Invalid purchase request item id",
+          });
+        }
 
+        const requiredField = ["financeId"];
+        for (const field of requiredField) {
+          if (!req.body[field]) {
+            return res.status(403).json({
+              success: false,
+              message: `${field} is required`,
+            });
+          }
+        }
+    
+        // Validate the request body
+        const data = purchasedReqSchema.updateFinace.parse(req.body);
+
+    // Check if the purceasedRequestedItem exists
+        const isPurchsedReqExist = await prisma.purchasedRequest.findFirst({
+          where: {
+            id: +purceasedRequestId,
+
+          },
+        });
+    
+        if (!isPurchsedReqExist) {
+          return res.status(404).json({
+            success: false,
+            message: "Purchase request not found",
+          });
+        }
+
+        // Check if the product exists
+        const isFinanceExist = await prisma.users.findFirst({
+          where: {
+            id: +data.financeId,
+            role:"FINANCE"
+          },
+        });
+    
+        if (!isFinanceExist) {
+          return res.status(404).json({
+            success: false,
+            message: "finance not found",
+          });
+        }
+    
+        
+    
+        // Update purchase request item
+        const updatepurchasedReq = await prisma.purchasedRequest.update({
+          where: {
+            id: +purceasedRequestId,
+          },
+          data: {
+            userId:+data.financeId
+          },
+          include:{
+            items:{
+              include:{
+                products:{
+                  include:{
+                    materialRequestItem:{
+                      include:{
+                        productAttributes:true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        });
+    
+        return res.status(200).json({
+          success: true,
+          message: "Successfully updated purchase request item",
+          data: updatepurchasedReq,
+        });
+      } catch (error) {
+        return res.status(500).json({
+          success: false,
+          message: `Error - ${error.message}`,
+        });
+      }
+    },
+    updateGm: async (req, res, next) => {
+      try {
+        const purceasedRequestId = parseInt(req.params.id, 10);
+        if (isNaN(purceasedRequestId)) {
+          return res.status(400).json({
+            success: false,
+            message: "Invalid purchase request item id",
+          });
+        }
+
+        const requiredField = ["gmId"];
+        for (const field of requiredField) {
+          if (!req.body[field]) {
+            return res.status(403).json({
+              success: false,
+              message: `${field} is required`,
+            });
+          }
+        }
+    
+        // Validate the request body
+        const data = purchasedReqSchema.updateGm.parse(req.body);
+
+    // Check if the purceasedRequestedItem exists
+        const isPurchsedReqExist = await prisma.purchasedRequest.findFirst({
+          where: {
+            id:+purceasedRequestId
+
+          },
+        });
+    
+        if (!isPurchsedReqExist) {
+          return res.status(404).json({
+            success: false,
+            message: "Purchase request not found",
+          });
+        }
+
+        // Check if the product exists
+        const isGmExist = await prisma.users.findFirst({
+          where: {
+            id: +data.gmid,
+            role:"GENERAL_MANAGER"
+          },
+        });
+    
+        if (!isGmExist) {
+          return res.status(404).json({
+            success: false,
+            message: "General manager not found",
+          });
+        }
+    
+        
+    
+        // Update purchase request item
+        const updatepurchasedReq = await prisma.purchasedRequest.update({
+          where: {
+            id: +purceasedRequestId,
+          },
+          data: {
+            userId:+data.gmid,
+          },
+          include:{
+            items:{
+              include:{
+                products:{
+                  include:{
+                    materialRequestItem:{
+                      include:{
+                        productAttributes:true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        });
+    
+        return res.status(200).json({
+          success: true,
+          message: "Successfully updated purchase request item",
+          data: updatepurchasedReq,
+        });
+      } catch (error) {
+        return res.status(500).json({
+          success: false,
+          message: `Error - ${error.message}`,
+        });
+      }
+    },
 
     deletepurchasedReq:async (req,res,next)=>{
         try {
@@ -263,7 +466,10 @@ const purchasedReqConntroller={
       }
 
       const ispurchaseReqExist = await prisma.purchasedRequest.findFirst({
-        where: { id: purchaseReqId },
+        where: {
+           id: purchaseReqId,
+          userId:req.user.id
+         },
       });
       if (!ispurchaseReqExist) {
         return res.status(404).json({
@@ -277,7 +483,7 @@ const purchasedReqConntroller={
       });
      
         const deletedPurchaseReq = await prisma.purchasedRequest.delete({
-        where: { id: purchaseReqId },
+        where: { id: +purchaseReqId },
       });
 
       return res.status(200).json({
@@ -293,6 +499,167 @@ const purchasedReqConntroller={
               });
         }
     },
+    approvePurchasedRequestByFinance:async (req,res,next)=>{
+      try {
+        const purchasedReqId = parseInt(req.params.id, 10);
+        if (isNaN(purchasedReqId)) {
+          return res.status(400).json({
+            success: false,
+            message: "invalid purchased requiest id ",
+          });
+        }
+        const requiredField = ["isApproviedByfinance"];
+        for (const field of requiredField) {
+          if (!req.body[field]) {
+            return res.status(403).json({
+              success: false,
+              message: `${field} is required`,
+            });
+          }
+        }
+        // zod validation
+        const data = purchasedReqSchema.approvePurchasedReqFinace.parse(req.body);
+        const isPurchasedReqExist = await prisma.purchasedRequest.findFirst({
+          where: {
+            id: +purchasedReqId,
+            financeId: +req.user.id,
+          },
+        });
+  
+        if (!isPurchasedReqExist) {
+          return res.status(404).json({
+            success: false,
+            message: "This purchased request is not found",
+          });
+        }
+        // check if the logestic supervisor
+        const isFinanceExist = await prisma.users.findFirst({
+          where: {
+            id: +data.financeId,
+            role: "FINANCE",
+          },
+        });
+        if (!isFinanceExist) {
+          return res.status(400).json({
+            success: false,
+            message: "FINANCE not found",
+          });
+        }
+        // update
+        const updatepurchasefRequiest = await prisma.purchasedRequest.update({
+          where: {
+            id: +purchasedReqId,
+          },
+          data: {
+            isApproviedByFinance:data.isApproviedByFinance
+          },
+          include: {
+            items: {
+              include: {
+                product: {
+                  include: {
+                    productAttributes: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+  
+        return res.status(201).json({
+          success: true,
+          message: "purchased request approved successfully",
+          data: updatepurchasefRequiest,
+        });
+      } catch (error) {
+        return res.status(500).json({
+          success: false,
+          message: `Error - ${error.message}`,
+        });
+      }
+    },
+    approvePurchasedRequestByGM:async (req,res,next)=>{
+      try {
+        const purchasedReqId = parseInt(req.params.id, 10);
+        if (isNaN(purchasedReqId)) {
+          return res.status(400).json({
+            success: false,
+            message: "invalid purchased requiest id ",
+          });
+        }
+        const requiredField = ["isApproviedByGm"];
+        for (const field of requiredField) {
+          if (!req.body[field]) {
+            return res.status(403).json({
+              success: false,
+              message: `${field} is required`,
+            });
+          }
+        }
+        // zod validation
+        const data = purchasedReqSchema.approvePurchasedReqGm.parse(req.body);
+        const isPurchasedReqExist = await prisma.purchasedRequest.findFirst({
+          where: {
+            id: +purchasedReqId,
+            gmid: +req.user.id,
+          },
+        });
+  
+        if (!isPurchasedReqExist) {
+          return res.status(404).json({
+            success: false,
+            message: "This purchased request is not found",
+          });
+        }
+        // check if the logestic supervisor
+        const isGmExist = await prisma.users.findFirst({
+          where: {
+            id: +data.gmid,
+            role: "GENERAL_MANAGER",
+          },
+        });
+        if (!isFinanceExist) {
+          return res.status(400).json({
+            success: false,
+            message: "GENERAL_MANAGER not found",
+          });
+        }
+        // update
+        const updatepurchasefRequiest = await prisma.purchasedRequest.update({
+          where: {
+            id: +purchasedReqId,
+          },
+          data: {
+            isApproviedByGM:data.isApproviedByGM
+          },
+          include: {
+            items: {
+              include: {
+                product: {
+                  include: {
+                    productAttributes: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+  
+        return res.status(201).json({
+          success: true,
+          message: "purchased request approved successfully",
+          data: updatepurchasefRequiest,
+        });
+      } catch (error) {
+        return res.status(500).json({
+          success: false,
+          message: `Error - ${error.message}`,
+        });
+      }
+    }
+
+
+
 }
 
 
