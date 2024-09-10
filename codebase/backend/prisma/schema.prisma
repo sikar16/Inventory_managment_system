@@ -304,7 +304,7 @@ model PurchasedOrder {
   id        Int                  @id @default(autoincrement())
   userId    Int
   createdAt DateTime             @default(now())
-  // relation
+  // relation 
   items     PurchasedOrderItem[]
   winner    Winner[]
   // references

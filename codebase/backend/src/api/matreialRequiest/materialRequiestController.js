@@ -225,12 +225,7 @@ const materialRequiestController = {
           role: "DEPARTMENT_HEAD",
         },
       });
-      if (!isDepartmentHeadExist) {
-        return res.status(400).json({
-          success: false,
-          message: "Department head not found",
-        });
-      }
+       
       const updatematerialRequiest = await prisma.materialRequest.update({
         where: {
           id: +materialReqId,

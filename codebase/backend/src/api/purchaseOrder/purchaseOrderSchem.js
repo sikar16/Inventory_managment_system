@@ -4,24 +4,26 @@ const purchaseOrderSchema={
     create:z.object({
         items: z.array(
             z.object({
-              productId: z.number().nonnegative(),
+              productId: z.number(),
               quantityToBePurchased: z.number().positive(),
               remark: z.string().min(1),
           })
         )
     }),
     updateItem:z.object({
-              productId: z.number().nonnegative(),
-              quantityToBePurchased: z.number().positive(),
+              productId: z.number(),
+              quantityToBePurchased: z.number(),
               remark: z.string().min(1),              
     }),
     updateSupplier:z.object({
-              suppliersId: z.number().nonnegative(),          
+              suppliersId: z.number(),          
     }),
     updateWinner:z.object({
-              winnerId: z.number().nonnegative(),             
+              winnerId: z.number(),             
     }),
-   
+    updateWinner:z.object({
+              winnerId: z.number(),             
+    }),
     
 }
 

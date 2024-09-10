@@ -149,7 +149,7 @@ const userController = {
       }
 
       // Hash the password
-      const hashedPassword = await bcrypt.hashSync(data.password, 10);
+      // const hashedPassword = await bcrypt.hashSync(data.password, 10);
 
       // Create the user
       const newUser = await prisma.users.create({

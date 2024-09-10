@@ -137,7 +137,7 @@ const purchasedOrderController={
            }) 
         }
     },
-    createPurchasedOrder:async (req,res,next)=>{
+    createPurchasedOrder: async (req, res, next) => {
         try {
             const requiredFields = ["items"];
             for(const field of requiredFields){
@@ -148,106 +148,295 @@ const purchasedOrderController={
                       });
                 }
             }
-            const data=purchaseOrderSchema.create.parse(req.body);
-
-            const isPurchasedOrderExist=await prisma.purchasedOrder.findFirst({
-                where: {
-                    id: data.purchasOrderId,
-                  },
-            })
-            if (!isPurchasedOrderExist) {
-                return res.status(404).json({
-                  success: false,
-                  message: "purchased order not found",
+          const data = purchaseOrderSchema.create.parse(req.body);
+    
+          for (const item of data.items) {
+            const product = await prisma.product.findFirst({
+                 where: { id: item.productId } 
                 });
-              }
-
-              for (const item of data.items) {
-                const isProductExist = await prisma.product.findFirst({
-                  where: {
-                    id: item.productId,
-                  },
-                });
-                if (!isProductExist) {
-                  return res.status(404).json({
-                    success: false,
-                    message: `Product with id ${item.productId} not found`,
-                  });
-                }
-              }
-
-              const newPurchaseOrder = await prisma.purchasedOrder.create({
-                data: {
-                  userId: req.body.id,
-                  items: {
-                    create: data.items.map((item) => ({
-                      purchasOrderId: item.purchasOrderId,
-                      quantityToBePurchased: item.quantityToBePurchased,
-                      remark:item.remark,
-                      
-                    })),
-                  },
-                },
+            if (!product) {
+              return res.status(404).json({
+                success: false,
+                message: `Product with ID ${item.productId} not found`,
               });
-              return res.status(201).json({
-                success: true,
-                message: "Purchase order created successfully",
-                data: newPurchaseOrder,
-              });
-            
+            }
+          }
+    
+          const newPurchaseOrder = await prisma.purchasedOrder.create({
+            data: {
+              userId: +req.user.id,
+              items: {
+                create: data.items.map((item) => ({
+                  purchasOrderId: item.purchasOrderId,
+                  quantityToBePurchased: item.quantityToBePurchased,
+                  remark: item.remark,
+                })),
+              },
+            },
+            include: {
+              items: {
+                include: 
+                {
+                     products:
+                     {
+                         include: 
+                         { 
+                            productAttributes: true 
+                        }
+                     }
+                     },
+              },
+            },
+          });
+    
+          return res.status(201).json({
+            success: true,
+            message: "Purchase order created successfully",
+            data: newPurchaseOrder,
+          });
         } catch (error) {
-            return res.status(500).json({
-                success:false,
-                message:`Error-${error}`
-            })
+          return res.status(500).json({
+            success: false,
+            message: `Error: ${error.message}`,
+          });
         }
     },
-    updatePurchasedOrder:(req,res,next)=>{},
-    deletePurchasedOrder:async (req,res,next)=>{
+    updatePurchasedOrder:async (req,res,next)=>{
         try {
-            const purchasedorderId=parseInt(req.params.id,10);
-            if (isNaN(purchasedorderId)) {
-                return res.status(400).json({
-                  success: false,
-                  message: "Invalid purchase order ID",
-                });
-              }
-
-              const isPurchasedOrderExist=await prisma.purchasedOrder.findFirst({
-                where:{
-                    id:purchasedorderId
-                }
-              })
-              if(!isPurchasedOrderExist){
-                return res.status(404).json({
-                    success:false,
-                    message:"purchased order not found"
-                })
-              }
-
-              await prisma.purceasedRequestedItem.deleteMany({
-                where: { 
-                    purchasedRequestId:purchasedorderId
-                },
-              })
-        
-              const deletedPurchaseOredr = await prisma.purchasedRequest.delete({
-                where: { id: purchasedorderId },
+            const purchaseOrderId = parseInt(req.params.id, 10);
+            if (isNaN(purchaseOrderId)) {
+              return res.status(400).json({
+                success: false,
+                message: "Invalid purchase order ID",
               });
-        
-              return res.status(200).json({
-                success: true,
-                message: "Purchase order deleted successfully",
-                data: deletedPurchaseOredr,
-              });
-
-        } catch (error) {
+            }
+            const updatedOrder = await prisma.purchasedOrder.update({
+              where: { id: purchaseOrderId },
+              data: req.body,
+            });
+      
+            return res.status(200).json({
+              success: true,
+              message: "Purchase order updated successfully",
+              data: updatedOrder,
+            });
+          } catch (error) {
             return res.status(500).json({
-                success:false,
-                message:`Error-${error}`
-            })
+              success: false,
+              message: `Error: ${error.message}`,
+            });
+          }
+    },
+    updatePurchasedOrderItems:async (req,res,next)=>{
+        try {
+            const purchaseOrderId = parseInt(req.params.id, 10);
+            if (isNaN(purchaseOrderId)) {
+              return res.status(400).json({
+                success: false,
+                message: "Invalid purchase order ID",
+              });
+            }
+      
+            const data = purchaseOrderSchema.updateItem.parse(req.body);
+      
+            const purchaseOrderItem = await prisma.purchasedOrderItem.findFirst({
+              where: { id: purchaseOrderId },
+            });
+            if (!purchaseOrderItem) {
+              return res.status(404).json({
+                success: false,
+                message: "Purchase order item not found",
+              });
+            }
+      
+            const product = await prisma.product.findFirst({ where: { id: data.productId } });
+            if (!product) {
+              return res.status(404).json({
+                success: false,
+                message: "Product not found",
+              });
+            }
+      
+            const updatedItem = await prisma.purchasedOrderItem.update({
+              where: { id: purchaseOrderId },
+              data: {
+                productId: data.productId,
+                quantityToBePurchased: data.quantityToBePurchased,
+                remark: data.remark,
+              },
+            });
+      
+            return res.status(200).json({
+              success: true,
+              message: "Purchase order item updated successfully",
+              data: updatedItem,
+            });
+          } catch (error) {
+            return res.status(500).json({
+              success: false,
+              message: `Error: ${error.message}`,
+            });
+          }
+    },
+    updatesupplier:async (req,res,next)=>{
+        try {
+            const purchaseOrderId = parseInt(req.params.id, 10);
+            if (isNaN(purchaseOrderId)) {
+              return res.status(400).json({
+                success: false,
+                message: "Invalid purchase order ID",
+              });
+            }
+      
+            const data = purchaseOrderSchema.updateSupplier.parse(req.body);
+      
+            const purchaseOrderItem = await prisma.purchasedOrderItem.findFirst({
+              where: { id: purchaseOrderId },
+            });
+            if (!purchaseOrderItem) {
+              return res.status(404).json({
+                success: false,
+                message: "Purchase order item not found",
+              });
+            }
+      
+            const supplier = await prisma.suppliers.findFirst({
+              where: { id: data.suppliersId },
+            });
+            if (!supplier) {
+              return res.status(404).json({
+                success: false,
+                message: "Supplier not found",
+              });
+            }
+      
+            const updatedSupplier = await prisma.purchasedOrderItem.update({
+              where: { id: purchaseOrderId },
+              data: { suppliersId: supplier.id },
+            });
+      
+            return res.status(200).json({
+              success: true,
+              message: "Supplier updated successfully",
+              data: updatedSupplier,
+            });
+          } catch (error) {
+            return res.status(500).json({
+              success: false,
+              message: `Error: ${error.message}`,
+            });
+          }
+    },
+    updateWinner: async (req, res, next) => {
+        try {
+          const purchasedOrderId = parseInt(req.params.id, 10);
+          if (isNaN(purchasedOrderId)) {
+            return res.status(400).json({
+              success: false,
+              message: "Invalid purchase order ID",
+            });
+          }
+    
+          const data = purchaseOrderSchema.updateWinner.parse(req.body);
+    
+          // Check if the purchased order exists
+          const isPurchasedOrderExist = await prisma.purchasedOrder.findFirst({
+            where: {
+              id: purchasedOrderId,
+            },
+          });
+    
+          if (!isPurchasedOrderExist) {
+            return res.status(404).json({
+              success: false,
+              message: "Purchased order not found",
+            });
+          }
+    
+          // Check if the winner exists
+          const isWinnerExist = await prisma.suppliers.findFirst({
+            where: {
+              id: data.winnerId,
+            },
+          });
+    
+          if (!isWinnerExist) {
+            return res.status(404).json({
+              success: false,
+              message: "Winner not found",
+            });
+          }
+    
+          // Update the winner
+          const updatedPurchaseOrder = await prisma.purchasedOrder.update({
+            where: {
+              id: purchasedOrderId,
+            },
+            data: {
+              winnerId: data.winnerId,
+            },
+            include: {
+              winner: {
+                include: {
+                  supplayer: true,
+                },
+              },
+            },
+          });
+    
+          return res.status(200).json({
+            success: true,
+            message: "Successfully updated the winner",
+            data: updatedPurchaseOrder,
+          });
+        } catch (error) {
+          return res.status(500).json({
+            success: false,
+            message: `Error - ${error.message}`,
+          });
         }
-    }
+    },
+    deletePurchasedOrder: async (req, res, next) => {
+        try {
+          const purchaseOrderId = parseInt(req.params.id, 10);
+          if (isNaN(purchaseOrderId)) {
+            return res.status(400).json({
+              success: false,
+              message: "Invalid purchase order ID",
+            });
+          }
+    
+          const purchaseOrder = await prisma.purchasedOrder.findFirst({
+            where: { id: purchaseOrderId },
+          });
+          if (!purchaseOrder) {
+            return res.status(404).json({
+              success: false,
+              message: "Purchase order not found",
+            });
+          }
+    
+          // Delete associated items
+          await prisma.purchasedOrderItem.deleteMany({
+            where: { purchasedRequestId: purchaseOrderId },
+          });
+    
+          const deletedPurchaseOrder = await prisma.purchasedOrder.delete({
+            where: { id: purchaseOrderId },
+          });
+    
+          return res.status(200).json({
+            success: true,
+            message: "Purchase order deleted successfully",
+            data: deletedPurchaseOrder,
+          });
+        } catch (error) {
+          return res.status(500).json({
+            success: false,
+            message: `Error: ${error.message}`,
+          });
+        }
+    },
 }
 
 
