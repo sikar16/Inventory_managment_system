@@ -1,14 +1,13 @@
-import express from 'express'
+import express from 'express';
 import supplierOfferController from './supplierOfferController';
 
-const supplierOfferRoute=express.Router()
-
-supplierOfferRoute.get("/:id",supplierOfferController.getSinglesupplierOffer),
-supplierOfferRoute.get("/",supplierOfferController.getAllsupplierOffer),
-supplierOfferRoute.post("/",supplierOfferController.createsupplierOffer),
-supplierOfferRoute.put("/supplier/:id",supplierOfferController.updatesupplier),
-supplierOfferRoute.put("/supplieroffer/:id",supplierOfferController.updatesupplierOffer),
-supplierOfferRoute.put("/item/:id",supplierOfferController.updatesupplierOfferItem),
-supplierOfferRoute.delete("/:id",supplierOfferController.deletesupplierOffer)
+const supplierOfferRoute = express.Router();
+supplierOfferRoute.get("/:id", supplierOfferController.getSingleSupplierOffer);
+supplierOfferRoute.get("/", supplierOfferController.getAllSupplierOffers);
+supplierOfferRoute.post("/", supplierOfferController.createSupplierOffer);
+supplierOfferRoute.put("/supplier/:id", supplierOfferController.updateSupplierOffer);
+supplierOfferRoute.put("/supplieroffer/:id", supplierOfferController.updateSupplier);
+supplierOfferRoute.put("/item/:id", supplierOfferController.updateSupplierOfferItems);
+supplierOfferRoute.delete("/:id", supplierOfferController.deleteSupplierOffer);
 
 export default supplierOfferRoute;
