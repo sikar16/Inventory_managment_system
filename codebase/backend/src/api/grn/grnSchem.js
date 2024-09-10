@@ -1,7 +1,6 @@
 import z from 'zod'
 const grnSchem={
     create:z.object({
-        reciverId:z.number(),
         supplayerId:z.number(),
         purchasedOrderId:z.number(),
         grnItem:z.array(
