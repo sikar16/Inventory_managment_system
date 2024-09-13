@@ -1,99 +1,107 @@
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import AddCategory from './AddCategory';
-import { useState } from 'react';
-import CategoryTable from './CategoryTable';
-import Title from '../../../component/TablesTitle';
-import { useGetAllproductCategoryQuery } from '../../../services/productCategorySerivce';
-import Loading from '../../../component/Loading';
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import AddCategory from "./AddCategory";
+import { useState } from "react";
+import CategoryTable from "./CategoryTable";
+import Title from "../../../component/TablesTitle";
+import { useGetAllproductCategoryQuery } from "../../../services/productCategorySerivce";
+import Loading from "../../../component/Loading";
 
 export default function CategoryList() {
-    const [openDialog, setOpenDialog] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const handleOpenDialog = () => setOpenDialog(true);
+  const handleCloseDialog = () => setOpenDialog(false);
 
-    const handleOpenDialog = () => setOpenDialog(true);
-    const handleCloseDialog = () => setOpenDialog(false);
+  const { isError, isLoading, isSuccess, data, error } =
+    useGetAllproductCategoryQuery("productCategory");
+  const {
+    isError: isCategoryError,
+    isLoading: isCategoryLoading,
+    isSuccess: isCategorySuccess,
+    data: categories,
+    error: categoryError,
+  } = useGetAllproductCategoryQuery("get all product");
+  // console.log(data)
+  if (isError) {
+    return (
+      <div>
+        <h1>Error: {"An error occurred"}</h1>
+      </div>
+    );
+  }
 
-    const { isError, isLoading, isSuccess, data, error } = useGetAllproductCategoryQuery('productCategory');
-    const {
-        isError: isCategoryError,
-        isLoading: isCategoryLoading,
-        isSuccess: isCategorySuccess,
-        data: categories = [], // Default to an empty array
-        error: categoryError,
-    } = useGetAllproductCategoryQuery();
+  if (isLoading) {
+    return <Loading />;
+  }
+  if (isSuccess) {
+    return (
+      <div className="mt-10">
+        <Title
+          tableName="Category"
+          onClick={handleOpenDialog}
+          action="Add Category"
+        />
 
-    if (isError) {
-        return (
-            <div>
-                <h1>Error: {error?.message || 'An error occurred'}</h1>
-            </div>
-        );
-    }
+        <div className="flex flex-wrap gap-2 mt-10 mx-10 mb-5">
+          <div className="bg-white px-3 py-3 rounded-md mb-2 flex items-center">
+            <p className="me-3 text-gray-500">Category :</p>
+            <select className="bg-[#F5F5F5] text-gray-700">
+              {categories &&
+                categories.map((category: any) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+        </div>
 
-    if (isLoading) {
-        return <Loading />;
-    }
+        <hr className="w-full text-black bg-black" />
 
-    if (isSuccess) {
-        const filteredCategories = categories?.filter(category =>
-            category.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        <div className="my-4">
+          <input
+            type="text"
+            placeholder="Search"
+            className="w-[50%] bg-white rounded-2xl py-[5px] px-3"
+          />
+        </div>
+        <CategoryTable
+          productCategorylist={data}
+          anchorEl={anchorEl}
+          setAnchorEl={setAnchorEl}
+        />
 
-        return (
-            <div className='mt-10'>
-                <Title tableName="Category" action="Add Category" onClick={handleOpenDialog} />
+        <Dialog open={openDialog} onClose={handleCloseDialog}>
+          <DialogTitle>Add new category</DialogTitle>
+          <DialogContent>
+            <AddCategory handleCloseDialog={handleCloseDialog} />
+          </DialogContent>
+          <DialogActions>
+            <button onClick={handleCloseDialog} className="p-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width={25}
+                height={25}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="none"
+                  stroke="black"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"
+                ></path>
+              </svg>
+            </button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
 
-                <div className='flex flex-wrap gap-2 mt-10 mx-10 mb-5'>
-                    <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
-                        <p className='me-3 text-gray-500'>Category :</p>
-                        <select className='bg-[#F5F5F5] text-gray-700'>
-                            {filteredCategories?.map((category) => (
-                                <option key={category.id} value={category.id}>
-                                    {category.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-
-                <hr className='w-full text-black bg-black' />
-
-                <div className='my-4 justify-center flex'>
-                    <input
-                        type="text"
-                        placeholder="Search"
-                        className=" w-[90%] bg-white dark:bg-[#313131] rounded-md py-[5px] px-3 focus:outline-none"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-
-                <CategoryTable productCategorylist={filteredCategories} />
-
-                <Dialog open={openDialog} onClose={handleCloseDialog}>
-                    <div className='flex justify-between me-5'>
-                        <DialogTitle>
-                            Add new category
-                        </DialogTitle>
-                        <DialogActions>
-                            <button onClick={handleCloseDialog} className='p-2'>
-                                <svg xmlns="http://www.w3.org/2000/svg" width={25} height={25} viewBox="0 0 24 24">
-                                    <path fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"></path>
-                                </svg>
-                            </button>
-                        </DialogActions>
-                    </div>
-                    <DialogContent>
-                        <AddCategory handleCloseDialog={handleCloseDialog} />
-                    </DialogContent>
-
-                </Dialog>
-            </div>
-        );
-    }
-
-    return null;
+  return null;
 }
