@@ -19,7 +19,6 @@ type FormValues = {
   password: string;
 };
 
-
 function Login() {
   const form = useForm<FormValues>();
   const { register, control, handleSubmit, formState } = form;

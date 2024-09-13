@@ -39,16 +39,62 @@ const MaterialRequestForm = () => {
     const [requests, setRequests] = useState([]);
     const categoryRef = useRef(null);
     const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+    const [errors, setErrors] = useState({});
 
     const toggleAddProduct = () => {
         setIsAddProductOpen(!isAddProductOpen);
     };
+
     useEffect(() => {
         if (categoryRef.current) {
             categoryRef.current.focus();
         }
     }, [requests.length]);
-    const handleAddProduct = () => {
+
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!formData.category) {
+            newErrors.category = 'Category is required';
+        }
+
+        if (!formData.subcategory) {
+            newErrors.subcategory = 'Subcategory is required';
+        }
+
+        if (formData.products.length === 0) {
+            newErrors.products = 'Please select at least one product';
+        }
+
+        if (!formData.quantity || formData.quantity <= 0) {
+            newErrors.quantity = 'Quantity must be greater than 0';
+        }
+
+        if (!formData.unit) {
+            newErrors.unit = 'Unit is required';
+        }
+
+        if (!formData.desiredDate) {
+            newErrors.desiredDate = 'Desired date is required';
+        } else {
+            const today = new Date().toISOString().split('T')[0];
+            if (formData.desiredDate < today) {
+                newErrors.desiredDate = 'Desired date must be in the future';
+            }
+        }
+
+        if (!formData.reason.trim()) {
+            newErrors.reason = 'Reason for request is required';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const addRequest = () => {
+        if (!validateForm()) return;
+
+        setRequests([...requests, formData]);
         setFormData(initialFormData);
     };
 
@@ -76,67 +122,34 @@ const MaterialRequestForm = () => {
         });
     };
 
-    const handleReasonChange = (e) => {
-        setFormData({ ...formData, reason: e.target.value });
-    };
-
-    const addRequest = () => {
-        if (!formData.category || !formData.subcategory || !formData.products.length || !formData.reason) {
-            alert('Please fill out all required fields.');
-            return;
-        }
-        setRequests([...requests, formData]);
-        setFormData(initialFormData);
-    };
-
-    const handleSubmit = () => {
-        if (requests.some(req => !req.category || !req.subcategory || !req.products.length || !req.reason)) {
-            alert('Please fill out all fields in each request.');
-            return;
-        }
-        console.log('Request Data:', requests);
-    };
-
     return (
-        <div className="container mx-auto px-6 bg-white rounded-lg ">
-            <>
-
-                <div className=" mb-10">
-                    <h3 className="text-lg font-medium text-gray-700 mb-4 underline-offset-1">Request lists</h3>
-                    <table className="w-full border border-gray-300 rounded-lg">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <td className="border px-4 py-2 text-left text-gray-600 ">Products</td>
-                                <td className="border px-4 py-2 text-left text-gray-600">Quantity</td>
-                                <td className="border px-4 py-2 text-left text-gray-600">Reason</td>
+        <div className="px-6 bg-white rounded-lg ">
+            {/* Request List Section */}
+            <div className="mb-10">
+                <h3 className="text-lg font-medium text-gray-700 mb-4 underline-offset-1">Request lists</h3>
+                <table className="w-full border border-gray-300 rounded-lg">
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <td className="border px-4 py-2 text-left text-gray-600">Products</td>
+                            <td className="border px-4 py-2 text-left text-gray-600">Quantity</td>
+                            <td className="border px-4 py-2 text-left text-gray-600">Reason</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {requests.map((req, index) => (
+                            <tr key={index} className="hover:bg-gray-100">
+                                <td className="border px-4 py-2">
+                                    {productsData[req.subcategory]?.filter(product => req.products.includes(product.id)).map(product => product.name).join(', ')}
+                                </td>
+                                <td className="border px-4 py-2">{req.quantity}</td>
+                                <td className="border px-4 py-2">{req.reason}</td>
                             </tr>
-                        </thead>
-                        {requests.length > 0 && (
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
-                            <tbody>
-                                {requests.map((req, index) => (
-                                    <tr key={index} className="hover:bg-gray-100">
-                                        <td className="border px-4 py-2">
-                                            {productsData[req.subcategory]?.filter(product => req.products.includes(product.id)).map(product => product.name).join(', ')}
-                                        </td>
-                                        <td className="border px-4 py-2">{req.quantity}</td>
-                                        <td className="border px-4 py-2">{req.reason}</td>
-                                    </tr>
-                                ))}
-                                <tr>
-                                    <button
-                                        type="button"
-                                        onClick={handleAddProduct}
-                                        className=" text-white px-2 py-2 rounded "
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width={21} height={24} viewBox="0 0 448 512" ><path fill="#currentColor" d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32v144H48c-17.7 0-32 14.3-32 32s14.3 32 32 32h144v144c0 17.7 14.3 32 32 32s32-14.3 32-32V288h144c17.7 0 32-14.3 32-32s-14.3-32-32-32H256z"></path></svg>
-                                    </button>
-                                </tr>
-                            </tbody>
-                        )}
-                    </table>
-                </div>
-            </>
+            {/* Form Section */}
             <form className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -155,6 +168,7 @@ const MaterialRequestForm = () => {
                                 </option>
                             ))}
                         </select>
+                        {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
                     </div>
 
                     <div>
@@ -164,7 +178,7 @@ const MaterialRequestForm = () => {
                                 name="subcategory"
                                 value={formData.subcategory}
                                 onChange={handleSubcategoryChange}
-                                className="border border-gray-300 p-3 rounded-lg w-full  focus:outline-none"
+                                className="border border-gray-300 p-3 rounded-lg w-full focus:outline-none"
                             >
                                 <option value="">Select Subcategory</option>
                                 {categories
@@ -176,6 +190,7 @@ const MaterialRequestForm = () => {
                                     ))}
                             </select>
                         )}
+                        {errors.subcategory && <p className="text-red-500 text-sm">{errors.subcategory}</p>}
                     </div>
                 </div>
 
@@ -186,11 +201,10 @@ const MaterialRequestForm = () => {
                             <table className="w-full border border-gray-300 rounded-lg">
                                 <thead className="bg-gray-100">
                                     <tr>
-                                        <th className="border px-4 py-2 text-left">Product Name</th>
-                                        <th className="border px-4 py-2 text-left">RAM</th>
-                                        <th className="border px-4 py-2 text-left">ROM</th>
+                                        <td className="border px-4 py-2 text-left">Product Name</td>
+                                        <td className="border px-4 py-2 text-left">RAM</td>
+                                        <td className="border px-4 py-2 text-left">ROM</td>
                                     </tr>
-                                    <tr></tr>
                                 </thead>
                                 <tbody>
                                     {productsData[formData.subcategory]?.map(product => (
@@ -203,51 +217,22 @@ const MaterialRequestForm = () => {
                                                     onChange={() => handleCheckboxChange(product.id)}
                                                     className="mr-3 focus:outline-none"
                                                 />
-                                                <label htmlFor={`product-${product.id}`} className="text-gray-700 font-semibold cursor-pointer">
+                                                <label htmlFor={`product-${product.id}`} className="text-gray-700 text-sm cursor-pointer">
                                                     {product.name}
                                                 </label>
                                             </td>
-                                            <td className="border px-4 py-2 text-gray-600 text-sm">
-                                                {product.attributes.RAM}
-                                            </td>
-                                            <td className="border px-4 py-2 text-gray-600 text-sm">
-                                                {product.attributes.ROM}
-                                            </td>
-                                            {/* Plus Icon Button */}
-
+                                            <td className="border px-4 py-2 text-sm">{product.attributes.RAM}</td>
+                                            <td className="border px-4 py-2 text-sm">{product.attributes.ROM}</td>
                                         </tr>
-
                                     ))}
-                                    <tr>
-                                        <button
-                                            type="button"
-                                            onClick={toggleAddProduct}
-                                            className=" text-white px-2 py-2 rounded "
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" width={21} height={24} viewBox="0 0 448 512" ><path fill="#currentColor" d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32v144H48c-17.7 0-32 14.3-32 32s14.3 32 32 32h144v144c0 17.7 14.3 32 32 32s32-14.3 32-32V288h144c17.7 0 32-14.3 32-32s-14.3-32-32-32H256z"></path></svg>
-                                        </button>
-                                    </tr>
                                 </tbody>
                             </table>
-                        </div>
-                    )}
-                    {isAddProductOpen && (
-                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-                                <DialogTitle>Add New Product</DialogTitle>
-                                <AddProduct />
-                                <button
-                                    onClick={toggleAddProduct}
-                                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-                                >
-                                    &times;
-                                </button>
-                            </div>
+                            {errors.products && <p className="text-red-500 text-sm mt-1">{errors.products}</p>}
                         </div>
                     )}
                 </div>
 
-                <div className='grid grid-cols-2 gap-4'>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label className="block text-gray-700 font-medium mb-2">Quantity:</label>
                         <input
@@ -257,32 +242,32 @@ const MaterialRequestForm = () => {
                             onChange={handleInputChange}
                             className="border border-gray-300 p-3 rounded-lg w-full focus:outline-none"
                         />
+                        {errors.quantity && <p className="text-red-500 text-sm">{errors.quantity}</p>}
                     </div>
 
                     <div>
                         <label className="block text-gray-700 font-medium mb-2">Unit:</label>
-                        <select
+                        <input
+                            type="text"
                             name="unit"
                             value={formData.unit}
                             onChange={handleInputChange}
-                            className="border border-gray-300 p-3 rounded-lg w-full"
-                        >
-                            <option value="">Select Unit</option>
-                            <option value="Pieces">Pieces</option>
-                        </select>
-                    </div>
-                </div>
-                <div className='grid grid-cols-2'>
-                    <div >
-                        <label className="block text-gray-700 font-medium mb-2">Desired Date:</label>
-                        <input
-                            type="date"
-                            name="desiredDate"
-                            value={formData.desiredDate}
-                            onChange={handleInputChange}
                             className="border border-gray-300 p-3 rounded-lg w-full focus:outline-none"
                         />
+                        {errors.unit && <p className="text-red-500 text-sm">{errors.unit}</p>}
                     </div>
+                </div>
+
+                <div>
+                    <label className="block text-gray-700 font-medium mb-2">Desired Date:</label>
+                    <input
+                        type="date"
+                        name="desiredDate"
+                        value={formData.desiredDate}
+                        onChange={handleInputChange}
+                        className="border border-gray-300 p-3 rounded-lg w-full focus:outline-none"
+                    />
+                    {errors.desiredDate && <p className="text-red-500 text-sm">{errors.desiredDate}</p>}
                 </div>
 
                 <div>
@@ -290,35 +275,40 @@ const MaterialRequestForm = () => {
                     <textarea
                         name="reason"
                         value={formData.reason}
-                        onChange={handleReasonChange}
-                        className="border border-gray-300 p-3 rounded-lg w-3/4"
-                        rows="4"
-                    />
+                        onChange={handleInputChange}
+                        className="border border-gray-300 p-3 rounded-lg w-full focus:outline-none"
+                    ></textarea>
+                    {errors.reason && <p className="text-red-500 text-sm">{errors.reason}</p>}
                 </div>
 
-                <div className="flex justify-between mt-6">
+                <div className="flex justify-between items-center">
                     <button
                         type="button"
                         onClick={addRequest}
-                        className="bg-[#002a47] text-white px-4 py-2 rounded"
+                        className="bg-[#002A47] text-white px-4 py-2 rounded-lg "
                     >
-                        Add Request
+                        Add Another Request
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={toggleAddProduct}
+                        className="flex items-center text-[#002A47] hover:underline"
+                    >
+                        <FaPlus className="mr-2" /> Add New Product
                     </button>
                 </div>
-            </form >
+            </form>
 
-
-
-            <div className="mt-6">
-                <button
-                    type="button"
-                    onClick={handleSubmit}
-                    className="bg-[#002a47] text-white px-6 py-3 rounded-lg transition-colors"
-                >
-                    Submit All Requests
-                </button>
-            </div>
-        </div >
+            {isAddProductOpen && (
+                <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg  w-[500px]">
+                        <DialogTitle>Add Product</DialogTitle>
+                        <AddProduct onClose={toggleAddProduct} />
+                    </div>
+                </div>
+            )}
+        </div>
     );
 };
 

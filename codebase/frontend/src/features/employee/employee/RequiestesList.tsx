@@ -100,7 +100,7 @@ export default function RequiestesList() {
                 </div>
                 <hr className='w-full text-black bg-black' />
                 <div className='my-4'>
-                    <input type="text" placeholder='Search' className='w-[80%] bg-[#f5f5f5] rounded-md py-[5px] px-3' />
+                    <input type="text" placeholder='Search' className='w-full bg-white rounded-md py-[5px] px-3 outline-none' />
                 </div>
 
                 <Paper sx={{ width: '100%', overflow: 'hidden' }}>
