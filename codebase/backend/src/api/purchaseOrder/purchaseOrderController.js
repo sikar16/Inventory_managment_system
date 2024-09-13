@@ -149,18 +149,21 @@ const purchasedOrderController={
                 }
             }
           const data = purchaseOrderSchema.create.parse(req.body);
-    
-          for (const item of data.items) {
-            const product = await prisma.product.findFirst({
-                 where: { id: item.productId } 
+
+          for (let index = 0; index < data.items.length; index++) {
+            const element = data.items[index];
+             const isproductExist = await prisma.product.findFirst({
+                 where: { id: element.productId } 
                 });
-            if (!product) {
+            if (!isproductExist) {
               return res.status(404).json({
                 success: false,
-                message: `Product with ID ${item.productId} not found`,
+                message: `Product not found`,
               });
             }
           }
+    
+        
     
           const newPurchaseOrder = await prisma.purchasedOrder.create({
             data: {
@@ -249,8 +252,8 @@ const purchasedOrderController={
               });
             }
       
-            const product = await prisma.product.findFirst({ where: { id: data.productId } });
-            if (!product) {
+            const isproductExist = await prisma.product.findFirst({ where: { id: data.productId } });
+            if (!isproductExist) {
               return res.status(404).json({
                 success: false,
                 message: "Product not found",
@@ -418,7 +421,7 @@ const purchasedOrderController={
     
           // Delete associated items
           await prisma.purchasedOrderItem.deleteMany({
-            where: { purchasedRequestId: purchaseOrderId },
+            where: { purchasOrderId: purchaseOrderId },
           });
     
           const deletedPurchaseOrder = await prisma.purchasedOrder.delete({

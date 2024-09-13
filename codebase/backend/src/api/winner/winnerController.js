@@ -27,8 +27,8 @@ const winnerController={
 
             
         } catch (error) {
-            return res.status(500).json({
-                success: false,
+                return res.status(500).json({
+                    success: false,
                 message: `error ${error}`,
               });
         }

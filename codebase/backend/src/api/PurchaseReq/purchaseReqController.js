@@ -17,34 +17,21 @@ const purchasedReqConntroller={
             },
             include:{
               _count:true,
+              totalPrice:true,
               items:{
                 include:{
-                  products:true
+                  products:{
+                    include:{
+                      materialRequestItem:true
+                    }
+                  },
+                  quantityToBePurchased:true,
+                  remark:true,
+                  unitPrice:true
                 }
-              }
+              }, 
             }
-            // include:{
-            //   user:true,
-            //   _count:true,
-            //   items:{
-            //     include:{
-            //       _count:true,
-            //       products:{
-            //         include:{
-            //           materialRequestItem:{
-            //             include:{
-            //               product:{
-            //                 include:{
-            //                   productAttributes:true
-            //                 }
-            //               }
-            //             }
-            //           }
-            //         }
-            //       }
-            //     }
-            //   }
-            // }  
+          
           });
       
           if (!purchasedReq) {
@@ -73,11 +60,19 @@ const purchasedReqConntroller={
             const purchaseReq=await prisma.purchasedRequest.findMany({
               include:{
                 _count:true,
+                totalPrice:true,
                 items:{
                   include:{
-                    products:true
+                    products:{
+                      include:{
+                        materialRequestItem:true
+                      }
+                    },
+                    quantityToBePurchased:true,
+                    remark:true,
+                    unitPrice:true
                   }
-                }
+                }, 
               }
               // include:{
               //   user:true,
@@ -197,6 +192,7 @@ const purchasedReqConntroller={
             message: "Invalid purchase request item id",
           });
         }
+
     
         // Validate the request body
         const data = purchasedReqSchema.updateItems.parse(req.body);
@@ -244,8 +240,6 @@ const purchasedReqConntroller={
           });
         }
     
-        
-    
         // Update purchase request item
         const updatepurchasedReqItem = await prisma.purceasedRequestedItem.update({
           where: {
@@ -276,7 +270,7 @@ const purchasedReqConntroller={
         if (isNaN(purceasedRequestId)) {
           return res.status(400).json({
             success: false,
-            message: "Invalid purchase request item id",
+            message: "Invalid purchase request  id",
           });
         }
 
@@ -368,7 +362,7 @@ const purchasedReqConntroller={
         if (isNaN(purceasedRequestId)) {
           return res.status(400).json({
             success: false,
-            message: "Invalid purchase request item id",
+            message: "Invalid purchase request  id",
           });
         }
 
@@ -468,7 +462,7 @@ const purchasedReqConntroller={
       const ispurchaseReqExist = await prisma.purchasedRequest.findFirst({
         where: {
            id: purchaseReqId,
-          userId:req.user.id
+          userId:+req.user.id
          },
       });
       if (!ispurchaseReqExist) {
@@ -479,7 +473,7 @@ const purchasedReqConntroller={
       }
 
       await prisma.purceasedRequestedItem.deleteMany({
-        where: { purchasedRequestId: purchaseReqId },
+        where: { purchasedRequestId: +purchaseReqId },
       });
      
         const deletedPurchaseReq = await prisma.purchasedRequest.delete({
@@ -618,7 +612,7 @@ const purchasedReqConntroller={
             role: "GENERAL_MANAGER",
           },
         });
-        if (!isFinanceExist) {
+        if (!isGmExist) {
           return res.status(400).json({
             success: false,
             message: "GENERAL_MANAGER not found",

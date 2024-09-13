@@ -128,7 +128,7 @@ const userController = {
           country: data.country,
           city: data.city,
           subCity: data.subCity,
-          wereda: data.wereda,
+          wereda:data.wereda
         },
       });
       // if address exist
@@ -142,14 +142,14 @@ const userController = {
             country: data.country,
             city: data.city,
             subCity: data.subCity,
-            wereda: data.wereda,
+            wereda:data.wereda
           },
         });
         addressId = newAddress.id;
       }
 
       // Hash the password
-      // const hashedPassword = await bcrypt.hashSync(data.password, 10);
+      const hashedPassword = await bcrypt.hashSync(data.password, 10);
 
       // Create the user
       const newUser = await prisma.users.create({

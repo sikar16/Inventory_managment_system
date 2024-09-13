@@ -2,6 +2,7 @@ import { z } from "zod";
 
 const supplierOfferSchem = {
   create: z.object({
+    purchasedOrderId: z.string(),
     supplayerId: z.number(),
     totalPrice: z.number(),
     items: z.array(

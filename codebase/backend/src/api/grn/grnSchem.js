@@ -11,7 +11,12 @@ const grnSchem={
             })
         )
     }),
-
+    updateSupplier:z.object({
+        supplayerId:z.number(),
+    }),
+    updatePurchasedOrder:z.object({
+        purchasedOrderId:z.number(),
+    }),
     updateitems:z.object({
         productId:z.number(),
         quantity:z.number(),

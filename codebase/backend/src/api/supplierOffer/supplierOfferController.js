@@ -78,6 +78,15 @@ const supplierOfferController = {
 
   createSupplierOffer: async (req, res, next) => {
     try {
+      const requiredField = ["purchasedOrderId", "supplayerId","totalPrice","items"];
+      for (const field of requiredField) {
+        if (!req.body[field]) {
+          return res.status(403).json({
+            success: false,
+            message: `${field} is required`,
+          });
+        }
+      }
       const data = supplierOfferSchem.create.parse(req.body);
 
       const isSupplierExist = await prisma.suppliers.findFirst({
@@ -90,11 +99,22 @@ const supplierOfferController = {
           message: "Supplier not found",
         });
       }
+      const isPurchasedOrderExist = await prisma.purchasedOrder.findFirst({
+        where: { id: data.purchasedOrderId }
+      });
+
+      if (!isPurchasedOrderExist) {
+        return res.status(404).json({
+          success: false,
+          message: "purchased order not found",
+        });
+      }
 
       const newSupplierOffer = await prisma.supplayerOffer.create({
         include: {
           _count: true,
           supplayer: true,
+          purchasedOrder:true,
           offerItem: {
             include: {
               products: {
@@ -109,6 +129,7 @@ const supplierOfferController = {
         data: {
           totalPrice: data.totalPrice,
           supplayerId: data.supplayerId,
+          purchasedOrderId:data.purchasedOrderId,
           offerItem: {
             create: data.items.map(item => ({
               productId: +item.productId,
@@ -142,7 +163,15 @@ const supplierOfferController = {
         });
       }
 
-
+      const requiredField = ["totalPrice"];
+      for (const field of requiredField) {
+        if (!req.body[field]) {
+          return res.status(403).json({
+            success: false,
+            message: `${field} is required`,
+          });
+        }
+      }
       const data = supplierOfferSchem.updateSupplierOffer.parse(req.body);
 
       const updatedSupplierOffer = await prisma.supplayerOffer.update({
@@ -171,7 +200,15 @@ const supplierOfferController = {
           message: "Invalid supplier offer ID",
         });
       }
-
+      const requiredField = ["supplayerId"];
+      for (const field of requiredField) {
+        if (!req.body[field]) {
+          return res.status(403).json({
+            success: false,
+            message: `${field} is required`,
+          });
+        }
+      }
       const data = supplierOfferSchem.updateSupplier.parse(req.body);
 
       const updatedSupplier = await prisma.supplayerOffer.update({
@@ -210,7 +247,6 @@ const supplierOfferController = {
       const isSupplierOfferExist = await prisma.supplayerOffer.findFirst({
               where: {
                 id: +supplierOfferId,
-
               },
             });
 
@@ -222,17 +258,11 @@ const supplierOfferController = {
             }
       const updatedSupplierOffer = await prisma.supplayerOffer.update({
         where: { id: supplierOfferId },
-        data: {
-          offerItem: {
-            updateMany: {
-              where: { productId: data.productId },
               data: {
                 quantity: data.quantity,
-                unitPrice: data.unitPrice
+                unitPrice: data.unitPrice,
+                productId: data.productId
               }
-            }
-          }
-        }
       });
 
       return res.status(200).json({
@@ -270,6 +300,10 @@ const supplierOfferController = {
           message: "This supplier is not found",
         });
       }
+      await prisma.offerItem.deleteMany({
+        where: { supplayerOfferId: +supplierOfferId },
+      });
+
       const deletedSupplierOffer = await prisma.supplayerOffer.delete({
         where: { id: supplierOfferId }
       });

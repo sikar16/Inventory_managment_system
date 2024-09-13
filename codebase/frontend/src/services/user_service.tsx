@@ -3,6 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { UserType } from "../_types/user_type";
 import extractErrorMessage from "../util/extractErrorMessage";
 const baseUrl = import.meta.env.VITE_API_URL;
+
 interface FormDataType {
   firstName: string;
   middleName: string;
@@ -16,6 +17,12 @@ interface FormDataType {
   departmentId: number;
   password: string;
 }
+
+interface LoginDataType {
+  email: string;
+  password: string;
+}
+
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}user` }),
@@ -27,7 +34,7 @@ export const userApi = createApi({
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          //   Authorization: "token",
+          // Authorization: "token",
         },
       }),
       transformResponse: (response: any) =>
@@ -41,7 +48,7 @@ export const userApi = createApi({
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          //   Authorization: "token",
+          // Authorization: "token",
         },
       }),
     }),
@@ -52,12 +59,11 @@ export const userApi = createApi({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['user'], // Invalidate 'userType' tag
+      invalidatesTags: ['user'],
       transformResponse: (response: Response) => {
         console.log(response);
-        return response.success ? response.message : "something happend";
+        return response.success ? response.message : "something happened";
       },
-
       transformErrorResponse: (response: Response) => {
         const message = response?.data?.message;
         return extractErrorMessage(message);
@@ -71,7 +77,7 @@ export const userApi = createApi({
         body: userData,
         headers: {
           "Content-Type": "application/json",
-          //   Authorization: "token",
+          // Authorization: "token",
         },
       }),
     }),
@@ -82,7 +88,7 @@ export const userApi = createApi({
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          //   Authorization: "token",
+          // Authorization: "token",
         },
       }),
       invalidatesTags: ['user'],
@@ -95,6 +101,31 @@ export const userApi = createApi({
         }
       },
     }),
+
+    // Add the login mutation here
+    loginUser: builder.mutation({
+      query: (loginData: LoginDataType) => ({
+        url: `http://localhost:8888/api/user/login`, // Adjust to your actual login API endpoint
+        method: "POST",
+        body: loginData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      transformResponse: (response: any) => {
+        // You can handle storing token or response here
+        if (response.success) {
+          // Store token in localStorage
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('role', response.role);
+        }
+        return response;
+      },
+      transformErrorResponse: (response: any) => {
+        const message = response?.data?.message || "Login failed";
+        return extractErrorMessage(message);
+      },
+    }),
   }),
 });
 
@@ -104,4 +135,5 @@ export const {
   useAddNewuserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useLoginUserMutation,
 } = userApi;

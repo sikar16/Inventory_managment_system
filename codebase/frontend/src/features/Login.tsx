@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { DevTool } from "@hookform/devtools";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import LogoContainer from '../component/LogoContainer';
 import { useThemeData } from '../context/them_context';
 import {
@@ -9,10 +9,16 @@ import {
   MdBrightnessAuto,
 } from "react-icons/md";
 import IconContainer from '../component/icon/Icon_container';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
+import { useLoginUserMutation } from '../services/user_service';
+
 type FormValues = {
   email: string;
   password: string;
 };
+
 
 function Login() {
   const form = useForm<FormValues>();
@@ -20,6 +26,7 @@ function Login() {
   const { errors } = formState;
   const [showPassword, setShowPassword] = useState(false);
   const { themeData, setThemeData } = useThemeData();
+  const { isLoggedIn, fetchData } = useAuth()
 
   const onSubmit = (data: FormValues) => {
     console.log("Form submitted", data);
@@ -43,6 +50,30 @@ function Login() {
       setThemeData("dark");
     }
   };
+  const navigetor = useNavigate()
+
+  const handleLogin = async () => {
+    // console.log(form);
+
+    const response = await useLoginUserMutation(form);
+    // console.log(response);
+
+    if (response.success === true) {
+      fetchData();
+      navigetor("/");
+      // alert(response.message);
+    } else {
+      console.log(response.message);
+      // alert(response.message);
+    }
+  };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchData();
+      navigetor("/");
+    }
+  }, [isLoggedIn])
   return (
     <>
       <div className='bg-[#002A47] text-white dark:bg-[#1C1E22] dark:text-[#B7E4FF] w-full h-screen   items-center justify-center '>
@@ -86,7 +117,9 @@ function Login() {
               </div>
             </div>
             <div className='flex justify-center'>
-              <button type="submit" className='bg-white text-[#002A47] dark:bg-[#B7E4FF] dark:text-black px-3 py-[3px] rounded-md transition'> Submit
+              <button type="submit" className='bg-white text-[#002A47] dark:bg-[#B7E4FF] dark:text-black px-3 py-[3px] rounded-md transition'
+                onClick={handleLogin}
+              > Login
               </button>
             </div>
           </form>
