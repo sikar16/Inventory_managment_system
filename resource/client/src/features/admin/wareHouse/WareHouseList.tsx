@@ -21,17 +21,25 @@ export default function WareHouseList() {
         setOpenDialog(false);
     };
 
-    const { isError, isLoading, isSuccess, data, error } = useGetAllstoreQuery('store');
+    const { isError, isLoading, data, error } = useGetAllstoreQuery();
 
     if (isError) return <h1>Error: {error.toString()}</h1>;
     if (isLoading) return <Loader />;
 
-    const filteredData = data?.filter(store =>
-        store.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        store.address.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        store.address.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        store.address.subCity.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredData = data?.filter(store => {
+        const { name, address } = store;
+        // Check if address exists to avoid accessing properties of undefined
+        const country = address?.country || '';
+        const city = address?.city || '';
+        const subCity = address?.subCity || '';
+
+        return (
+            name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            country.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            subCity.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }) || [];
 
     return (
         <div className='mt-10'>

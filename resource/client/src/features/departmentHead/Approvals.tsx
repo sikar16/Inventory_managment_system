@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -17,30 +16,44 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-// import MaterialRequistForm from '../MaterialRequistForm';
 
-const columns = [
+interface Column {
+    id: string;
+    label: string;
+    minWidth?: number;
+    align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
+}
+
+const columns: Column[] = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'orderId', label: 'Order Id', minWidth: 70 },
     { id: 'requestedEmployee', label: 'Requested Employee', minWidth: 70, align: 'left' },
     { id: 'product', label: 'Product', minWidth: 70, align: 'left' },
     { id: 'quantity', label: 'Quantity', minWidth: 70, align: 'left' },
     { id: 'status', label: 'Status', minWidth: 70, align: 'left' },
-    { id: 'dateOfRequest', label: 'Date of request', minWidth: 70, align: 'left' },
+    { id: 'dateOfRequest', label: 'Date of Request', minWidth: 70, align: 'left' },
 ];
+
+interface RowData {
+    no: number;
+    orderId: string;
+    requestedEmployee: string;
+    product: string;
+    quantity: string;
+    status: string;
+    dateOfRequest: string;
+}
 
 function createData(no: number, orderId: string, requestedEmployee: string, product: string, quantity: string, status: string, dateOfRequest: string) {
     return { no, orderId, requestedEmployee, product, quantity, status, dateOfRequest };
 }
 
 const rows = [
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-
+    createData(1, "#12345", "Zerubabel", "HP Laptop", "20", "Active", "8-26-2024"),
+    createData(2, "#12346", "Alice", "Dell Desktop", "10", "Pending", "8-27-2024"),
+    createData(3, "#12347", "Bob", "MacBook Pro", "5", "Completed", "8-28-2024"),
+    createData(4, "#12348", "Charlie", "Lenovo ThinkPad", "15", "Active", "8-29-2024"),
+    createData(5, "#12349", "David", "Asus ROG", "8", "Active", "8-30-2024"),
 ];
 
 export default function Approvals() {
@@ -48,9 +61,9 @@ export default function Approvals() {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [openDialog, setOpenDialog] = React.useState(false);
-    const [selectedProduct, setSelectedProduct] = React.useState<any>(null);
+    const [selectedProduct, setSelectedProduct] = React.useState<null | RowData>(null);
 
-    const handleChangePage = (event: unknown, newPage: number) => {
+    const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
 
@@ -59,7 +72,7 @@ export default function Approvals() {
         setPage(0);
     };
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, product: any) => {
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, product: RowData) => {
         setAnchorEl(event.currentTarget);
         setSelectedProduct(product);
     };
@@ -67,19 +80,21 @@ export default function Approvals() {
     const handleCloseMenu = () => {
         setAnchorEl(null);
     };
+
     const handleOpenDialog = () => {
         setOpenDialog(true);
+        handleCloseMenu();
     };
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
+        setSelectedProduct(null);
     };
 
     return (
         <div className='pt-10 mx-7'>
             <div className='flex justify-between mb-3 mx-2'>
-                <p className='text-[#002a47] text-4xl font-medium'>Approval request</p>
-                {/* <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Add Product</button> */}
+                <p className='text-[#002a47] text-4xl font-medium'>Approval Request</p>
             </div>
             <hr className='w-full text-black bg-black' />
             <div className='my-4'>
@@ -99,22 +114,23 @@ export default function Approvals() {
                                         {column.label}
                                     </TableCell>
                                 ))}
+                                <TableCell align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {rows
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.productId}>
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.no}>
                                         {columns.map((column) => {
-                                            const value = row[column.id];
+                                            const value = row[column.id as keyof RowData];
                                             return (
                                                 <TableCell key={column.id} align={column.align}>
                                                     {value}
                                                 </TableCell>
                                             );
                                         })}
-                                        <TableCell>
+                                        <TableCell align="right">
                                             <IconButton
                                                 aria-label="more"
                                                 aria-controls="long-menu"
@@ -128,7 +144,7 @@ export default function Approvals() {
                                                 open={Boolean(anchorEl)}
                                                 onClose={handleCloseMenu}
                                             >
-                                                <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
+                                                <MenuItem onClick={handleOpenDialog}>Edit</MenuItem>
                                                 <MenuItem onClick={handleCloseMenu}>Delete</MenuItem>
                                             </Menu>
                                         </TableCell>
@@ -147,22 +163,35 @@ export default function Approvals() {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
-            <Dialog open={openDialog} onClose={handleCloseDialog}
-                open={openDialog}
+            <Dialog open={openDialog}
                 onClose={handleCloseDialog}
                 PaperProps={{
                     style: {
                         width: '70vw',
                         maxWidth: '70vw',
-                        height: '90vw'
+                        height: '90vh'
                     },
                 }}
-                className="relative mx-auto"
             >
-                <div className='flex justify-between me-5'>
-
-                </div>
-
+                <DialogTitle>Edit Product</DialogTitle>
+                <DialogContent>
+                    {selectedProduct && (
+                        <div>
+                            <p><strong>Order ID:</strong> {selectedProduct.orderId}</p>
+                            <p><strong>Requested Employee:</strong> {selectedProduct.requestedEmployee}</p>
+                            <p><strong>Product:</strong> {selectedProduct.product}</p>
+                            <p><strong>Quantity:</strong> {selectedProduct.quantity}</p>
+                            <p><strong>Status:</strong> {selectedProduct.status}</p>
+                            <p><strong>Date of Request:</strong> {selectedProduct.dateOfRequest}</p>
+                            {/* Add more fields if necessary */}
+                        </div>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
             </Dialog>
         </div>
     );

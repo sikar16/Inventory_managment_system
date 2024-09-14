@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -16,10 +15,16 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import MaterialRequistForm from '../MaterialRequistForm';
+import MaterialRequistForm from '../component/MaterialRequistForm';
 
-const columns = [
+interface Column {
+    id: string;
+    label: string;
+    minWidth: number;
+    align?: 'left' | 'right' | 'center';
+}
+
+const columns: Column[] = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'orderId', label: 'Order Id', minWidth: 70 },
     { id: 'requestedEmployee', label: 'Requested Employee', minWidth: 70, align: 'left' },
@@ -29,29 +34,35 @@ const columns = [
     { id: 'dateOfRequest', label: 'Date of request', minWidth: 70, align: 'left' },
 ];
 
-function createData(no: number, orderId: string, requestedEmployee: string, product: string, quantity: string, status: string, dateOfRequest: string) {
+interface Data {
+    no: number;
+    orderId: string;
+    requestedEmployee: string;
+    product: string;
+    quantity: string;
+    status: string;
+    dateOfRequest: string;
+}
+
+function createData(no: number, orderId: string, requestedEmployee: string, product: string, quantity: string, status: string, dateOfRequest: string): Data {
     return { no, orderId, requestedEmployee, product, quantity, status, dateOfRequest };
 }
 
-const rows = [
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-
+const rows: Data[] = [
+    createData(1, "#12345", "Zerubabel", "Hp laptop", "20", "Active", "8-26-2024"),
+    createData(2, "#12346", "Zerubabel", "Dell laptop", "15", "Active", "8-27-2024"),
+    createData(3, "#12347", "Zerubabel", "Lenovo", "10", "Pending", "8-28-2024"),
+    // Add more data as needed
 ];
 
 export default function IncomingRequest() {
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [page, setPage] = React.useState<number>(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState<number>(5);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const [openDialog, setOpenDialog] = React.useState(false);
-    const [openDetails, setOpenDetails] = React.useState(false);
-    const [selectedProduct, setSelectedProduct] = React.useState<any>(null);
+    const [openDialog, setOpenDialog] = React.useState<boolean>(false);
+    const [selectedProduct, setSelectedProduct] = React.useState<Data | null>(null);
 
-    const handleChangePage = (event: unknown, newPage: number) => {
+    const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
 
@@ -60,18 +71,13 @@ export default function IncomingRequest() {
         setPage(0);
     };
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, product: any) => {
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, product: Data) => {
         setAnchorEl(event.currentTarget);
         setSelectedProduct(product);
     };
 
     const handleCloseMenu = () => {
         setAnchorEl(null);
-    };
-
-
-    const handleCloseDetails = () => {
-        setOpenDetails(false);
     };
 
     const handleOpenDialog = () => {
@@ -81,6 +87,17 @@ export default function IncomingRequest() {
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
+    // Add this function to handle editing
+    const handleEdit = () => {
+        if (selectedProduct) {
+            // Logic to edit the selected product
+            console.log("Editing product:", selectedProduct);
+            handleCloseMenu();
+            handleOpenDialog(); // Open the dialog to edit the product
+        }
+    };
+
+    // Update your MenuItem for Edit
 
     return (
         <div className='mt-10 mx-7'>
@@ -112,9 +129,9 @@ export default function IncomingRequest() {
                             {rows
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.productId}>
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.orderId}>
                                         {columns.map((column) => {
-                                            const value = row[column.id];
+                                            const value = row[column.id as keyof Data];
                                             return (
                                                 <TableCell key={column.id} align={column.align}>
                                                     {value}
@@ -135,7 +152,7 @@ export default function IncomingRequest() {
                                                 open={Boolean(anchorEl)}
                                                 onClose={handleCloseMenu}
                                             >
-                                                <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
+                                                <MenuItem onClick={handleEdit}>Edit</MenuItem>
                                                 <MenuItem onClick={handleCloseMenu}>Delete</MenuItem>
                                             </Menu>
                                         </TableCell>
@@ -155,9 +172,7 @@ export default function IncomingRequest() {
                 />
             </Paper>
 
-
-
-            <Dialog open={openDialog} onClose={handleCloseDialog}
+            <Dialog
                 open={openDialog}
                 onClose={handleCloseDialog}
                 PaperProps={{
@@ -176,7 +191,9 @@ export default function IncomingRequest() {
                         </p>
                     </DialogTitle>
                     <DialogActions>
-                        <svg onClick={handleCloseDialog} xmlns="http://www.w3.org/2000/svg" width={30} height={30} viewBox="0 0 24 24" ><path fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"></path></svg>
+                        <svg onClick={handleCloseDialog} xmlns="http://www.w3.org/2000/svg" width={30} height={30} viewBox="0 0 24 24">
+                            <path fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243" />
+                        </svg>
                     </DialogActions>
                 </div>
                 <DialogContent>

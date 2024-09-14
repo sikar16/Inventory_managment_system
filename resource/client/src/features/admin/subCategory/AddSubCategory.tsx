@@ -17,7 +17,7 @@ const AddSubCategory: React.FC<AddSubcategoryProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [customSubCategory, setCustomSubCategory] = useState<string>("");
-  const { isSuccess, data } = useGetAllproductCategoryQuery();
+  const { isSuccess, data } = useGetAllproductCategoryQuery("product category");
   const [addSubcategory] = useAddNewProductSubCategoryMutation();
 
   const categories: ProductCategoryType[] = isSuccess ? data : [];

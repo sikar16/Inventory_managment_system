@@ -5,18 +5,22 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import AddProduct from "./AddProduct";
 import Title from "../../../component/TablesTitle";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ProductTable from "./ProductTable";
 import { useGetAllproductQuery } from "../../../services/product_service";
 import Loader from "../../../component/Loading";
 import { useGetAllproductCategoryQuery } from "../../../services/productCategorySerivce";
 import { useGetAllproductSubCategoryQuery } from "../../../services/productSubcategory_service";
 import { useGetAlltemplateQuery } from "../../../services/template_service";
+import { ProductType } from "../../../_types/product_type";
+import { ProductCategoryType } from "../../../_types/productCategory_type";
+import { ProductSubCategoryType } from "../../../_types/productSubcategory_type";
+import { TemplateType } from "../../../_types/template_type";
 
 export default function ProductList() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductType>();
   const [openDetails, setOpenDetails] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
@@ -29,9 +33,7 @@ export default function ProductList() {
     undefined
   );
 
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
+
   const handleCloseDetails = () => {
     setOpenDetails(false);
   };
@@ -53,19 +55,19 @@ export default function ProductList() {
     isLoading: isCategoryLoading,
     data: productCategories,
     error: categoryError,
-  } = useGetAllproductCategoryQuery();
+  } = useGetAllproductCategoryQuery("product category");
   const {
     isError: isSubCategoryError,
     isLoading: isSubCategoryLoading,
     data: productSubCategories,
     error: subCategoryError,
-  } = useGetAllproductSubCategoryQuery();
+  } = useGetAllproductSubCategoryQuery("product sub category");
   const {
     isError: isTemplateError,
     isLoading: isTemplateLoading,
     data: templates,
     error: templateError,
-  } = useGetAlltemplateQuery();
+  } = useGetAlltemplateQuery("template");
 
   if (
     isProductError ||
@@ -81,7 +83,7 @@ export default function ProductList() {
           categoryError ||
           subCategoryError ||
           templateError
-        ).toString()}
+        )?.toString() || "No errors"}
       </h1>
     );
   }
@@ -95,15 +97,13 @@ export default function ProductList() {
   }
 
   const filteredProducts = products?.filter(
-    (product: any) =>
+    (product: ProductType) =>
       (searchTerm === "" ||
         product.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (selectedCategory === undefined ||
-        product.categoryId === selectedCategory) &&
+        product.category.name === selectedCategory) &&
       (selectedSubCategory === undefined ||
-        product.subCategoryId === selectedSubCategory) &&
-      (selectedTemplate === undefined ||
-        product.templateId === selectedTemplate)
+        product.subcategory.name === selectedSubCategory)
   );
 
   // console.log(filteredProducts);
@@ -124,7 +124,7 @@ export default function ProductList() {
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="">All Categories</option>
-            {productCategories.map((productCategory: any) => (
+            {productCategories?.map((productCategory: ProductCategoryType) => (
               <option key={productCategory.id} value={productCategory.id}>
                 {productCategory.name}
               </option>
@@ -139,7 +139,7 @@ export default function ProductList() {
             onChange={(e) => setSelectedSubCategory(e.target.value)}
           >
             <option value="">All Subcategories</option>
-            {productSubCategories.map((productSubCategory: any) => (
+            {productSubCategories?.map((productSubCategory: ProductSubCategoryType) => (
               <option key={productSubCategory.id} value={productSubCategory.id}>
                 {productSubCategory.name}
               </option>
@@ -154,7 +154,7 @@ export default function ProductList() {
             onChange={(e) => setSelectedTemplate(e.target.value)}
           >
             <option value="">All Templates</option>
-            {templates.map((template: any) => (
+            {templates?.map((template: TemplateType) => (
               <option key={template.id} value={template.id}>
                 {template.name}
               </option>
@@ -173,10 +173,10 @@ export default function ProductList() {
         />
       </div>
       <ProductTable
-        productList={filteredProducts}
+        productList={filteredProducts || []}
         anchorEl={anchorEl}
         setAnchorEl={setAnchorEl}
-        selectedProduct={selectedProduct}
+        selectedProduct={selectedProduct || null}
         setSelectedProduct={setSelectedProduct}
         setOpenDetails={setOpenDetails}
       />
@@ -191,19 +191,19 @@ export default function ProductList() {
                 {" "}
                 Product ID:{" "}
                 <span className="text-sm">
-                  {selectedProduct.productId}
+                  {selectedProduct.id}
                 </span>{" "}
               </p>
               <p className="text-md">
                 Product:{" "}
-                <span className="text-sm">{selectedProduct.product} </span>
+                <span className="text-sm">{selectedProduct.name} </span>
               </p>
               <p className="text-md">
                 Category:{" "}
-                <span className="text-sm">{selectedProduct.category} </span>
+                <span className="text-sm">{selectedProduct.category.name} </span>
               </p>
               <p className="text-md">
-                Template: <span className="text-sm"> </span>
+                Template: <span className="text-sm">{ } </span>
               </p>
               <p className="text-md">
                 Attributes:

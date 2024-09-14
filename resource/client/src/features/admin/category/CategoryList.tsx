@@ -8,6 +8,7 @@ import CategoryTable from "./CategoryTable";
 import Title from "../../../component/TablesTitle";
 import { useGetAllproductCategoryQuery } from "../../../services/productCategorySerivce";
 import Loading from "../../../component/Loading";
+import { ProductCategoryType } from "../../../_types/productCategory_type";
 
 export default function CategoryList() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -15,14 +16,10 @@ export default function CategoryList() {
   const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
 
-  const { isError, isLoading, isSuccess, data, error } =
+  const { isError, isLoading, isSuccess, data } =
     useGetAllproductCategoryQuery("productCategory");
   const {
-    isError: isCategoryError,
-    isLoading: isCategoryLoading,
-    isSuccess: isCategorySuccess,
     data: categories,
-    error: categoryError,
   } = useGetAllproductCategoryQuery("get all product");
   // console.log(data)
   if (isError) {
@@ -50,7 +47,7 @@ export default function CategoryList() {
             <p className="me-3 text-gray-500">Category :</p>
             <select className="bg-[#F5F5F5] text-gray-700">
               {categories &&
-                categories.map((category: any) => (
+                categories.map((category: ProductCategoryType) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
                   </option>

@@ -7,32 +7,46 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useState } from 'react';
-import { supplierCategoryType } from '../../../_types/supplierCategory_type';
-const columns = [
-    { id: 'no', label: 'No', minWidth: 50 },
-    { id: 'suppliersid', label: 'Suppliers id', minWidth: 70 },
-    { id: 'category', label: 'Category', minWidth: 70, align: 'left' },
-];
+import { SupplierCategoryType } from '../../../_types/supplierCategory_type';
 
-function createData(no: number, suppliersid: string, category: string) {
+const columns: {
+    id: string;
+    label: string;
+    minWidth: number;
+    align?: "left" | "center" | "right" | "inherit" | "justify"; // Optional align property
+}[] = [
+        { id: 'no', label: 'No', minWidth: 50 },
+        { id: 'suppliersid', label: 'Suppliers id', minWidth: 70 },
+        { id: 'category', label: 'Category', minWidth: 70, align: 'left' },
+    ];
+
+interface RowType {
+    no: number;
+    suppliersid: string;
+    category: string;
+}
+
+function createData(no: number, suppliersid: string, category: string): RowType {
     return { no, suppliersid, category };
 }
 
 interface SupplierCategoryProps {
-    suppliersCategorylist: supplierCategoryType;
+    suppliersCategorylist: SupplierCategoryType[]; // Change to an array type
 }
+
 const SupplierCategoryTable: React.FC<SupplierCategoryProps> = ({ suppliersCategorylist }) => {
-    const rows = suppliersCategorylist.map((i) =>
+    const rows = suppliersCategorylist.map((i, index) =>  // Use index for 'no'
         createData(
-            i.id,
+            index + 1, // Assuming 'no' is the index + 1
             `${i.id}`,
-            `${i.name}`,
+            `${i.name}`
         )
-    )
+    );
+
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const handleChangePage = (event: unknown, newPage: number) => {
+    const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
 
@@ -40,6 +54,7 @@ const SupplierCategoryTable: React.FC<SupplierCategoryProps> = ({ suppliersCateg
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
+
     return (
         <>
             <div className="flex mx-[7%]">
@@ -63,16 +78,15 @@ const SupplierCategoryTable: React.FC<SupplierCategoryProps> = ({ suppliersCateg
                                 {rows
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row) => (
-                                        <TableRow hover role="checkbox" tabIndex={-1} key={row.productId}>
+                                        <TableRow hover role="checkbox" tabIndex={-1} key={row.suppliersid}>
                                             {columns.map((column) => {
-                                                const value = row[column.id];
+                                                const value = row[column.id as keyof RowType];
                                                 return (
                                                     <TableCell key={column.id} align={column.align}>
                                                         {value}
                                                     </TableCell>
                                                 );
                                             })}
-
                                         </TableRow>
                                     ))}
                             </TableBody>
@@ -90,7 +104,7 @@ const SupplierCategoryTable: React.FC<SupplierCategoryProps> = ({ suppliersCateg
                 </Paper>
             </div>
         </>
-    )
+    );
 }
 
-export default SupplierCategoryTable
+export default SupplierCategoryTable;

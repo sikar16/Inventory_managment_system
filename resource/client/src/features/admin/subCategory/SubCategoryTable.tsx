@@ -8,36 +8,52 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { ProductSubCategoryType } from "../../../_types/productSubcategory_type";
-const columns = [
+
+interface Column {
+  id: keyof RowType; // Ensure this matches the keys of RowType
+  label: string;
+  minWidth: number;
+  align?: "left" | "center" | "right" | "inherit" | "justify";
+}
+
+const columns: Column[] = [
   { id: "no", label: "No", minWidth: 50 },
   { id: "subcategoryId", label: "SubCategory Id", minWidth: 70 },
   { id: "category", label: "Category", minWidth: 70, align: "left" },
   { id: "subCategory", label: "SubCategory", minWidth: 70, align: "left" },
 ];
 
+interface RowType {
+  no: number;
+  subcategoryId: string;
+  category: string;
+  subCategory: string;
+}
+
 function createData(
   no: number,
   subcategoryId: string,
   category: string,
   subCategory: string
-) {
+): RowType {
   return { no, subcategoryId, category, subCategory };
 }
 
-interface productSubcategoryprops {
+interface ProductSubCategoryProps {
   subcategoryList: ProductSubCategoryType[];
 }
 
-const SubCategoryTable: React.FC<productSubcategoryprops> = ({
+const SubCategoryTable: React.FC<ProductSubCategoryProps> = ({
   subcategoryList,
 }) => {
   const rows = subcategoryList.map((i) =>
     createData(i.id, `${i.id}`, `${i.category.name}`, `${i.name}`)
   );
+
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
@@ -47,6 +63,7 @@ const SubCategoryTable: React.FC<productSubcategoryprops> = ({
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
   return (
     <>
       <div className="flex mx-[7%]">
@@ -74,10 +91,10 @@ const SubCategoryTable: React.FC<productSubcategoryprops> = ({
                       hover
                       role="checkbox"
                       tabIndex={-1}
-                      key={row.productId}
+                      key={row.subcategoryId}
                     >
                       {columns.map((column) => {
-                        const value = row[column.id];
+                        const value = row[column.id as keyof RowType]; // Type assertion
                         return (
                           <TableCell key={column.id} align={column.align}>
                             {value}

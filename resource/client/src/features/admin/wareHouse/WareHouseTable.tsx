@@ -11,7 +11,14 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { StoreType } from '../../../_types/store_type';
 
-const columns = [
+interface Column {
+    id: string;
+    label: string;
+    minWidth?: number;
+    align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
+}
+
+const columns: Column[] = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'storeName', label: 'Store Name', minWidth: 200 },
     { id: 'city', label: 'City', minWidth: 200, align: 'left' },
@@ -46,7 +53,7 @@ const WareHouseTable: React.FC<StoreProps> = ({ storeList }) => {
         setOpenFaqIndex(openFaqIndex === index ? null : index);
     };
 
-    const handleChangePage = (event: unknown, newPage: number) => {
+    const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
 
@@ -115,7 +122,7 @@ const WareHouseTable: React.FC<StoreProps> = ({ storeList }) => {
                                                             <p className="text-md">Store Name: <span className="text-sm">{storeList[index].name}</span></p>
                                                             <p className="text-md">Attributes:</p>
                                                             <div className="col-span-2 grid grid-cols-2 text-sm gap-2">
-                                                                {storeList[index].attributes?.map((attr, idx) => (
+                                                                {storeList[index].attributes?.map((attr: { name: string | number | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<unknown>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; value: string | number | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<unknown>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }, idx: React.Key | null | undefined) => (
                                                                     <p key={idx} className="ms-3">{attr.name} - {attr.value}</p>
                                                                 ))}
                                                             </div>

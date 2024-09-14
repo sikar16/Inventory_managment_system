@@ -11,13 +11,20 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import logo from "../../../../public/vite.svg"
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import MaterialRequestForm from '../../../component/MaterialRequistForm';
-const columns = [
+
+interface Column {
+    id: string;
+    label: string;
+    minWidth: number;
+    align?: 'left' | 'right' | 'center';
+}
+
+const columns: Column[] = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'orderId', label: 'Order Id', minWidth: 200 },
     { id: 'category', label: 'Category', minWidth: 200, align: 'left' },
@@ -25,43 +32,48 @@ const columns = [
     { id: 'quantity', label: 'Quantity', minWidth: 200, align: 'left' },
     { id: 'status', label: 'Status', minWidth: 200, align: 'left' },
     { id: 'createdAt', label: 'Created at', minWidth: 200, align: 'left' },
-    { id: 'status', label: 'Status', minWidth: 200, align: 'left' },
     { id: 'actions', label: 'Actions', minWidth: 50, align: 'center' },
 ];
 
-function createData(no: number, orderId: string, category: string, product: string, quantity: string, status: string, createdAt: string) {
+interface Data {
+    no: number;
+    orderId: string;
+    category: string;
+    product: string;
+    quantity: string;
+    status: string;
+    createdAt: string;
+}
+
+function createData(no: number, orderId: string, category: string, product: string, quantity: string, status: string, createdAt: string): Data {
     return { no, orderId, category, product, quantity, status, createdAt };
 }
 
-const rows = [
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
+const rows: Data[] = [
+    createData(1, "#12345", "Electronics", "Lenovo", "20", "Active", "16-08-2024"),
+    createData(2, "#12346", "Electronics", "Dell", "15", "Active", "17-08-2024"),
+    createData(3, "#12347", "Electronics", "Acer", "10", "Inactive", "18-08-2024"),
+    createData(3, "#12347", "Electronics", "Dell", "10", "Inactive", "18-08-2024"),
+    createData(3, "#12347", "Electronics", "Lenovo", "10", "Inactive", "18-08-2024"),
 ];
 
-export default function RequiestesList() {
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [selectedRow, setSelectedRow] = React.useState(null);
-    const [openDialog, setOpenDialog] = React.useState(false);
+const RequestsList: React.FC = () => {
+    const [page, setPage] = React.useState<number>(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState<number>(5);
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [selectedRow, setSelectedRow] = React.useState<Data | null>(null);
+    const [openDialog, setOpenDialog] = React.useState<boolean>(false);
 
-    const handleChangePage = (event, newPage) => {
+    const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
 
-    const handleChangeRowsPerPage = (event) => {
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
 
-    const handleMenuClick = (event, row) => {
+    const handleMenuClick = (event: React.MouseEvent<HTMLElement>, row: Data) => {
         setAnchorEl(event.currentTarget);
         setSelectedRow(row);
     };
@@ -72,32 +84,29 @@ export default function RequiestesList() {
 
     const handleOpenDialog = () => {
         setOpenDialog(true);
+        handleMenuClose(); // Close the menu when opening the dialog
     };
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
+        setSelectedRow(null); // Clear selected row when closing
     };
+
     return (
         <div>
-            {/* <div className='w-full bg-[#002a47]'>
-                <div className='ms-10 pt-5 flex justify-between'>
-                    <img src={logo} alt="" className='w-24 md:w-40' />
-                    <svg className='me-10' xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 20 20"><path fill="#ffffff" d="M8.6 3.4L14.2 9H2v2h12.2l-5.6 5.6L10 18l8-8l-8-8z"></path></svg>
-                </div>
-            </div> */}
             <div className='mx-10 pt-6'>
-                <div>
-                    <div className='flex justify-between mb-3 mx-2'>
-                        <p className='text-[#002a47] text-4xl font-medium'>Requests</p>
-                        <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Create request</button>
-                    </div>
+                <div className='flex justify-between mb-3 mx-2'>
+                    <p className='text-[#002a47] text-4xl font-medium'>Requests</p>
+                    <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Create request</button>
                 </div>
+
                 <div className='flex gap-8 text-gray-400 mt-8 mb-1'>
                     <button className='hover:underline hover:text-black'>All requests</button>
                     <button className='hover:underline hover:text-black'>Accepted requests</button>
                     <button className='hover:underline hover:text-black'>Pending requests</button>
                     <button className='hover:underline hover:text-black'>Rejected requests</button>
                 </div>
+
                 <hr className='w-full text-black bg-black' />
                 <div className='my-4'>
                     <input type="text" placeholder='Search' className='w-[80%] bg-[#f5f5f5] rounded-md py-[5px] px-3' />
@@ -120,10 +129,10 @@ export default function RequiestesList() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                                {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.orderId}>
                                         {columns.map((column) => {
-                                            const value = row[column.id];
+                                            const value = row[column.id as keyof Data];
                                             return (
                                                 <TableCell key={column.id} align={column.align}>
                                                     {column.id === 'actions' ? (
@@ -168,12 +177,10 @@ export default function RequiestesList() {
                     }} className="relative mx-auto"
                 >
                     <div className='flex justify-between p-4'>
-                        <DialogTitle
-                        >
+                        <DialogTitle>
                             <p className='bg-[#002a47] text-white rounded-e-full pe-20 ps-2 py-[5px] '>
                                 Material Request Form
                             </p>
-                            {/* Material Request Form */}
                         </DialogTitle>
                         <DialogActions>
                             <svg
@@ -195,14 +202,10 @@ export default function RequiestesList() {
                             </svg>
                         </DialogActions>
                     </div>
-                    <div>
-                        <DialogContent>
-                            <MaterialRequestForm />
-                        </DialogContent>
-                    </div>
+                    <DialogContent>
+                        <MaterialRequestForm />
+                    </DialogContent>
                 </Dialog>
-
-
 
                 <Menu
                     id="long-menu"
@@ -211,10 +214,21 @@ export default function RequiestesList() {
                     open={Boolean(anchorEl)}
                     onClose={handleMenuClose}
                 >
-                    <MenuItem>Update</MenuItem>
-                    <MenuItem>Delete</MenuItem>
+                    <MenuItem onClick={() => {
+                        handleMenuClose();
+                        handleOpenDialog();
+                    }}>
+                        Update
+                    </MenuItem>
+                    <MenuItem onClick={() => {
+                        handleMenuClose();
+                    }}>
+                        Delete
+                    </MenuItem>
                 </Menu>
             </div>
         </div>
     );
 }
+
+export default RequestsList;

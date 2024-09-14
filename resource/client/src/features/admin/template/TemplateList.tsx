@@ -10,12 +10,14 @@ import Loader from "../../../component/Loading";
 import { useGetAlltemplateQuery } from "../../../services/template_service";
 import { useGetAllproductCategoryQuery } from "../../../services/productCategorySerivce";
 import { useGetAllproductSubCategoryQuery } from "../../../services/productSubcategory_service";
+import { ProductCategoryType } from "../../../_types/productCategory_type";
+import { ProductSubCategoryType } from "../../../_types/productSubcategory_type";
 
 export default function TemplateList() {
   const [openDialog, setOpenDialog] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [selectedCategory, setSelectedCategory] = React.useState('');
-  const [selectedSubCategory, setSelectedSubCategory] = React.useState('');
+  const [selectedCategory, setSelectedCategory] = React.useState<number | null>(null);
+  const [selectedSubCategory, setSelectedSubCategory] = React.useState<number | null>(null);
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -28,34 +30,39 @@ export default function TemplateList() {
   const {
     isError: isCategoryError,
     isLoading: isCategoryLoading,
-    isSuccess: isCategorySuccess,
-    data: categories = [], // Default to an empty array
+    data: categories = [],
     error: categoryError,
-  } = useGetAllproductCategoryQuery();
+  } = useGetAllproductCategoryQuery("product category");
 
   const {
     isError: isSubCategoryError,
     isLoading: isSubCategoryLoading,
-    isSuccess: isSubCategorySuccess,
-    data: productSubCategories = [], // Default to an empty array
+    data: productSubCategories = [],
     error: subCategoryError,
-  } = useGetAllproductSubCategoryQuery();
+  } = useGetAllproductSubCategoryQuery("product sub category");
 
-  const { isError, isLoading, isSuccess, data, error } = useGetAlltemplateQuery("template");
+  const { isError, isLoading, data, error } = useGetAlltemplateQuery("template");
 
   if (isCategoryError || isSubCategoryError || isError) {
-    return <h1>Error: {isCategoryError ? categoryError.toString() : isSubCategoryError ? subCategoryError.toString() : error.toString()}</h1>;
+    return (
+      <h1>
+        Error: {isCategoryError
+          ? categoryError?.toString() || "Unknown category error"
+          : isSubCategoryError
+            ? subCategoryError?.toString() || "Unknown subcategory error"
+            : error?.toString() || "Unknown error"}
+      </h1>
+    );
   }
-
   if (isCategoryLoading || isSubCategoryLoading || isLoading) return <Loader />;
 
-  // Filter templates based on searchTerm, selectedCategory, and selectedSubCategory
+
+  // Filtering logic
   const filteredTemplates = data?.filter(template =>
     template.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (selectedCategory ? template.categoryId === selectedCategory : true) &&
-    (selectedSubCategory ? template.subCategoryId === selectedSubCategory : true)
-  );
-
+    (selectedCategory != null ? template.categoryId.id === Number(selectedCategory) : true) &&
+    (selectedSubCategory != null ? template.subCategoryId.id === Number(selectedSubCategory) : true)
+  ) ?? [];
   return (
     <div className="mt-10">
       <Title
@@ -68,11 +75,14 @@ export default function TemplateList() {
           <p className='me-3 text-gray-500'>Category :</p>
           <select
             className='bg-[#F5F5F5] text-gray-700'
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            value={selectedCategory || ''}
+            onChange={(e) => {
+              const categoryId = Number(e.target.value);
+              setSelectedCategory(isNaN(categoryId) ? null : categoryId);
+            }}
           >
             <option value="">All Categories</option>
-            {categories.map((category) => (
+            {categories.map((category: ProductCategoryType) => (
               <option key={category.id} value={category.id}>
                 {category.name}
               </option>
@@ -83,11 +93,14 @@ export default function TemplateList() {
           <p className='me-3 text-gray-500'>Sub Category :</p>
           <select
             className='bg-[#faf9f9] text-gray-700'
-            value={selectedSubCategory}
-            onChange={(e) => setSelectedSubCategory(e.target.value)}
+            value={selectedSubCategory || ''}
+            onChange={(e) => {
+              const subCategoryId = Number(e.target.value);
+              setSelectedSubCategory(isNaN(subCategoryId) ? null : subCategoryId);
+            }}
           >
             <option value="">All Subcategories</option>
-            {productSubCategories.map((productSubCategory) => (
+            {productSubCategories.map((productSubCategory: ProductSubCategoryType) => (
               <option key={productSubCategory.id} value={productSubCategory.id}>
                 {productSubCategory.name}
               </option>

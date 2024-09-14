@@ -3,7 +3,7 @@ import { Card, CardContent, Typography } from "@mui/material";
 
 interface CardListPropsType {
   name: string;
-  detaile: string;
+  detaile: number;
 }
 
 const CardList: React.FC<CardListPropsType> = ({ name, detaile }) => {

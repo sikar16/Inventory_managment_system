@@ -16,10 +16,10 @@ const columns: {
   minWidth: number;
   align?: "center" | "left" | "right" | "inherit" | "justify";
 }[] = [
-  { id: "no", label: "No", minWidth: 50 },
-  { id: "categoryId", label: "Category Id", minWidth: 70 },
-  { id: "category", label: "Category", minWidth: 70, align: "left" },
-];
+    { id: "no", label: "No", minWidth: 50 },
+    { id: "categoryId", label: "Category Id", minWidth: 70 },
+    { id: "category", label: "Category", minWidth: 70, align: "left" },
+  ];
 
 function createData(no: number, categoryId: string, category: string) {
   return { no, categoryId, category };
@@ -28,8 +28,8 @@ function createData(no: number, categoryId: string, category: string) {
 type RowData = ReturnType<typeof createData>;
 
 interface ProductCategoryProps {
-  anchorEl: any;
-  setAnchorEl: any;
+  anchorEl: null | HTMLElement;
+  setAnchorEl: (value: null | HTMLElement) => void;
   productCategorylist?: ProductCategoryType[];
 }
 
@@ -43,7 +43,7 @@ const CategoryTable: React.FC<ProductCategoryProps> = ({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 

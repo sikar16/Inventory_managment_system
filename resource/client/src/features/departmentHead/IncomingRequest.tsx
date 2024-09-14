@@ -16,11 +16,17 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
 import MaterialRequistForm from '../../component/MaterialRequistForm';
 import Title from '../../component/TablesTitle';
 
-const columns = [
+interface Column {
+    id: string;
+    label: string;
+    minWidth: number;
+    align?: 'left' | 'right' | 'center'; // Optional align property
+}
+
+const columns: Column[] = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'orderId', label: 'Order Id', minWidth: 70 },
     { id: 'requestedEmployee', label: 'Requested Employee', minWidth: 70, align: 'left' },
@@ -30,7 +36,17 @@ const columns = [
     { id: 'dateOfRequest', label: 'Date of request', minWidth: 70, align: 'left' },
 ];
 
-function createData(no: number, orderId: string, requestedEmployee: string, product: string, quantity: string, status: string, dateOfRequest: string) {
+interface RowType {
+    no: number;
+    orderId: string;
+    requestedEmployee: string;
+    product: string;
+    quantity: string;
+    status: string;
+    dateOfRequest: string;
+}
+
+function createData(no: number, orderId: string, requestedEmployee: string, product: string, quantity: string, status: string, dateOfRequest: string): RowType {
     return { no, orderId, requestedEmployee, product, quantity, status, dateOfRequest };
 }
 
@@ -50,7 +66,7 @@ export default function IncomingRequest() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [openDialog, setOpenDialog] = React.useState(false);
 
-    const handleChangePage = (event: unknown, newPage: number) => {
+    const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
 
@@ -59,9 +75,8 @@ export default function IncomingRequest() {
         setPage(0);
     };
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, product: any) => {
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
-        setSelectedProduct(product);
     };
 
     const handleCloseMenu = () => {
@@ -107,9 +122,9 @@ export default function IncomingRequest() {
                             {rows
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.productId}>
+                                    <TableRow hover role="checkbox" tabIndex={-1} >
                                         {columns.map((column) => {
-                                            const value = row[column.id];
+                                            const value = row[column.id as keyof RowType];
                                             return (
                                                 <TableCell key={column.id} align={column.align}>
                                                     {value}
@@ -121,7 +136,7 @@ export default function IncomingRequest() {
                                                 aria-label="more"
                                                 aria-controls="long-menu"
                                                 aria-haspopup="true"
-                                                onClick={(event) => handleClick(event, row)}
+                                                onClick={(event) => handleClick(event)}
                                             >
                                                 <MoreVertIcon />
                                             </IconButton>
@@ -149,7 +164,7 @@ export default function IncomingRequest() {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
-            <Dialog open={openDialog} onClose={handleCloseDialog}
+            <Dialog
                 open={openDialog}
                 onClose={handleCloseDialog}
                 PaperProps={{

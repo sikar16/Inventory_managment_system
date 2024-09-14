@@ -27,11 +27,12 @@ export default function SupplierCategoryList() {
         isSuccess: isCategorySuccess,
         data: categories,
         error: categoryError,
-    } = useGetAllsupplierCategoryQuery();
+    } = useGetAllsupplierCategoryQuery("supplier category");
 
     // Assuming the `useGetAllsupplierCategoryQuery` call should not have 'supplier category'
     // Remove the duplicate query call for `useGetAllsupplierCategoryQuery('supplier category')`
     // and use the `categories` data instead.
+
 
     if (isCategoryError) return <h1>Error: {categoryError.toString()}</h1>;
     if (isCategoryLoading) return <Loader />;

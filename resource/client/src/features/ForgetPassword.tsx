@@ -1,4 +1,3 @@
-import logo from '../assets/logo.png';
 import LogoContainer from '../component/LogoContainer';
 import { useThemeData } from '../context/them_context';
 import {

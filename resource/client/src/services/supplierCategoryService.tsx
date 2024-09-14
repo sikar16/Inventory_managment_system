@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { supplierCategoryType } from "../_types/supplierCategory_type";
+import { SupplierCategoryType } from "../_types/supplierCategory_type";
 import extractErrorMessage from "../util/extractErrorMessage";
 const baseUrl = import.meta.env.VITE_API_URL;
 export const supplierCategoryApi = createApi({
@@ -17,7 +17,7 @@ export const supplierCategoryApi = createApi({
                 },
             }),
             transformResponse: (response: any) =>
-                response.success ? (response.data as supplierCategoryType[]) : ([] as supplierCategoryType[]),
+                response.success ? (response.data as SupplierCategoryType[]) : ([] as SupplierCategoryType[]),
             providesTags: ['supplierCategory'],
 
         }),

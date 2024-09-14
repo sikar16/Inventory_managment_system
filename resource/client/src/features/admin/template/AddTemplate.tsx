@@ -16,7 +16,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog }) => {
     const [attributes, setAttributes] = useState<{ name: string; dataType: string }[]>([]);
     const [addTemplate] = useAddNewtemplateMutation();
 
-    const { isError: isTemplateError, isLoading: isTemplateLoading } = useGetAlltemplateQuery();
+    const { isError: isTemplateError, isLoading: isTemplateLoading } = useGetAlltemplateQuery("template");
 
     const handleAddAttribute = () => {
         setAttributes([...attributes, { name: '', dataType: 'STRING' }]); // Default dataType is STRING

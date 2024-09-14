@@ -54,7 +54,6 @@ const ProductTable: React.FC<ProductProps> = ({
   setAnchorEl,
   setSelectedProduct,
   setOpenDetails,
-  selectedProduct,
 }) => {
   const rows = productList.map((i, index) =>
     createData(
@@ -69,7 +68,7 @@ const ProductTable: React.FC<ProductProps> = ({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 

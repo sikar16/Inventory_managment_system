@@ -1,5 +1,5 @@
 import { AddressType } from "./address_type";
-import { supplierCategoryType } from "./supplierCategory_type";
+import { SupplierCategoryType } from "./supplierCategory_type";
 
 export interface SupplierType {
     id: number;
@@ -9,6 +9,6 @@ export interface SupplierType {
     email: string;
     addressId: number;
     createdAt: Date;
-    category: supplierCategoryType;
+    category: SupplierCategoryType;
     address: AddressType;
 }

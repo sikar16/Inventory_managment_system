@@ -24,7 +24,7 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
     wereda: "",
   });
 
-  const { isSuccess, data } = useGetAllsupplierCategoryQuery();
+  const { isSuccess, data } = useGetAllsupplierCategoryQuery("supplier category");
   const [addSupplier] = useAddNewsupplierMutation();
 
   const categories: SupplierCategoryType[] = isSuccess ? data : [];

@@ -17,33 +17,33 @@ interface AddProductProps {
 
 const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
   const [productName, setProductName] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [selectedSubCategory, setSelectedSubCategory] = useState<string>("");
-  const [selectedTemplate, setSelectedTemplate] = useState<
-    string | { id: number; name: string }
-  >("");
+  const [selectedCategory, setSelectedCategory] = useState<number | "">(""); // Handle category as a number
+  const [selectedSubCategory, setSelectedSubCategory] = useState<number | "">(""); // Handle subcategory as a number
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType | "Other" | "">("");
   const [customTemplate, setCustomTemplate] = useState("");
   const [attributes, setAttributes] = useState<
     { key: string; value: string; templateAttributeId: number }[]
   >([]);
 
-  const { data: categories = [] } = useGetAllproductCategoryQuery();
-  const { data: allSubCategories = [] } = useGetAllproductSubCategoryQuery();
-  const { data: allTemplates = [] } = useGetAlltemplateQuery();
+  const { data: categories = [] } = useGetAllproductCategoryQuery(null);
+  const { data: allSubCategories = [] } = useGetAllproductSubCategoryQuery(null);
+  const { data: allTemplates = [] } = useGetAlltemplateQuery(null);
+
+
   const [addProduct, { isSuccess: isAddSuccess }] = useAddNewProductMutation();
 
   const filteredSubCategories = allSubCategories.filter(
-    (subCategory: any) => subCategory.categoryId === selectedCategory
+    (subCategory: ProductSubCategoryType) => subCategory.categoryId === selectedCategory
   );
 
   useEffect(() => {
-    if (typeof selectedTemplate === "object" && selectedTemplate.id) {
+    if (typeof selectedTemplate === "object" && selectedTemplate?.id) {
       const selectedTemplateData = allTemplates.find(
         (t: TemplateType) => t.id === selectedTemplate.id
       );
       if (selectedTemplateData && selectedTemplateData.attributes) {
         setAttributes(
-          selectedTemplateData.attributes.map((attr: any) => ({
+          selectedTemplateData.attributes.map((attr) => ({
             key: attr.name,
             value: "",
             templateAttributeId: attr.id,
@@ -56,13 +56,13 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
   }, [selectedTemplate, allTemplates]);
 
   const handleCategoryChange = (event: SelectChangeEvent<string>) => {
-    const category = event.target.value;
+    const category = Number(event.target.value); // Convert to number
     setSelectedCategory(category);
     setSelectedSubCategory("");
   };
 
   const handleSubCategoryChange = (event: SelectChangeEvent<string>) => {
-    setSelectedSubCategory(event.target.value);
+    setSelectedSubCategory(Number(event.target.value)); // Convert to number
   };
 
   const handleTemplateChange = (event: SelectChangeEvent<string>) => {
@@ -101,15 +101,19 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
       templateAttributeId: attr.templateAttributeId,
       value: attr.value,
     }));
-
     const formData = {
       name: productName,
       category: selectedCategory,
       subcategoryId: subCategoryId,
       template:
-        selectedTemplate === "Other" ? customTemplate : selectedTemplate,
+        selectedTemplate === "Other"
+          ? customTemplate
+          : typeof selectedTemplate === "object" && selectedTemplate?.name
+            ? selectedTemplate.name
+            : "",
       items,
     };
+
 
     try {
       await addProduct(formData);
@@ -153,11 +157,11 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
           variant="outlined"
           size="small"
           className="w-full"
-          value={selectedCategory}
+          value={selectedCategory.toString()}
           onChange={handleCategoryChange}
         >
           {categories.map((category: ProductCategoryType) => (
-            <MenuItem key={category.id} value={category.id}>
+            <MenuItem key={category.id} value={category.id.toString()}>
               {category.name}
             </MenuItem>
           ))}
@@ -168,12 +172,12 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
           variant="outlined"
           size="small"
           className="w-full"
-          value={selectedSubCategory}
+          value={selectedSubCategory.toString()}
           onChange={handleSubCategoryChange}
         >
           {filteredSubCategories.length > 0 ? (
             filteredSubCategories.map((subcategory: ProductSubCategoryType) => (
-              <MenuItem key={subcategory.id} value={subcategory.id}>
+              <MenuItem key={subcategory.id} value={subcategory.id.toString()}>
                 {subcategory.name}
               </MenuItem>
             ))

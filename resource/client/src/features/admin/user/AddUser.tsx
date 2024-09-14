@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAddNewuserMutation } from "../../../services/user_service";
 import { Link } from "react-router-dom";
-import { useGetAlldepartmentQuery } from "../../../services/department_service";
+import { DepartmentType } from "../../../_types/department_type";
 
 interface FormDataType {
   firstName: string;
@@ -18,10 +18,10 @@ interface FormDataType {
   role: string;
   password: string;
 }
-
-function AddUser() {
-  const { data: departments } = useGetAlldepartmentQuery("");
-
+interface AddUserProps {
+  departments: DepartmentType[]; // Define the prop type
+}
+const AddUser: React.FC<AddUserProps> = ({ departments }) => {
   const [formData, setFormData] = useState<FormDataType>({
     firstName: "",
     middleName: "",
@@ -226,7 +226,7 @@ function AddUser() {
                     <option value="" className="text-gray-400">
                       Select Department
                     </option>
-                    {departments?.map((department: any) => (
+                    {departments?.map((department) => (
                       <option key={department.id} value={department.id}>
                         {department.name}
                       </option>

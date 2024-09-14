@@ -1,37 +1,31 @@
-import React, { useState } from 'react';
+import React from 'react';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
+import { useForm, Controller } from 'react-hook-form';
 import { useAddNewstoreMutation } from '../../../services/store_service';
 
 interface AddWareHouseProps {
     handleCloseDialog: () => void;
 }
 
+interface FormData {
+    name: string;
+    country: string;
+    city: string;
+    subCity: string;
+    wereda: string;
+}
+
 const AddWareHouse: React.FC<AddWareHouseProps> = ({ handleCloseDialog }) => {
-    const [warehouseData, setWarehouseData] = useState({
-        name: '',
-        country: '',
-        city: '',
-        subCity: '',
-        wereda: ''
-    });
+    const { control, handleSubmit, formState: { errors } } = useForm<FormData>();
     const [addWareHouse, { isError, isSuccess, isLoading, error }] = useAddNewstoreMutation();
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.target;
-        setWarehouseData(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
-
-    const handleAddWareHouse = async (event: React.FormEvent) => {
-        event.preventDefault(); // Prevent default form submission
+    const onSubmit = async (data: FormData) => {
         try {
-            await addWareHouse(warehouseData).unwrap(); // Await the result and unwrap any errors
+            await addWareHouse(data).unwrap();
             if (isSuccess) {
-                handleCloseDialog(); // Close the dialog on success
+                handleCloseDialog();
             }
         } catch (err) {
             console.error('Failed to add warehouse:', err);
@@ -44,57 +38,91 @@ const AddWareHouse: React.FC<AddWareHouseProps> = ({ handleCloseDialog }) => {
 
     return (
         <div className='mx-10 mb-10 w-[350px]'>
-            <form className='space-y-2' onSubmit={handleAddWareHouse}>
+            <form className='space-y-2' onSubmit={handleSubmit(onSubmit)}>
                 <InputLabel id="warehouse-name">Name</InputLabel>
-                {isError && <p className='text-red-500'>{error?.message || 'An error occurred'}</p>}
-                <TextField
-                    label="Name"
+                {isError && <p className='text-red-500'>{error && 'An error occurred'}</p>}
+                <Controller
                     name="name"
-                    variant="outlined"
-                    size="small"
-                    className="w-full mt-2"
-                    value={warehouseData.name}
-                    onChange={handleInputChange}
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: 'Name is required' }}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            label="Name"
+                            variant="outlined"
+                            size="small"
+                            className="w-full mt-2"
+                            error={!!errors.name}
+                            helperText={errors.name ? errors.name.message : ''}
+                        />
+                    )}
                 />
                 <InputLabel id="warehouse-country">Country</InputLabel>
-                <TextField
-                    label="Country"
+                <Controller
                     name="country"
-                    variant="outlined"
-                    size="small"
-                    className="w-full mt-2"
-                    value={warehouseData.country}
-                    onChange={handleInputChange}
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: 'Country is required' }}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            label="Country"
+                            variant="outlined"
+                            size="small"
+                            className="w-full mt-2"
+                            error={!!errors.country}
+                            helperText={errors.country ? errors.country.message : ''}
+                        />
+                    )}
                 />
                 <InputLabel id="warehouse-city">City</InputLabel>
-                <TextField
-                    label="City"
+                <Controller
                     name="city"
-                    variant="outlined"
-                    size="small"
-                    className="w-full mt-2"
-                    value={warehouseData.city}
-                    onChange={handleInputChange}
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: 'City is required' }}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            label="City"
+                            variant="outlined"
+                            size="small"
+                            className="w-full mt-2"
+                            error={!!errors.city}
+                            helperText={errors.city ? errors.city.message : ''}
+                        />
+                    )}
                 />
                 <InputLabel id="warehouse-subCity">Sub-city</InputLabel>
-                <TextField
-                    label="Sub-city"
+                <Controller
                     name="subCity"
-                    variant="outlined"
-                    size="small"
-                    className="w-full mt-2"
-                    value={warehouseData.subCity}
-                    onChange={handleInputChange}
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            label="Sub-city"
+                            variant="outlined"
+                            size="small"
+                            className="w-full mt-2"
+                        />
+                    )}
                 />
                 <InputLabel id="warehouse-wereda">Wereda</InputLabel>
-                <TextField
-                    label="Wereda"
+                <Controller
                     name="wereda"
-                    variant="outlined"
-                    size="small"
-                    className="w-full mt-2"
-                    value={warehouseData.wereda}
-                    onChange={handleInputChange}
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            label="Wereda"
+                            variant="outlined"
+                            size="small"
+                            className="w-full mt-2"
+                        />
+                    )}
                 />
 
                 <div className='pt-10'>
@@ -102,12 +130,14 @@ const AddWareHouse: React.FC<AddWareHouseProps> = ({ handleCloseDialog }) => {
                         <Button variant="outlined" color="error" onClick={handleDiscard}>
                             Discard
                         </Button>
-                        <button
-                            className='bg-[#002a47] py-1 px-3 text-white rounded-md'
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
                             disabled={isLoading}
                         >
                             {isLoading ? 'Adding...' : 'Add Warehouse'}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </form>

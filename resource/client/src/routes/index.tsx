@@ -13,7 +13,6 @@ import TemplateList from "../features/admin/template/TemplateList";
 import SupplierList from "../features/admin/suppllier/SuppliersList";
 import WareHouseList from "../features/admin/wareHouse/WareHouseList";
 import IncomingRequest from "../features/departmentHead/IncomingRequest";
-// import MaterialRequestForm from '../component/MaterialRequistForm'
 import RequiestDetail from "../features/employee/employee/RequiestDetail";
 import Login from "../features/Login";
 import ConfirmPassword from "../features/ConfirmPassword";
@@ -29,6 +28,7 @@ import { LogesticsLayout } from "../layout/Logestics/LogesticsLayout";
 import { FinanceLayout } from "../layout/Finance/FinanceLayout";
 import { GeneralManagerLayout } from "../layout/generalManager/GeneralManagerLayout";
 import { WarehouseLayout } from "../layout/Warehouse/WarehouseLayout";
+import MaterialRequestForm from "../component/MaterialRequistForm";
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -85,7 +85,7 @@ export const router = createBrowserRouter(
 
       <Route path="/employee" element={<EmployeeLayout />}>
         <Route path="/employee/requests-list" element={<RequiestesList />} />
-        {/* <Route path='/employee/create-requests' element={<MaterialRequestForm />} /> */}
+        <Route path='/employee/create-requests' element={<MaterialRequestForm />} />
       </Route>
 
       {/* {department section} */}
@@ -95,7 +95,7 @@ export const router = createBrowserRouter(
           path="/department-head/incoming-requests"
           element={<IncomingRequest />}
         />
-        {/* <Route path='/department-head/material-request' element={<MaterialRequestForm />} /> */}
+        <Route path='/department-head/material-request' element={<MaterialRequestForm />} />
         <Route
           path="/department-head/requiest-detaile"
           element={<RequiestDetail />}
@@ -112,7 +112,7 @@ export const router = createBrowserRouter(
           path="/logestics/incoming-requests"
           element={<IncomingRequest />}
         />
-        {/* <Route path='/logestics/material-request' element={<MaterialRequestForm />} /> */}
+        <Route path='/logestics/material-request' element={<MaterialRequestForm />} />
         <Route
           path="/logestics/requiest-detaile"
           element={<RequiestDetail />}
