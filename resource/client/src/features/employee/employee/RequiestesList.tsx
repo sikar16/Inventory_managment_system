@@ -23,7 +23,6 @@ interface Column {
     minWidth: number;
     align?: 'left' | 'right' | 'center';
 }
-
 const columns: Column[] = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'orderId', label: 'Order Id', minWidth: 200 },
