@@ -56,8 +56,8 @@ export const router = createBrowserRouter(
             </>
           }
         />
-        <Route path="/admin/user" element={<UserList />} />
-        <Route path="/admin/add-user" element={<AddUser />} />
+        <Route path="/admin/user" element={<UserList departments={[]} />} />
+        <Route path="/admin/add-user" element={<AddUser departments={[]} />} />
         <Route path="/admin/product" element={<ProductList />} />
         <Route path="/admin/category" element={<CategoryList />} />
         <Route path="/admin/sub-category" element={<SubCategoryList />} />

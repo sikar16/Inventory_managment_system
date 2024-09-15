@@ -66,6 +66,7 @@ const RequestsList: React.FC = () => {
     const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
+    console.log(selectedRow)
 
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(+event.target.value);
