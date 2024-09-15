@@ -8,3 +8,6 @@ source /home/huludeig/nodevenv/inventory.huludelala.com/codebase/backend/20/bin/
 
 ps aux
 kill pid[09876678]
+
+git clean -n
+git clean -f -d

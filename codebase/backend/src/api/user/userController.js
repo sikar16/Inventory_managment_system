@@ -128,7 +128,7 @@ const userController = {
           country: data.country,
           city: data.city,
           subCity: data.subCity,
-          wereda:data.wereda
+          wereda: data.wereda,
         },
       });
       // if address exist
@@ -142,11 +142,14 @@ const userController = {
             country: data.country,
             city: data.city,
             subCity: data.subCity,
-            wereda:data.wereda
+            wereda: data.wereda,
           },
         });
         addressId = newAddress.id;
       }
+      console.log(addressId);
+
+      console.log(isAddressExist);
 
       // Hash the password
       const hashedPassword = await bcrypt.hashSync(data.password, 10);
