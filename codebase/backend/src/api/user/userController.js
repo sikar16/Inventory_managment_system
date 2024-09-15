@@ -336,7 +336,7 @@ const userController = {
         });
       }
       const payload = {
-        userId: user.id,
+        id: user.id,
         role: user.role,
         firstName: user.profile.firstName,
       };

@@ -1,7 +1,6 @@
 import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom'
 import { AdminLayout } from '../layout/Admin/AdminLayout'
 import EmployeeLayout from '../layout/Employee/EmployeeLayout'
-import Analysis from '../features/admin/dashbord/Analysis'
 import UserList from '../features/admin/user/UserList'
 import ProductList from '../features/admin/product/ProductList'
 import CategoryList from '../features/admin/category/CategoryList'

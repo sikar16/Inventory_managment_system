@@ -94,6 +94,20 @@ const grnController = {
                     message: "Supplayer not found",
                 });
             }
+
+            
+            const purchasedOrderExist=await prisma.purchasedOrder.findFirst({
+                where:{
+                    id:data.purchasedOrderId
+                }
+              })
+              if (!purchasedOrderExist) {
+                return res.status(400).json({
+                  success: false,
+                  message: "purchased order not found",
+                });
+              } 
+
                 for (let index = 0; index < data.grnItem.length; index++) {
                     const element = data.grnItem[index];
                 const isProductExist = await prisma.product.findFirst({
@@ -217,7 +231,6 @@ const grnController = {
             const isSupplierExist = await prisma.suppliers.findFirst({
                 where: {
                      id: +supplayerId,
-                    reciverId:+req.user.id
                 },
             });
             if (!isSupplierExist) {

@@ -3,6 +3,7 @@ import z from "zod";
 const purchasedReqSchema = {
   create: z.object({
   totalPrice: z.number().nonnegative(),
+  materialReqId:z.number(),
   items: z.array(
     z.object({
       productId: z.number().nonnegative(),
@@ -19,16 +20,17 @@ updateItems: z.object({
       unitPrice: z.number(),
 }),
 updateFinace: z.object({
-     financeId:z.number().nonnegative()
+    //  financeId:z.number().nonnegative()
 }),
 updateGm: z.object({
      gmid:z.number().nonnegative()
 }),
 approvePurchasedReqFinace:z.object({
-  isApproviedByGM:z.boolean(),
+  isApproviedByFinance:z.boolean(),
 }),
 approvePurchasedReqGm:z.object({
-  isApproviedByFinance:z.boolean(),
+  isApproviedByGM:z.boolean(),
+
 })
 };
 

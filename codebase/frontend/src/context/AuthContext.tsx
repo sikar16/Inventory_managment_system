@@ -1,50 +1,47 @@
 import { useState, useEffect, useContext, createContext } from "react";
-import getAuth from "../../src/util/authHeader";
-// create auth context
-const AuthContext = createContext();
+import getAuth from "../util/authHeader";
+import { AuthContextType, userDataType } from "../_types/context_type";
 
-// prepare auth provider
-export const AuthProvider = ({ children }) => {
-  const [userData, setUserData] = useState({});
+// // create auth context
+const AuthContext = createContext<AuthContextType | null>(null);
+
+// // prepare auth provider
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [userData, setUserData] = useState<userDataType>({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isEmployee, setIsEmployee] = useState(false);
   const [isDH, setIsDH] = useState(false);
   const [isLS, setIsLS] = useState(false);
   const [isFinance, setIsFinance] = useState(false);
   const [isGM, setIsGM] = useState(false);
   const [isStoreKeeper, setIsStoreKeeper] = useState(false);
-  const [seletedChild, selectChild] = useState({});
-  useEffect(() => {
 
+  useEffect(() => {
     fetchData();
   }, []);
-
-
 
   const fetchData = async () => {
     const loggedInUser = getAuth();
 
     loggedInUser.then((response) => {
-      // console.log(response);
-      if (response.token) {
+      if (response != null && response.token != null) {
         setIsLoggedIn(true);
         if (response.role === "ADMIN") {
           setIsAdmin(true);
-        } else if (response.role === "DH") {
+        } else if (response.role === "EMPLOYEE") {
+          setIsEmployee(true);
+        } else if (response.role === "DEPARTMENT_HEAD") {
           setIsDH(true);
-        } else if (response.role === "LS") {
+        } else if (response.role === "LOGESTIC_SUPERVISER") {
           setIsLS(true);
-        }
-        else if (response.role === "FINANCE") {
+        } else if (response.role === "FINANCE") {
           setIsFinance(true);
-        }
-        else if (response.role === "GM") {
+        } else if (response.role === "GENERAL_MANAGER") {
           setIsGM(true);
-        }
-        else if (response.role === "STOREKEEPER") {
+        } else if (response.role === "STORE_KEEPER") {
           setIsStoreKeeper(true);
         }
-        console.log(response);
         setUserData(response);
       }
     });
@@ -56,6 +53,7 @@ export const AuthProvider = ({ children }) => {
     isLS,
     isFinance,
     isGM,
+    isEmployee,
     isStoreKeeper,
     userData,
     setUserData,
@@ -66,13 +64,13 @@ export const AuthProvider = ({ children }) => {
     setIsLS,
     setIsStoreKeeper,
     fetchData,
-    seletedChild,
-    selectChild,
-    isLoggedIn
+    setIsLoggedIn,
+    isLoggedIn,
   };
 
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;
 };
+
 
 // useAuth
 export const useAuth = () => {

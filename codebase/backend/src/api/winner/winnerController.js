@@ -97,6 +97,7 @@ const winnerController={
                     supplayer:true
                 },
                 data:{
+                    userId:req.user.id,
                     purchasedOrderId:data.purchasedOrderId,
                     supplayerId:data.supplayerId
                 }
@@ -169,7 +170,7 @@ const winnerController={
               });
         }
     },
-    updateitems:async (req,res,next)=>{
+    updatepurchedOrder:async (req,res,next)=>{
         try {
             const winnerId=parseInt(req.params.id,10)    
         if (isNaN(winnerId)) {
@@ -199,6 +200,19 @@ const winnerController={
             return res.status(404).json({
               success: false,
               message: "winner not found",
+            });
+          }
+
+          
+          const purchasedOrderExist=await prisma.purchasedOrder.findFirst({
+            where:{
+                id:data.purchasedOrderId
+            }
+          })
+          if (!purchasedOrderExist) {
+            return res.status(400).json({
+              success: false,
+              message: "purchased order not found",
             });
           }
 

@@ -204,36 +204,36 @@ const purchasedOrderController={
           });
         }
     },
-    updatePurchasedOrder:async (req,res,next)=>{
-        try {
-            const purchaseOrderId = parseInt(req.params.id, 10);
-            if (isNaN(purchaseOrderId)) {
-              return res.status(400).json({
-                success: false,
-                message: "Invalid purchase order ID",
-              });
-            }
-            const updatedOrder = await prisma.purchasedOrder.update({
-              where: { id: purchaseOrderId },
-              data: req.body,
-            });
+    // updatePurchasedOrder:async (req,res,next)=>{
+    //     try {
+    //         const purchaseOrderId = parseInt(req.params.id, 10);
+    //         if (isNaN(purchaseOrderId)) {
+    //           return res.status(400).json({
+    //             success: false,
+    //             message: "Invalid purchase order ID",
+    //           });
+    //         }
+    //         const updatedOrder = await prisma.purchasedOrder.update({
+    //           where: { id: purchaseOrderId },
+    //           data: req.body,
+    //         });
       
-            return res.status(200).json({
-              success: true,
-              message: "Purchase order updated successfully",
-              data: updatedOrder,
-            });
-          } catch (error) {
-            return res.status(500).json({
-              success: false,
-              message: `Error: ${error.message}`,
-            });
-          }
-    },
+    //         return res.status(200).json({
+    //           success: true,
+    //           message: "Purchase order updated successfully",
+    //           data: updatedOrder,
+    //         });
+    //       } catch (error) {
+    //         return res.status(500).json({
+    //           success: false,
+    //           message: `Error: ${error.message}`,
+    //         });
+    //       }
+    // },
     updatePurchasedOrderItems:async (req,res,next)=>{
         try {
-            const purchaseOrderId = parseInt(req.params.id, 10);
-            if (isNaN(purchaseOrderId)) {
+            const purchaseOrderItemId = parseInt(req.params.id, 10);
+            if (isNaN(purchaseOrderItemId)) {
               return res.status(400).json({
                 success: false,
                 message: "Invalid purchase order ID",
@@ -243,7 +243,7 @@ const purchasedOrderController={
             const data = purchaseOrderSchema.updateItem.parse(req.body);
       
             const purchaseOrderItem = await prisma.purchasedOrderItem.findFirst({
-              where: { id: purchaseOrderId },
+              where: { id: purchaseOrderItemId },
             });
             if (!purchaseOrderItem) {
               return res.status(404).json({
@@ -261,7 +261,7 @@ const purchasedOrderController={
             }
       
             const updatedItem = await prisma.purchasedOrderItem.update({
-              where: { id: purchaseOrderId },
+              where: { id: purchaseOrderItemId },
               data: {
                 productId: data.productId,
                 quantityToBePurchased: data.quantityToBePurchased,
@@ -281,124 +281,124 @@ const purchasedOrderController={
             });
           }
     },
-    updatesupplier:async (req,res,next)=>{
-        try {
-            const purchaseOrderId = parseInt(req.params.id, 10);
-            if (isNaN(purchaseOrderId)) {
-              return res.status(400).json({
-                success: false,
-                message: "Invalid purchase order ID",
-              });
-            }
+    // updatesupplier:async (req,res,next)=>{
+    //     try {
+    //         const purchaseOrderId = parseInt(req.params.id, 10);
+    //         if (isNaN(purchaseOrderId)) {
+    //           return res.status(400).json({
+    //             success: false,
+    //             message: "Invalid purchase order ID",
+    //           });
+    //         }
       
-            const data = purchaseOrderSchema.updateSupplier.parse(req.body);
+    //         const data = purchaseOrderSchema.updateSupplier.parse(req.body);
       
-            const purchaseOrderItem = await prisma.purchasedOrderItem.findFirst({
-              where: { id: purchaseOrderId },
-            });
-            if (!purchaseOrderItem) {
-              return res.status(404).json({
-                success: false,
-                message: "Purchase order item not found",
-              });
-            }
+    //         const purchaseOrderItem = await prisma.purchasedOrderItem.findFirst({
+    //           where: { id: purchaseOrderId },
+    //         });
+    //         if (!purchaseOrderItem) {
+    //           return res.status(404).json({
+    //             success: false,
+    //             message: "Purchase order item not found",
+    //           });
+    //         }
       
-            const supplier = await prisma.suppliers.findFirst({
-              where: { id: data.suppliersId },
-            });
-            if (!supplier) {
-              return res.status(404).json({
-                success: false,
-                message: "Supplier not found",
-              });
-            }
+    //         const supplier = await prisma.suppliers.findFirst({
+    //           where: { id: data.suppliersId },
+    //         });
+    //         if (!supplier) {
+    //           return res.status(404).json({
+    //             success: false,
+    //             message: "Supplier not found",
+    //           });
+    //         }
       
-            const updatedSupplier = await prisma.purchasedOrderItem.update({
-              where: { id: purchaseOrderId },
-              data: { suppliersId: supplier.id },
-            });
+    //         const updatedSupplier = await prisma.purchasedOrderItem.update({
+    //           where: { id: purchaseOrderId },
+    //           data: { suppliersId: supplier.id },
+    //         });
       
-            return res.status(200).json({
-              success: true,
-              message: "Supplier updated successfully",
-              data: updatedSupplier,
-            });
-          } catch (error) {
-            return res.status(500).json({
-              success: false,
-              message: `Error: ${error.message}`,
-            });
-          }
-    },
-    updateWinner: async (req, res, next) => {
-        try {
-          const purchasedOrderId = parseInt(req.params.id, 10);
-          if (isNaN(purchasedOrderId)) {
-            return res.status(400).json({
-              success: false,
-              message: "Invalid purchase order ID",
-            });
-          }
+    //         return res.status(200).json({
+    //           success: true,
+    //           message: "Supplier updated successfully",
+    //           data: updatedSupplier,
+    //         });
+    //       } catch (error) {
+    //         return res.status(500).json({
+    //           success: false,
+    //           message: `Error: ${error.message}`,
+    //         });
+    //       }
+    // },
+    // updateWinner: async (req, res, next) => {
+    //     try {
+    //       const purchasedOrderId = parseInt(req.params.id, 10);
+    //       if (isNaN(purchasedOrderId)) {
+    //         return res.status(400).json({
+    //           success: false,
+    //           message: "Invalid purchase order ID",
+    //         });
+    //       }
     
-          const data = purchaseOrderSchema.updateWinner.parse(req.body);
+    //       const data = purchaseOrderSchema.updateWinner.parse(req.body);
     
-          // Check if the purchased order exists
-          const isPurchasedOrderExist = await prisma.purchasedOrder.findFirst({
-            where: {
-              id: purchasedOrderId,
-            },
-          });
+    //       // Check if the purchased order exists
+    //       const isPurchasedOrderExist = await prisma.purchasedOrder.findFirst({
+    //         where: {
+    //           id: purchasedOrderId,
+    //         },
+    //       });
     
-          if (!isPurchasedOrderExist) {
-            return res.status(404).json({
-              success: false,
-              message: "Purchased order not found",
-            });
-          }
+    //       if (!isPurchasedOrderExist) {
+    //         return res.status(404).json({
+    //           success: false,
+    //           message: "Purchased order not found",
+    //         });
+    //       }
     
-          // Check if the winner exists
-          const isWinnerExist = await prisma.suppliers.findFirst({
-            where: {
-              id: data.winnerId,
-            },
-          });
+    //       // Check if the winner exists
+    //       const isWinnerExist = await prisma.suppliers.findFirst({
+    //         where: {
+    //           id: data.winnerId,
+    //         },
+    //       });
     
-          if (!isWinnerExist) {
-            return res.status(404).json({
-              success: false,
-              message: "Winner not found",
-            });
-          }
+    //       if (!isWinnerExist) {
+    //         return res.status(404).json({
+    //           success: false,
+    //           message: "Winner not found",
+    //         });
+    //       }
     
-          // Update the winner
-          const updatedPurchaseOrder = await prisma.purchasedOrder.update({
-            where: {
-              id: purchasedOrderId,
-            },
-            data: {
-              winnerId: data.winnerId,
-            },
-            include: {
-              winner: {
-                include: {
-                  supplayer: true,
-                },
-              },
-            },
-          });
+    //       // Update the winner
+    //       const updatedPurchaseOrder = await prisma.purchasedOrder.update({
+    //         where: {
+    //           id: purchasedOrderId,
+    //         },
+    //         data: {
+    //           winnerId: data.winnerId,
+    //         },
+    //         include: {
+    //           winner: {
+    //             include: {
+    //               supplayer: true,
+    //             },
+    //           },
+    //         },
+    //       });
     
-          return res.status(200).json({
-            success: true,
-            message: "Successfully updated the winner",
-            data: updatedPurchaseOrder,
-          });
-        } catch (error) {
-          return res.status(500).json({
-            success: false,
-            message: `Error - ${error.message}`,
-          });
-        }
-    },
+    //       return res.status(200).json({
+    //         success: true,
+    //         message: "Successfully updated the winner",
+    //         data: updatedPurchaseOrder,
+    //       });
+    //     } catch (error) {
+    //       return res.status(500).json({
+    //         success: false,
+    //         message: `Error - ${error.message}`,
+    //       });
+    //     }
+    // },
     deletePurchasedOrder: async (req, res, next) => {
         try {
           const purchaseOrderId = parseInt(req.params.id, 10);

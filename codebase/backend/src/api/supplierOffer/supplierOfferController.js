@@ -110,6 +110,20 @@ const supplierOfferController = {
         });
       }
 
+      for (const item of data.items) {
+        const isProductExist = await prisma.product.findFirst({
+          where: {
+            id: item.productId,
+          },
+        });
+        if (!isProductExist) {
+          return res.status(404).json({
+            success: false,
+            message: `Product with id ${item.productId} not found`,
+          });
+        }
+      }
+
       const newSupplierOffer = await prisma.supplayerOffer.create({
         include: {
           _count: true,
@@ -211,9 +225,11 @@ const supplierOfferController = {
       }
       const data = supplierOfferSchem.updateSupplier.parse(req.body);
 
+
+
       const updatedSupplier = await prisma.supplayerOffer.update({
        where:{
-        id:data.supplayerId
+        id:supplierOfferId
        },
        data:{
         supplayerId:data.supplayerId
@@ -235,8 +251,8 @@ const supplierOfferController = {
 
   updateSupplierOfferItems: async (req, res, next) => {
     try {
-      const supplierOfferId = parseInt(req.params.id, 10);
-      if (isNaN(supplierOfferId)) {
+      const supplierOfferItemId = parseInt(req.params.id, 10);
+      if (isNaN(supplierOfferItemId)) {
         return res.status(400).json({
           success: false,
           message: "Invalid supplier offer ID",
@@ -244,24 +260,69 @@ const supplierOfferController = {
       }
 
       const data = supplierOfferSchem.updateSupplierOfferItems.parse(req.body);
+
+      const isProductExist = await prisma.product.findFirst({
+        where: {
+          id: +data.productId,
+        },
+      });
+  
+      if (!isProductExist) {
+        return res.status(404).json({
+          success: false,
+          message: "Product not found",
+        });
+      }
+      const isSupplierOfferItemsExist = await prisma.offerItem.findFirst({
+        where: {
+          id: +supplierOfferItemId,
+        },
+      });
+
+      if (!isSupplierOfferItemsExist) {
+        return res.status(404).json({
+          success: false,
+          message: "This supplier offer item is not found",
+        });
+      }
+
       const isSupplierOfferExist = await prisma.supplayerOffer.findFirst({
               where: {
-                id: +supplierOfferId,
+                id: isSupplierOfferItemsExist.supplayerOfferId,
               },
             });
 
             if (!isSupplierOfferExist) {
               return res.status(404).json({
                 success: false,
-                message: "This supplier is not found",
+                message: "This supplier offer is not found",
               });
             }
-      const updatedSupplierOffer = await prisma.supplayerOffer.update({
-        where: { id: supplierOfferId },
+
+            const diffrenceInPrice=(isSupplierOfferItemsExist.unitPrice * isSupplierOfferItemsExist.quantity) - (data.unitPrice * data.quantity)
+            const newTotalPrice= isSupplierOfferExist.totalPrice + diffrenceInPrice
+
+    
+      const updatedSupplierOfferItem = await prisma.offerItem.update({
+        where: {
+          id: +supplierOfferItemId,
+          },
               data: {
                 quantity: data.quantity,
                 unitPrice: data.unitPrice,
                 productId: data.productId
+              }
+      });
+
+        const updatedSupplierOffer = await prisma.supplayerOffer.update({
+        where: {
+          id: isSupplierOfferItemsExist.supplayerOfferId,
+        },
+              data: {
+               totalPrice:newTotalPrice
+              },
+              include:{
+                offerItem:true
               }
       });
 

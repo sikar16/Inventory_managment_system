@@ -92,17 +92,18 @@ export const userApi = createApi({
         },
       }),
       invalidatesTags: ['user'],
-      transformErrorResponse: (response: any) => {
-        try {
-          const message = response?.data?.message;
-          return extractErrorMessage(message);
-        } catch (error) {
-          return 'An unexpected error occurred while processing your request.';
-        }
-      },
+      // transformErrorResponse: (response: any) => {
+      //   try {
+      //     const message = response?.data?.message;
+      //     return extractErrorMessage(message);
+      //   } catch (error:any) {
+      //     return 'An unexpected error occurred while processing your request.';
+      //   }
+      // },
     }),
 
     // Add the login mutation here
+
     loginUser: builder.mutation({
       query: (loginData: LoginDataType) => ({
         url: `http://localhost:8888/api/user/login`, // Adjust to your actual login API endpoint
@@ -112,18 +113,21 @@ export const userApi = createApi({
           "Content-Type": "application/json",
         },
       }),
-      transformResponse: (response: any) => {
-        // You can handle storing token or response here
-        if (response.success) {
-          // Store token in localStorage
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('role', response.role);
-        }
-        return response;
+      transformResponse: (response) => {
+        //   // You can handle storing token or response here
+        //   if (response.success) {
+        //     // Store token in localStorage
+        //     localStorage.setItem('token', response.token);
+        //     localStorage.setItem('role', response.role);
+        //   }
+        //   return response;
+        console.log(response)
       },
-      transformErrorResponse: (response: any) => {
-        const message = response?.data?.message || "Login failed";
-        return extractErrorMessage(message);
+
+      transformErrorResponse: (response) => {
+        // const message = response?.data?.message || "Login failed";
+        // return extractErrorMessage(message);
+        console.log(response)
       },
     }),
   }),
