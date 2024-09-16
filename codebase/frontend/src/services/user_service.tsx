@@ -17,6 +17,13 @@ interface FormDataType {
   departmentId: number;
   password: string;
 }
+// Define the LoginResponse type based on your API's response structure
+type LoginResponse = {
+  success: boolean;
+  token?: string; // Add optional fields based on your response
+  role?: string;
+  message?: string;
+};
 
 interface LoginDataType {
   email: string;
@@ -104,8 +111,9 @@ export const userApi = createApi({
 
     // Add the login mutation here
 
-    loginUser: builder.mutation({
-      query: (loginData: LoginDataType) => ({
+    // Define the mutation in your service
+    loginUser: builder.mutation<LoginResponse, LoginDataType>({
+      query: (loginData) => ({
         url: `http://localhost:8888/api/user/login`, // Adjust to your actual login API endpoint
         method: "POST",
         body: loginData,
@@ -113,23 +121,14 @@ export const userApi = createApi({
           "Content-Type": "application/json",
         },
       }),
-      transformResponse: (response) => {
-        //   // You can handle storing token or response here
-        //   if (response.success) {
-        //     // Store token in localStorage
-        //     localStorage.setItem('token', response.token);
-        //     localStorage.setItem('role', response.role);
-        //   }
-        //   return response;
-        console.log(response)
+      transformResponse: (response: any) => {
+        return response;
       },
-
       transformErrorResponse: (response) => {
-        // const message = response?.data?.message || "Login failed";
-        // return extractErrorMessage(message);
-        console.log(response)
+        return response.data;
       },
-    }),
+    })
+
   }),
 });
 

@@ -4,6 +4,7 @@ import extractErrorMessage from "../util/extractErrorMessage";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
+
 export const productCategoryApi = createApi({
     reducerPath: "productCategoryApi",
     baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}productCategory` }),
@@ -15,12 +16,20 @@ export const productCategoryApi = createApi({
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json",
-                    // Authorization: "token",
+                    Authorization: localStorage.getItem("token2")
+
                 },
             }),
             transformResponse: (response: any) =>
                 response.success ? (response.date as ProductCategoryType[]) : ([] as ProductCategoryType[]),
             providesTags: ['ProductCategory'], // Provide tags for this query
+
+            transformErrorResponse: (response: any) => {
+                console.log(response);
+                console.log(token)
+                return extractErrorMessage(response.data.message as string);
+
+            },
         }),
         addNewProductCategory: builder.mutation({
             query: (data) => ({

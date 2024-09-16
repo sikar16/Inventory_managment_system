@@ -5,7 +5,7 @@ import { CompanyRole } from "@prisma/client";
 
 export const isAuth = async (req, res, next) => {
   const token = req.headers.authorization;
-
+console.log(`hhhhhhhhhhh    ${token}`)
   if (!token) {
     return res.status(401).json({
       success: false,

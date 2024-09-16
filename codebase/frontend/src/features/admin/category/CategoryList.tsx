@@ -8,10 +8,12 @@ import CategoryTable from './CategoryTable';
 import Title from '../../../component/TablesTitle';
 import { useGetAllproductCategoryQuery } from '../../../services/productCategorySerivce';
 import Loading from '../../../component/Loading';
+import { useAuth } from '../../../context/AuthContext';
 
 export default function CategoryList() {
     const [openDialog, setOpenDialog] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const { userData } = useAuth();
 
     const handleOpenDialog = () => setOpenDialog(true);
     const handleCloseDialog = () => setOpenDialog(false);
@@ -23,7 +25,9 @@ export default function CategoryList() {
         isSuccess: isCategorySuccess,
         data: categories = [], // Default to an empty array
         error: categoryError,
-    } = useGetAllproductCategoryQuery();
+    } = useGetAllproductCategoryQuery(
+        userData.token
+    );
 
     if (isError) {
         return (

@@ -345,7 +345,8 @@ const userController = {
       return res.status(200).json({
         success: true,
         message: "user logged in successfully",
-        data: token,
+        token,
+        role:user.role
       });
     } catch (error) {
       console.error("error occurred:", error);

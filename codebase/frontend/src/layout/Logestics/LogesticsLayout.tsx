@@ -1,4 +1,3 @@
-import Footer from "../Footer"
 import Header from "../Header"
 // mui 
 import Box from '@mui/material/Box';
@@ -6,7 +5,6 @@ import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 const drawerWidth = 240;
 import { Outlet } from "react-router-dom"
 import { useState } from "react";
@@ -15,6 +13,7 @@ import Bottem from "../Bottem";
 import LogesticsSidebar from "./LogesticsSidebar";
 export const LogesticsLayout = () => {
     const [open, setOpen] = useState(true);
+
     const handleDrawerClose = () => {
         setOpen(false);
     };
