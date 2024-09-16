@@ -1,5 +1,5 @@
-import prisma from "../../config/prisma";
-import supplierOfferSchem from "./supplierOfferSchem";
+import prisma from "../../config/prisma.js";
+import supplierOfferSchem from "./supplierOfferSchem.js";
 
 const supplierOfferController = {
   getSingleSupplierOffer: async (req, res, next) => {
@@ -15,15 +15,10 @@ const supplierOfferController = {
       const supplierOffer = await prisma.supplayerOffer.findFirst({
         where: { id: supplierOfferId },
         include: {
-          _count: true,
-          totalPrice: true,
-          offerItem: {
-            include: {
-              supplayerOffer: {
-                include: { offerItem: true }
-              }
-            }
-          }
+          _count:true,
+          offerItem:true,
+          purchasedOrder:true,
+          supplayer:true
         }
       });
 
@@ -51,15 +46,10 @@ const supplierOfferController = {
     try {
       const supplierOffers = await prisma.supplayerOffer.findMany({
         include: {
-          _count: true,
-          totalPrice: true,
-          offerItem: {
-            include: {
-              supplayerOffer: {
-                include: { offerItem: true }
-              }
-            }
-          }
+          _count:true,
+          offerItem:true,
+          purchasedOrder:true,
+          supplayer:true
         }
       });
 
@@ -289,6 +279,21 @@ const supplierOfferController = {
       const isSupplierOfferExist = await prisma.supplayerOffer.findFirst({
               where: {
                 id: isSupplierOfferItemsExist.supplayerOfferId,
+              },
+              include: {
+                _count: true,
+                supplayer: true,
+                purchasedOrder:true,
+                offerItem: {
+                  include: {
+                    products: {
+                      include: {
+                        productAttributes: true
+                      }
+                    },
+                    supplayerOffer: true
+                  }
+                }
               },
             });
 

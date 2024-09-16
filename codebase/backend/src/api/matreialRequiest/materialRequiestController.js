@@ -293,7 +293,7 @@ const materialRequiestController = {
         },
       });
 
-      if (!isMaterialReqExist) {
+      if (isMaterialReqExist) {
         return res.status(404).json({
           success: false,
           message: "This materail request is not found",
@@ -405,7 +405,7 @@ const materialRequiestController = {
         },
       });
 
-      if (!isMaterialReqExist) {
+      if (isMaterialReqExist) {
         return res.status(404).json({
           success: false,
           message: "This materail request is not found",

@@ -17,11 +17,7 @@ const grnController = {
                 include: {
                     _count: true,
                     supplayer: true,
-                    grnItem: {
-                        include: {
-                            product: true,
-                        }
-                    }
+                    grnItem: true
                 }
             });
 
@@ -51,11 +47,7 @@ const grnController = {
                 include: {
                     _count: true,
                     supplayer: true,
-                    grnItem: {
-                        include: {
-                            product: true, 
-                        }
-                    }
+                    grnItem:true
                 }
             });
 
@@ -74,53 +66,57 @@ const grnController = {
 
     createGrn: async (req, res, next) => {
         try {
-           
-            const requiredFields = ["supplayerId", "purchasedOrderId","items"];
+            // Validate required fields
+            const requiredFields = ["supplayerId", "purchasedOrderId", "grnItem"];
             for (const field of requiredFields) {
-                if (!data[field]) {
+                if (!req.body[field]) {
                     return res.status(403).json({
                         success: false,
                         message: `${field} is required`,
                     });
                 }
             }
-           const data=grnSchem.create.parse(req.body)
-            const isSupplayerExist = await prisma.supplayer.findFirst({
+    
+            // Parse request body using your schema
+            const data = grnSchem.create.parse(req.body);
+            console.log('Parsed data:', data);
+    
+            // Check if the supplier exists
+            const isSupplayerExist = await prisma.suppliers.findFirst({
                 where: { id: +data.supplayerId },
             });
             if (!isSupplayerExist) {
                 return res.status(404).json({
                     success: false,
-                    message: "Supplayer not found",
+                    message: "Supplier not found",
                 });
             }
-
-            
-            const purchasedOrderExist=await prisma.purchasedOrder.findFirst({
-                where:{
-                    id:data.purchasedOrderId
-                }
-              })
-              if (!purchasedOrderExist) {
+    
+            // Check if the purchased order exists
+            const purchasedOrderExist = await prisma.purchasedOrder.findFirst({
+                where: { id: +data.purchasedOrderId },
+            });
+            if (!purchasedOrderExist) {
                 return res.status(400).json({
-                  success: false,
-                  message: "purchased order not found",
+                    success: false,
+                    message: "Purchased order not found",
                 });
-              } 
-
-                for (let index = 0; index < data.grnItem.length; index++) {
-                    const element = data.grnItem[index];
+            }
+    
+            // Validate each GRN item
+            for (const item of data.grnItem) {
                 const isProductExist = await prisma.product.findFirst({
-                    where: { id: element.productId },
+                    where: { id: +item.productId },
                 });
                 if (!isProductExist) {
                     return res.status(404).json({
                         success: false,
-                        message: `Product not found`,
+                        message: `Product with ID ${item.productId} not found`,
                     });
                 }
             }
-
+    
+            // Create the GRN
             const newGRN = await prisma.gRN.create({
                 data: {
                     reciverId: +req.user.id,
@@ -133,21 +129,23 @@ const grnController = {
                             remark: item.remark,
                         })),
                     },
-                }
+                },
             });
-
+    
             return res.status(201).json({
                 success: true,
                 message: "GRN created successfully",
                 data: newGRN,
             });
         } catch (error) {
+            console.error("Error creating GRN:", error);
             return res.status(500).json({
                 success: false,
-                message: `Error - ${error}`,
+                message: `Error - ${error.message}`,
             });
         }
     },
+    
 
     updateGrnItems: async (req, res, next) => {
         try {
@@ -213,24 +211,29 @@ const grnController = {
             if (isNaN(grnId)) {
                 return res.status(400).json({
                     success: false,
-                    message: "Invalid GRN  ID",
+                    message: "Invalid GRN ID",
                 });
             }
-
+    
             const requiredField = ["supplayerId"];
             for (const field of requiredField) {
-              if (!req.body[field]) {
-                return res.status(403).json({
-                  success: false,
-                  message: `${field} is required`,
-                });
-              }
+                if (!req.body[field]) {
+                    return res.status(403).json({
+                        success: false,
+                        message: `${field} is required`,
+                    });
+                }
             }
+    
             const data = grnSchem.updateSupplier.parse(req.body);
-
+    
+            // Define the supplayerId variable correctly
+            const { supplayerId } = data;
+    
+            // Check if the supplier exists
             const isSupplierExist = await prisma.suppliers.findFirst({
                 where: {
-                     id: +supplayerId,
+                    id: +supplayerId,
                 },
             });
             if (!isSupplierExist) {
@@ -239,46 +242,45 @@ const grnController = {
                     message: "Supplier not found",
                 });
             }
-
-            const isGrnExist=await prisma.gRN.findFirst({
-                where:{
-                    id:grnId,
-                    reciverId:req.user.id
-                }
-            })
-
+    
+            // Check if the GRN exists
+            const isGrnExist = await prisma.gRN.findFirst({
+                where: {
+                    id: grnId,
+                    reciverId: req.user.id,
+                },
+            });
             if (!isGrnExist) {
                 return res.status(404).json({
                     success: false,
-                    message: "GRN  not found",
+                    message: "GRN not found",
                 });
             }
-
+    
+            // Update the GRN
             const updatedGRN = await prisma.gRN.update({
-                where: { 
-                    id: grnId 
+                where: {
+                    id: grnId,
                 },
                 data: {
-                   supplayerId:data.supplayerId
+                    supplayerId: +supplayerId,
                 },
-
-                include:{
-                    supplayer:true,
-                    _count:true,
-                    purchasedOrder:true,
-                    grnItem:{
-                        include:{
-                            grn:{
-                                include:{
-                                    grnItem:true
-                                }
-                            }
-                        }
-                    }
-                }
-
+                include: {
+                    supplayer: true,
+                    _count: true,
+                    purchasedOrder: true,
+                    grnItem: {
+                        include: {
+                            grn: {
+                                include: {
+                                    grnItem: true,
+                                },
+                            },
+                        },
+                    },
+                },
             });
-
+    
             return res.status(200).json({
                 success: true,
                 message: "GRN items updated successfully",
@@ -287,10 +289,11 @@ const grnController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                message: `Error - ${error}`,
+                message: `Error - ${error.message}`,
             });
         }
     },
+    
     updateGrnPurchasedOrder: async (req, res, next) => {
         try {
             const grnId = parseInt(req.params.id, 10);

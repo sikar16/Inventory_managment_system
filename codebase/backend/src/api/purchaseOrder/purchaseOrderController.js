@@ -15,49 +15,13 @@ const purchasedOrderController={
                 where:{
                     id:purchaseOrderId 
                 },
-                include:{
-                    _count:true,
-                    user:{
-                        include:{
-                            profile:true,
-                        }
-                    },
-                    SupplayerOffer:{
-                        include:{
-                            supplayer:true
-                        }
-                    },
-                    winner:{
-                        include:{
-                            supplayer:true,
-                        }
-                    },
-                    items:{
-                        include:{
-                            purchasedRequest:{
-                                include:{
-                                    items:{
-                                        include:{
-                                            materialRequest:{
-                                                include:{
-                                                    purchasedOrderItem:{
-                                                        include:{
-                                                            products:{
-                                                                include:{
-                                                                    productAttributes:true
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+               include:{
+                _count:true,
+                items:true,
+                SupplayerOffer:true,
+                user:true,
+                winner:true
+               }
             })
 
             if (!purchaseOrder) {
@@ -83,45 +47,13 @@ const purchasedOrderController={
     getAllPurchasedOrder:async (req,res,next)=>{
         try {
             const purchaseOrder=await prisma.purchasedOrder.findMany({
-                include:{
-                    _count:true,
-                    user:{
-                        include:{
-                            profile:true,
-                        }
-                    },
-                    SupplayerOffer:true,
-                    winner:{
-                        include:{
-                            supplayer:true,
-                        }
-                    },
-                    items:{
-                        include:{
-                            purchasedRequest:{
-                                include:{
-                                    items:{
-                                        include:{
-                                            materialRequest:{
-                                                include:{
-                                                    purchasedOrderItem:{
-                                                        include:{
-                                                            products:{
-                                                                include:{
-                                                                    productAttributes:true
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+              include:{
+                _count:true,
+                items:true,
+                SupplayerOffer:true,
+                user:true,
+                winner:true
+               }
             })
 
             return res.status(200).json({
@@ -138,72 +70,84 @@ const purchasedOrderController={
         }
     },
     createPurchasedOrder: async (req, res, next) => {
-        try {
-            const requiredFields = ["items"];
-            for(const field of requiredFields){
-                if(!req.body[field]){
-                    return res.status(400).json({
-                        success: false,
-                        message: `${field} is required`,
-                      });
-                }
-            }
-          const data = purchaseOrderSchema.create.parse(req.body);
-
-          for (let index = 0; index < data.items.length; index++) {
-            const element = data.items[index];
-             const isproductExist = await prisma.product.findFirst({
-                 where: { id: element.productId } 
-                });
-            if (!isproductExist) {
-              return res.status(404).json({
-                success: false,
-                message: `Product not found`,
-              });
-            }
+      try {
+        const requiredFields = ["items"];
+        for(const field of requiredFields){
+          if(!req.body[field]){
+            return res.status(400).json({
+              success: false,
+              message: `${field} is required`,
+            });
+          }
+        }
+    
+        const data = purchaseOrderSchema.create.parse(req.body);
+    
+        // Loop through each item to check if the product exists
+        for (let index = 0; index < data.items.length; index++) {
+          const element = data.items[index];
+    
+          // Check if the product exists
+          const isProductExist = await prisma.product.findFirst({
+            where: { id: element.productId }
+          });
+          if (!isProductExist) {
+            return res.status(404).json({
+              success: false,
+              message: `Product not found`,
+            });
           }
     
-        
-    
-          const newPurchaseOrder = await prisma.purchasedOrder.create({
-            data: {
-              userId: +req.user.id,
-              items: {
-                create: data.items.map((item) => ({
-                  purchasOrderId: item.purchasOrderId,
-                  quantityToBePurchased: item.quantityToBePurchased,
-                  remark: item.remark,
-                })),
-              },
-            },
-            include: {
-              items: {
-                include: 
-                {
-                     products:
-                     {
-                         include: 
-                         { 
-                            productAttributes: true 
-                        }
-                     }
-                     },
-              },
-            },
+          // Check if the MaterialRequest exists
+          const isMaterialRequestExist = await prisma.materialRequest.findFirst({
+            where: { id: element.purchasedRequestId }
           });
-    
-          return res.status(201).json({
-            success: true,
-            message: "Purchase order created successfully",
-            data: newPurchaseOrder,
-          });
-        } catch (error) {
-          return res.status(500).json({
-            success: false,
-            message: `Error: ${error.message}`,
-          });
+          if (!isMaterialRequestExist) {
+            return res.status(404).json({
+              success: false,
+              message: `MaterialRequest with id ${element.purchasedRequestId} not found`,
+            });
+          }
         }
+    
+        // If all items are valid, proceed to create the purchase order
+        const newPurchaseOrder = await prisma.purchasedOrder.create({
+          data: {
+            userId: req.user.id, // Make sure to include userId
+            items: {
+              create: data.items.map(item => ({
+                productId: item.productId,
+                quantityToBePurchased: item.quantityToBePurchased,
+                remark: item.remark,
+                // Correctly connect purchasedRequestId
+                purchasedRequest: {
+                  connect: {
+                    id: item.purchasedRequestId
+                  }
+                }
+              }))
+            }
+          },
+          include: {
+            _count: true,
+            items: true,
+          }
+        });
+    
+        return res.status(201).json({
+          success: true,
+          message: "Purchase order created successfully",
+          data: newPurchaseOrder,
+        });
+      } catch (error) {
+        return res.status(500).json({
+          success: false,
+          message: `Error: ${error.message}`,
+        });
+      }
     },
+    
+    
     // updatePurchasedOrder:async (req,res,next)=>{
     //     try {
     //         const purchaseOrderId = parseInt(req.params.id, 10);
@@ -230,57 +174,70 @@ const purchasedOrderController={
     //         });
     //       }
     // },
-    updatePurchasedOrderItems:async (req,res,next)=>{
-        try {
-            const purchaseOrderItemId = parseInt(req.params.id, 10);
-            if (isNaN(purchaseOrderItemId)) {
-              return res.status(400).json({
-                success: false,
-                message: "Invalid purchase order ID",
-              });
+    updatePurchasedOrderItems: async (req, res, next) => {
+      try {
+        const purchaseOrderItemId = parseInt(req.params.id, 10);
+        if (isNaN(purchaseOrderItemId)) {
+          return res.status(400).json({
+            success: false,
+            message: "Invalid purchase order ID",
+          });
+        }
+    
+        // Parse and validate the request body
+        const data = purchaseOrderSchema.updateItem.parse(req.body);
+    
+        // Check if the purchase order item exists
+        const purchaseOrderItem = await prisma.purchasedOrderItem.findFirst({
+          where: { id: purchaseOrderItemId },
+        });
+        if (!purchaseOrderItem) {
+          return res.status(404).json({
+            success: false,
+            message: "Purchase order item not found",
+          });
+        }
+    
+        // Validate if the product exists
+        const isProductExist = await prisma.product.findFirst({
+          where: { id: data.productId }
+        });
+        if (!isProductExist) {
+          return res.status(404).json({
+            success: false,
+            message: "Product not found",
+          });
+        }
+    
+        // Update the purchased order item
+        const updatedItem = await prisma.purchasedOrderItem.update({
+          where: { id: purchaseOrderItemId },
+          data: {
+            productId: data.productId,
+            quantityToBePurchased: data.quantityToBePurchased,
+            remark: data.remark,
+            // Connect the purchasedRequestId if it exists
+            purchasedRequest: {
+              connect: {
+                id: data.purchasedRequestId
+              }
             }
-      
-            const data = purchaseOrderSchema.updateItem.parse(req.body);
-      
-            const purchaseOrderItem = await prisma.purchasedOrderItem.findFirst({
-              where: { id: purchaseOrderItemId },
-            });
-            if (!purchaseOrderItem) {
-              return res.status(404).json({
-                success: false,
-                message: "Purchase order item not found",
-              });
-            }
-      
-            const isproductExist = await prisma.product.findFirst({ where: { id: data.productId } });
-            if (!isproductExist) {
-              return res.status(404).json({
-                success: false,
-                message: "Product not found",
-              });
-            }
-      
-            const updatedItem = await prisma.purchasedOrderItem.update({
-              where: { id: purchaseOrderItemId },
-              data: {
-                productId: data.productId,
-                quantityToBePurchased: data.quantityToBePurchased,
-                remark: data.remark,
-              },
-            });
-      
-            return res.status(200).json({
-              success: true,
-              message: "Purchase order item updated successfully",
-              data: updatedItem,
-            });
-          } catch (error) {
-            return res.status(500).json({
-              success: false,
-              message: `Error: ${error.message}`,
-            });
-          }
+          },
+        });
+    
+        return res.status(200).json({
+          success: true,
+          message: "Purchase order item updated successfully",
+          data: updatedItem,
+        });
+      } catch (error) {
+        return res.status(500).json({
+          success: false,
+          message: `Error: ${error.message}`,
+        });
+      }
     },
+    
     // updatesupplier:async (req,res,next)=>{
     //     try {
     //         const purchaseOrderId = parseInt(req.params.id, 10);

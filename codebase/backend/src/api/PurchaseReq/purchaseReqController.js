@@ -17,20 +17,9 @@ const purchasedReqConntroller={
             },
             include:{
               _count:true,
-              totalPrice:true,
-              items:{
-                include:{
-                  products:{
-                    include:{
-                      materialRequestItem:true
-                    }
-                  },
-                  quantityToBePurchased:true,
-                  remark:true,
-                  unitPrice:true
-                }
-              }, 
-            }
+              user:true,
+              items:true
+            } 
           
           });
       
@@ -60,41 +49,9 @@ const purchasedReqConntroller={
             const purchaseReq=await prisma.purchasedRequest.findMany({
               include:{
                 _count:true,
-                totalPrice:true,
-                items:{
-                  include:{
-                    products:{
-                      include:{
-                        materialRequestItem:true
-                      }
-                    },
-                    quantityToBePurchased:true,
-                    remark:true,
-                    unitPrice:true
-                  }
-                }, 
-              }
-              // include:{
-              //   user:true,
-              //   _count:true,
-              //   items:{
-              //     include:{
-              //       products:{
-              //         include:{
-              //           materialRequestItem:{
-              //             include:{
-              //               product:{
-              //                 include:{
-              //                   productAttributes:true
-              //                 }
-              //               }
-              //             }
-              //           }
-              //         }
-              //       }
-              //     }
-              //   }
-              // }  
+                user:true,
+                items:true
+              } 
             });
             return res.status(200).json({
                 success: true,
@@ -161,6 +118,7 @@ const purchasedReqConntroller={
             userId:+req.user.id,
             items: {
               create: data.items.map((item) => ({
+                purchasedRequestId:item.purchasedRequestId,
                 productId: +item.productId,
                 quantityToBePurchased: item.quantityToBePurchased,
                 remark: item.remark,
@@ -185,104 +143,112 @@ const purchasedReqConntroller={
         });
       }
     },
-    
-    updatepurchasedReqItem: async (req, res, next) => {
-      try {
-        const purceasedRequestItemId = parseInt(req.params.id, 10);
-        if (isNaN(purceasedRequestItemId)) {
-          return res.status(400).json({
-            success: false,
-            message: "Invalid purchase request item id",
-          });
-        }
+  updatepurchasedReqItem: async (req, res, next) => {
+  try {
+    const purceasedRequestItemId = parseInt(req.params.id, 10);
+    if (isNaN(purceasedRequestItemId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid purchase request item id",
+      });
+    }
 
-    
-        // Validate the request body
-        const data = purchasedReqSchema.updateItems.parse(req.body);
+    // Validate the request body
+    const data = purchasedReqSchema.updateItems.parse(req.body);
 
-    // Check if the purceasedRequestedItem exists
-        const isPurchsedReqItemsExist = await prisma.purceasedRequestedItem.findFirst({
-          where: {
-            id: +purceasedRequestItemId,
-          },
-        });
-    
-        if (!isPurchsedReqItemsExist) {
-          return res.status(404).json({
-            success: false,
-            message: "Purchase request item not found",
-          });
-        }
+    // Check if the purchaseRequestedItem exists
+    const isPurchsedReqItemsExist = await prisma.purceasedRequestedItem.findFirst({
+      where: {
+        id: purceasedRequestItemId,
+      },
+    });
 
-        const ispurchaseReqExist=await prisma.purchasedRequest.findFirst({
-          where:{
-            id:+isPurchsedReqItemsExist.purchasedRequestId,
-            userId:+req.user.id
-          }
-        })
-        if(!ispurchaseReqExist){
-          return res.status(404).json({
-            success: false,
-            message: "This purchased request is not found",
-          });
-        }
+    if (!isPurchsedReqItemsExist) {
+      return res.status(404).json({
+        success: false,
+        message: "Purchase request item not found",
+      });
+    }
 
+    // Check if the corresponding purchase request exists
+    const ispurchaseReqExist = await prisma.purchasedRequest.findFirst({
+      where: {
+        id: isPurchsedReqItemsExist.purchasedRequestId,
+        userId: req.user.id, // Ensure userId is matching the request
+      },
+    });
 
+    console.log(isPurchsedReqItemsExist.purchasedRequestId)
 
-        // Check if the product exists
-        const isProductExist = await prisma.product.findFirst({
-          where: {
-            id: +data.productId,
-          },
-        });
-    
-        if (!isProductExist) {
-          return res.status(404).json({
-            success: false,
-            message: "Product not found",
-          });
-        }
-    
-        // Update purchase request item
-        const updatepurchasedReqItem = await prisma.purceasedRequestedItem.update({
-          where: {
-            id: +purceasedRequestItemId,
-          },
-          data: {
-            productId: data.productId,
-            remark: data.remark,
-            quantityToBePurchased: data.quantityToBePurchased,
-            unitPrice:data.unitPrice
-          },
-        });
+    // The condition here should return 404 if the purchase request DOES NOT exist
+    if (!ispurchaseReqExist) {
+      return res.status(404).json({
+        success: false,
+        message: "This purchase request is not found",
+      });
+    }
 
-        const diffrenceInPrice=(isPurchsedReqItemsExist.unitPrice * isPurchsedReqItemsExist.quantityToBePurchased) - (data.unitPrice * data.quantityToBePurchased)
-        const newTotalPrice= ispurchaseReqExist.totalPrice + diffrenceInPrice
+    // Check if the product exists
+    const isProductExist = await prisma.product.findFirst({
+      where: {
+        id: data.productId,
+      },
+    });
 
-        const updatepurchasedReq=await prisma.purchasedRequest.update({
-          where:{
-            id:ispurchaseReqExist.id
-          },
-          data:{
-            totalPrice:newTotalPrice
-          },
-          include:{
-            items:true
-          }
-        })
-    
-        return res.status(200).json({
-          success: true,
-          message: "Successfully updated purchase request item",
-          data: updatepurchasedReq,
-        });
-      } catch (error) {
-        return res.status(500).json({
-          success: false,
-          message: `Error - ${error.message}`,
-        });
-      }
-    },
+    if (!isProductExist) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    // Update purchase request item
+    const updatepurchasedReqItem = await prisma.purceasedRequestedItem.update({
+      where: {
+        id: purceasedRequestItemId,
+      },
+      data: {
+        productId: data.productId,
+        remark: data.remark,
+        quantityToBePurchased: data.quantityToBePurchased,
+        unitPrice: data.unitPrice,
+      },
+    });
+
+    // Calculate the difference in price
+    const differenceInPrice = 
+      (isPurchsedReqItemsExist.unitPrice * isPurchsedReqItemsExist.quantityToBePurchased) - 
+      (data.unitPrice * data.quantityToBePurchased);
+
+    // Ensure totalPrice is not null before updating
+    const newTotalPrice = (ispurchaseReqExist.totalPrice || 0) + differenceInPrice;
+
+    // Update the total price of the purchase request
+    const updatepurchasedReq = await prisma.purchasedRequest.update({
+      where: {
+        id: ispurchaseReqExist.id,
+      },
+      data: {
+        totalPrice: newTotalPrice,
+      },
+      include: {
+        items: true,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Successfully updated purchase request item",
+      data: updatepurchasedReq,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Error - ${error.message}`,
+    });
+  }
+},
+
     // updateFinace: async (req, res, next) => {
     //   try {
     //     const purceasedRequestId = parseInt(req.params.id, 10);

@@ -1,5 +1,5 @@
-import prisma from "../../config/prisma";
-import winnerSchem from "./winnerSchem";
+import prisma from "../../config/prisma.js";
+import winnerSchem from "./winnerSchem.js";
 
 const winnerController={
     getSinglewinner:async (req,res,next)=>{
@@ -71,7 +71,7 @@ const winnerController={
                     id:data.supplayerId
                 }
               })
-              if (!issupplierExist) {
+              if (issupplierExist) {
                 return res.status(400).json({
                   success: false,
                   message: "supplier not found",
@@ -116,171 +116,183 @@ const winnerController={
               });
         }
     },
-    updatesupplier:async (req,res,next)=>{
-        try {
-            const winnerId=parseInt(req.params.id,10)    
-        if (isNaN(winnerId)) {
-            return res.status(400).json({
-            success: false,
-            message: "invalid winnder id ",
-            });
-        }
-        const requiredField=["supplayerId"]
-        for (const field of requiredField) {
-            if (!req.body[field]) {
-              return res.status(403).json({
-                success: false,
-                message: `${field} is required`,
-              });
-            }
-          }
-
-          const data=winnerSchem.updatesupplier.parse(req.body);
-          const iswinnerExist=await prisma.winner.findFirst({
-            where:{
-                id:winnerId,
-                user:req.user.id
-            }
-          })
-          if (!iswinnerExist) {
-            return res.status(404).json({
-              success: false,
-              message: "winner not found",
-            });
-          }
-
-          const updatesupplier=await prisma.winner.update({
-            where:{
-                id:+winnerId
-            },
-            data:{
-                supplayerId:+data.supplayerId
-            }
-          })
-          return res.status(201).json({
-            success: true,
-            message: "winner created successfully",
-            data: updatesupplier,
-          });
-          
-        } catch (error) {
-            return res.status(500).json({
-                success: false,
-                message: `Error - ${error.message}`,
-              });
-        }
-    },
-    updatepurchedOrder:async (req,res,next)=>{
-        try {
-            const winnerId=parseInt(req.params.id,10)    
-        if (isNaN(winnerId)) {
-            return res.status(400).json({
-            success: false,
-            message: "invalid winnder id ",
-            });
-        }
-        const requiredField=["purchasedOrderId"]
-        for (const field of requiredField) {
-            if (!req.body[field]) {
-              return res.status(403).json({
-                success: false,
-                message: `${field} is required`,
-              });
-            }
-          }
-
-          const data=winnerSchem.updatepurchasedorder.parse(req.body);
-          const iswinnerExist=await prisma.winner.findFirst({
-            where:{
-                id:winnerId,
-                user:req.user.id
-            }
-          })
-          if (!iswinnerExist) {
-            return res.status(404).json({
-              success: false,
-              message: "winner not found",
-            });
-          }
-
-          
-          const purchasedOrderExist=await prisma.purchasedOrder.findFirst({
-            where:{
-                id:data.purchasedOrderId
-            }
-          })
-          if (!purchasedOrderExist) {
-            return res.status(400).json({
-              success: false,
-              message: "purchased order not found",
-            });
-          }
-
-          const updatepurchsedOrder=await prisma.winner.update({
-            where:{
-                id:+winnerId
-            },
-            data:{
-                purchasedOrderId:+data.purchasedOrderId
-            }
-          })
-          return res.status(201).json({
-            success: true,
-            message: "winner created successfully",
-            data: updatepurchsedOrder,
-          });
-          
-          
-        } catch (error) {
-            return res.status(500).json({
-                success: false,
-                message: `Error - ${error.message}`,
-              });
-        }
-    },
-    deletewinner:async (req,res,next)=>{
-        try {
-            const winnerId=parseInt(req.params.id,10)    
-            if (isNaN(winnerId)) {
-                return res.status(400).json({
-                success: false,
-                message: "invalid winnder id ",
-                });
-            }
-
-            const iswinnerExist=await prisma.winner.findFirst({
-                where:{
-                    id:winnerId,
-                    user:req.user.id
-                }
-              })
-              if (!iswinnerExist) {
-                return res.status(404).json({
+    updatesupplier: async (req, res, next) => {
+      try {
+          const winnerId = parseInt(req.params.id, 10);
+          if (isNaN(winnerId)) {
+              return res.status(400).json({
                   success: false,
-                  message: "winner not found",
-                });
+                  message: "Invalid winner ID",
+              });
+          }
+  
+          const requiredField = ["supplayerId"];
+          for (const field of requiredField) {
+              if (!req.body[field]) {
+                  return res.status(403).json({
+                      success: false,
+                      message: `${field} is required`,
+                  });
               }
-
-              const deletewinner=await prisma.winner.delete({
-                where:{
-                    id:winnerId
-                }
+          }
+  
+          const data = winnerSchem.updatesupplier.parse(req.body);
+  
+          // Use correct filter syntax for related fields
+          const isWinnerExist = await prisma.winner.findFirst({
+              where: {
+                  id: winnerId,
+                  user: { id: req.user.id } // Correct syntax for filtering by related field
+              }
+          });
+  
+          if (!isWinnerExist) {
+              return res.status(404).json({
+                  success: false,
+                  message: "Winner not found",
               });
-              return res.status(200).json({
-                success:true,
-                message:"winner delete succesfully",
-                data:deletewinner
-
-              })
-              
-
-        } catch (error) {
-            return res.status(500).json({
+          }
+  
+          // Update the winner record
+          const updatedSupplier = await prisma.winner.update({
+              where: {
+                  id: winnerId
+              },
+              data: {
+                  supplayerId: +data.supplayerId
+              }
+          });
+  
+          return res.status(200).json({
+              success: true,
+              message: "Winner updated successfully",
+              data: updatedSupplier,
+          });
+      } catch (error) {
+          return res.status(500).json({
+              success: false,
+              message: `Error - ${error.message}`,
+          });
+      }
+  }
+  ,
+  updatepurchasedOrder: async (req, res, next) => {
+    try {
+        const winnerId = parseInt(req.params.id, 10);
+        if (isNaN(winnerId)) {
+            return res.status(400).json({
                 success: false,
-                message: `Error - ${error.message}`,
-              });
+                message: "Invalid winner ID",
+            });
         }
+
+        const requiredField = ["purchasedOrderId"];
+        for (const field of requiredField) {
+            if (!req.body[field]) {
+                return res.status(403).json({
+                    success: false,
+                    message: `${field} is required`,
+                });
+            }
+        }
+
+        const data = winnerSchem.updatepurchasedorder.parse(req.body);
+
+        // Use correct filter syntax for related fields
+        const isWinnerExist = await prisma.winner.findFirst({
+            where: {
+                id: winnerId,
+                user: { id: req.user.id } // Correct syntax for filtering by related field
+            }
+        });
+
+        if (!isWinnerExist) {
+            return res.status(404).json({
+                success: false,
+                message: "Winner not found",
+            });
+        }
+
+        const purchasedOrderExist = await prisma.purchasedOrder.findFirst({
+            where: {
+                id: data.purchasedOrderId
+            }
+        });
+
+        if (!purchasedOrderExist) {
+            return res.status(400).json({
+                success: false,
+                message: "Purchased order not found",
+            });
+        }
+
+        // Update the winner record
+        const updatedWinner = await prisma.winner.update({
+            where: {
+                id: winnerId
+            },
+            data: {
+                purchasedOrderId: data.purchasedOrderId
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Winner updated successfully",
+            data: updatedWinner,
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: `Error - ${error.message}`,
+        });
     }
+},
+deletewinner: async (req, res, next) => {
+  try {
+      const winnerId = parseInt(req.params.id, 10);
+      if (isNaN(winnerId)) {
+          return res.status(400).json({
+              success: false,
+              message: "Invalid winner ID",
+          });
+      }
+
+      const isWinnerExist = await prisma.winner.findFirst({
+          where: {
+              id: winnerId,
+              user: { id: req.user.id } // Correct filter for related user
+          }
+      });
+
+      if (!isWinnerExist) {
+          return res.status(404).json({
+              success: false,
+              message: "Winner not found",
+          });
+      }
+
+      const deletedWinner = await prisma.winner.delete({
+          where: {
+              id: winnerId
+          }
+      });
+
+      return res.status(200).json({
+          success: true,
+          message: "Winner deleted successfully",
+          data: deletedWinner
+      });
+
+  } catch (error) {
+      return res.status(500).json({
+          success: false,
+          message: `Error - ${error.message}`,
+      });
+  }
+}
+
 }
 
 

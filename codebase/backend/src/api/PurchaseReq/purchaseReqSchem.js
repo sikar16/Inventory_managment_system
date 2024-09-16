@@ -3,9 +3,9 @@ import z from "zod";
 const purchasedReqSchema = {
   create: z.object({
   totalPrice: z.number().nonnegative(),
-  materialReqId:z.number(),
   items: z.array(
     z.object({
+      purchasedRequestId:z.number(),
       productId: z.number().nonnegative(),
       quantityToBePurchased: z.number().positive(),
       remark: z.string().min(1),
