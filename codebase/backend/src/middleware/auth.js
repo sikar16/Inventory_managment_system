@@ -81,6 +81,16 @@ export const isGM = (req, res, next) => {
   }
   next();
 };
+export const isAnyRole = (...roles) => {
+  return (req, res, next) => {
+    const user = req.user;
+    if (user && roles.includes(user.role)) {
+      return next();
+    }
+    return res.status(401).json({ success: false, message: "Access denied" });
+  };
+};
+
 export const isStoreKeeper = (req, res, next) => {
   const sk = req.user;
   if (sk && sk.role !== CompanyRole.STORE_KEEPER) {
