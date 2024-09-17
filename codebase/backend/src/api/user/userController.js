@@ -352,7 +352,7 @@ const userController = {
       console.error("error occurred:", error);
       return res.status(500).json({
         success: false,
-        message: "error while logging in",
+        message:`Error - ${error}`,
       });
     }
   },

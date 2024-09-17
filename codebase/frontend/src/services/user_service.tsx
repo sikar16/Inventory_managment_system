@@ -119,15 +119,17 @@ export const userApi = createApi({
         body: loginData,
         headers: {
           "Content-Type": "application/json",
+          "Authorization": "Bearer token" // Uncomment and adjust if using authorization tokens
         },
       }),
-      transformResponse: (response: any) => {
+      transformResponse: (response: LoginResponse) => {
         return response;
       },
-      transformErrorResponse: (response) => {
+      transformErrorResponse: (response: { data: any }) => {
         return response.data;
       },
     })
+
 
   }),
 });

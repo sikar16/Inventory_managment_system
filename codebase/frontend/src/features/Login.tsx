@@ -56,6 +56,9 @@ function Login() {
         case 'STORE_KEEPER':
           navigate("/warehouse");
           break;
+        case 'EMPLOYEE':
+          navigate("/employee");
+          break;
         default:
           navigate('/'); // Redirect to homepage or default route if role is unknown
           break;
@@ -69,7 +72,7 @@ function Login() {
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       const response: LoginResponse = await login(data).unwrap();
-      // console.log('API Response:', response); // Log the entire response
+      console.log('API Response:', response); // Log the entire response
 
       setToastData({
         message: response.message,
@@ -83,10 +86,10 @@ function Login() {
           "token",
           JSON.stringify({ token: response.token })
         );
-        localStorage.setItem(
-          "token2",
-          `${response.token}`
-        );
+        // localStorage.setItem(
+        //   "token",
+        //   `${response.token}`
+        // );
         fetchData()
 
         // Redirect based on user role
@@ -141,15 +144,9 @@ function Login() {
     setThemeData(prev => prev === "light" ? "dark" : "light");
   };
 
-  if (isLoading) {
-    return <h1>Loading</h1>;
-  }
-  if (isError) {
-    return <h1>Error</h1>;
-  }
-  if (isSuccess) {
-    return <h1>Success</h1>;
-  }
+
+
+
 
 
 
@@ -214,7 +211,7 @@ function Login() {
             </div>
             <button
               type="submit"
-              className='w-full bg-[#002A47] rounded-md text-white py-2 mt-3 hover:bg-blue-900'
+              className='w-full bg-[#002A47] rounded-md text-white py-2 mt-3 hover:bg-[#0e2432]'
             >
               {isLoading ? "Logging In..." : "Login"}
             </button>

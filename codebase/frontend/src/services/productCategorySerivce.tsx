@@ -1,50 +1,56 @@
+// productCategorySerivce.tsx
+
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { ProductCategoryType } from "../_types/productCategory_type";
 import extractErrorMessage from "../util/extractErrorMessage";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
-
 export const productCategoryApi = createApi({
     reducerPath: "productCategoryApi",
-    baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}productCategory` }),
-    tagTypes: ['ProductCategory'], // Define the tags
+    baseQuery: fetchBaseQuery({
+        baseUrl: `${baseUrl}productCategory`,
+        prepareHeaders: (headers) => {
+            const token = localStorage.getItem("token");
+            if (token) {
+                headers.set("Authorization", `Bearer ${token}`);
+            }
+            return headers;
+        },
+    }),
+    tagTypes: ['ProductCategory'],
     endpoints: (builder) => ({
-        getAllproductCategory: builder.query({
+        getAllproductCategory: builder.query<ProductCategoryType[], void>({
             query: () => ({
                 url: `/`,
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: localStorage.getItem("token2")
-
                 },
             }),
             transformResponse: (response: any) =>
-                response.success ? (response.date as ProductCategoryType[]) : ([] as ProductCategoryType[]),
-            providesTags: ['ProductCategory'], // Provide tags for this query
-
+                response.success ? (response.data as ProductCategoryType[]) : ([] as ProductCategoryType[]),
+            providesTags: ['ProductCategory'],
             transformErrorResponse: (response: any) => {
-                console.log(response);
-                console.log(token)
-                return extractErrorMessage(response.data.message as string);
-
+                // console.log(response);
+                const message = response?.data?.message || "Unknown error"; // Safely access the message
+                return extractErrorMessage(message);
             },
         }),
-        addNewProductCategory: builder.mutation({
+        addNewProductCategory: builder.mutation<void, ProductCategoryType>({
             query: (data) => ({
                 url: `/`,
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
-                    // Authorization: "token",
                 },
                 body: data,
             }),
-            invalidatesTags: ['ProductCategory'], // Invalidate cache after mutation
+            invalidatesTags: ['ProductCategory'],
             transformErrorResponse: (response: any) => {
                 console.log(response);
-                return extractErrorMessage(response.data.message as string);
+                const message = response?.data?.message || "Unknown error"; // Safely access the message
+                return extractErrorMessage(message);
             },
         }),
         deleteProductCategory: builder.mutation<void, string>({
@@ -53,13 +59,11 @@ export const productCategoryApi = createApi({
                 method: 'DELETE',
                 headers: {
                     "Content-Type": "application/json",
-                    // Authorization: "token",
                 },
             }),
-            invalidatesTags: ['ProductCategory'], // Invalidate cache after mutation
+            invalidatesTags: ['ProductCategory'],
             transformErrorResponse: (response: any) => {
-                // Safely handle the error response
-                const message = response?.data?.message;
+                const message = response?.data?.message || "Unknown error"; // Safely access the message
                 return extractErrorMessage(message);
             },
         }),

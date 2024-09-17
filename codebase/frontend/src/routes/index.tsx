@@ -29,7 +29,7 @@ export const router = createBrowserRouter(
     createRoutesFromElements(
         <>
             {/* root section */}
-            <Route path='/' element={<><h1>root</h1></>} />
+            <Route path='/' element={<Login />} />
             <Route path='/login' element={<Login />} />
             <Route path='/confirm-password' element={<ConfirmPassword />} />
             <Route path='/forget-password' element={<ForgetPassword />} />
