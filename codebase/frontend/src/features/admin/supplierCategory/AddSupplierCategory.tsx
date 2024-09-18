@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
 import { useAddNewsupplierCategoryMutation } from '../../../services/supplierCategoryService';
@@ -12,10 +10,10 @@ interface AddSupplierProps {
 
 const AddSupplierCategory: React.FC<AddSupplierProps> = ({ handleCloseDialog }) => {
     const [customCategory, setCustomCategory] = useState('');
-    const [addCategory, { isError, isSuccess, isLoading, error }] = useAddNewsupplierCategoryMutation();
+    const [addCategory, { isSuccess }] = useAddNewsupplierCategoryMutation();
     // console.log(response)
     const handleCustomCategoryChange = (
-        event: React.MouseEvent<HTMLButtonElement>,
+        event: React.ChangeEvent<HTMLInputElement> // Change to ChangeEvent
     ) => {
         setCustomCategory(event.target.value);
     };
@@ -54,7 +52,6 @@ const AddSupplierCategory: React.FC<AddSupplierProps> = ({ handleCloseDialog }) 
                             Discard
                         </Button>
                         <button
-                            variant="contained"
                             className='bg-[#002a47] text-white px-2 rounded-md'
                             onClick={handleAddCategory}
                         >

@@ -3,7 +3,6 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import InputLabel from '@mui/material/InputLabel';
 import { useAddNewtemplateMutation, useGetAlltemplateQuery } from '../../../services/template_service';
 
 interface AddTemplateProps {
@@ -15,9 +14,9 @@ const dataTypeOptions = ['STRING', 'DOUBLE', 'INT', 'DATE_TIME'];
 const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog }) => {
     const [customTemplate, setCustomTemplate] = useState('');
     const [attributes, setAttributes] = useState<{ name: string; dataType: string }[]>([]);
-    const [addTemplate, { isSuccess: isAddSuccess }] = useAddNewtemplateMutation();
+    const [addTemplate] = useAddNewtemplateMutation();
 
-    const { isError: isTemplateError, isLoading: isTemplateLoading } = useGetAlltemplateQuery();
+    const { isError: isTemplateError, isLoading: isTemplateLoading } = useGetAlltemplateQuery("template");
 
     const handleAddAttribute = () => {
         setAttributes([...attributes, { name: '', dataType: 'STRING' }]); // Default dataType is STRING

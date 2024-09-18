@@ -14,8 +14,8 @@ import { useGetAllproductSubCategoryQuery } from "../../../services/productSubca
 export default function TemplateList() {
   const [openDialog, setOpenDialog] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [selectedCategory, setSelectedCategory] = React.useState('');
-  const [selectedSubCategory, setSelectedSubCategory] = React.useState('');
+  const [selectedCategory, setSelectedCategory] = React.useState<number | null>(null);
+  const [selectedSubCategory, setSelectedSubCategory] = React.useState<number | null>(null);
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -28,7 +28,6 @@ export default function TemplateList() {
   const {
     isError: isCategoryError,
     isLoading: isCategoryLoading,
-    isSuccess: isCategorySuccess,
     data: categories = [], // Default to an empty array
     error: categoryError,
   } = useGetAllproductCategoryQuery();
@@ -36,12 +35,11 @@ export default function TemplateList() {
   const {
     isError: isSubCategoryError,
     isLoading: isSubCategoryLoading,
-    isSuccess: isSubCategorySuccess,
     data: productSubCategories = [], // Default to an empty array
     error: subCategoryError,
-  } = useGetAllproductSubCategoryQuery();
+  } = useGetAllproductSubCategoryQuery("subcategory");
 
-  const { isError, isLoading, isSuccess, data, error } = useGetAlltemplateQuery("template");
+  const { isError, isLoading, data, error } = useGetAlltemplateQuery("template");
 
   if (isCategoryError || isSubCategoryError || isError) {
     return <h1>Error: {isCategoryError ? categoryError.toString() : isSubCategoryError ? subCategoryError.toString() : error.toString()}</h1>;
@@ -52,9 +50,9 @@ export default function TemplateList() {
   // Filter templates based on searchTerm, selectedCategory, and selectedSubCategory
   const filteredTemplates = data?.filter(template =>
     template.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (selectedCategory ? template.categoryId === selectedCategory : true) &&
-    (selectedSubCategory ? template.subCategoryId === selectedSubCategory : true)
-  );
+    (selectedCategory != null ? template.categoryId.id === Number(selectedCategory) : true) &&
+    (selectedSubCategory != null ? template.subCategoryId.id === Number(selectedSubCategory) : true)
+  ) ?? [];
 
   return (
     <div className="mt-10">
@@ -68,9 +66,11 @@ export default function TemplateList() {
           <p className='me-3 text-gray-500'>Category :</p>
           <select
             className='bg-[#F5F5F5] text-gray-700'
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
+            value={selectedCategory || ''}
+            onChange={(e) => {
+              const categoryId = Number(e.target.value);
+              setSelectedCategory(isNaN(categoryId) ? null : categoryId);
+            }}          >
             <option value="">All Categories</option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
@@ -83,9 +83,11 @@ export default function TemplateList() {
           <p className='me-3 text-gray-500'>Sub Category :</p>
           <select
             className='bg-[#faf9f9] text-gray-700'
-            value={selectedSubCategory}
-            onChange={(e) => setSelectedSubCategory(e.target.value)}
-          >
+            value={selectedSubCategory || ""}
+            onChange={(e) => {
+              const subCategoryId = Number(e.target.value);
+              setSelectedSubCategory(isNaN(subCategoryId) ? null : subCategoryId);
+            }}          >
             <option value="">All Subcategories</option>
             {productSubCategories.map((productSubCategory) => (
               <option key={productSubCategory.id} value={productSubCategory.id}>

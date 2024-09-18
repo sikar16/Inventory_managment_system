@@ -13,7 +13,20 @@ import {
   TemplateAttributeType,
   TemplateType,
 } from "../../../_types/template_type";
-const columns = [
+interface Column {
+  id: keyof RowData;
+  label: string;
+  minWidth: number;
+  align?: "left" | "right" | "center";
+}
+
+interface RowData {
+  no: number;
+  templateId: string;
+  template: string;
+  attributes: TemplateAttributeType[];
+}
+const columns: Column[] = [
   { id: "no", label: "No", minWidth: 50 },
   { id: "templateId", label: "Template Id", minWidth: 70 },
   { id: "template", label: "Template", minWidth: 70, align: "left" },
@@ -82,16 +95,21 @@ const TemplateTable: React.FC<Templateprops> = ({ templateList }) => {
                     <React.Fragment key={row.templateId}>
                       <TableRow hover role="checkbox" tabIndex={-1}>
                         {columns.map((column) => {
-                          const value = row[column.id];
+                          const value = row[column.id as keyof RowData];
+
                           return (
                             <TableCell key={column.id} align={column.align}>
-                              {value}
+                              {Array.isArray(value)
+                                ? value.map((item, itemIndex) => (
+                                  <p key={itemIndex}>{item.name}</p>
+                                ))
+                                : value}
                             </TableCell>
                           );
                         })}
                         <TableCell>
                           <button
-                            className=" flex items-center"
+                            className="flex items-center"
                             onClick={() => handleToggle(index)}
                           >
                             <div className="mr-5 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/5 text-primary dark:bg-white/5">
@@ -109,21 +127,18 @@ const TemplateTable: React.FC<Templateprops> = ({ templateList }) => {
                           <TableCell colSpan={columns.length + 1}>
                             <div
                               id={`faq-content-${index}`}
-                              className=" pl-[62px] bg-gray-100 h-[150px]"
+                              className="pl-[62px] bg-gray-100 h-[150px]"
                             >
-                              <p className="py-3 text-base leading-relaxed text-body-color dark:text-dark-6">
-                                <div className=" grid grid-cols-2 gap-4">
-                                  <p className="text-md">Template Attributs</p>
-                                  <p className="text-md ">
-                                    <div className="grid grid-cols-2 w-full text-sm  gap-2 mt-2 ">
-                                      {row &&
-                                        row.attributes.map((e) => (
-                                          <p className="ms-3">{e.name}</p>
-                                        ))}
-                                    </div>
-                                  </p>
-                                </div>{" "}
-                              </p>
+                              <div className="grid grid-cols-2 gap-4">
+                                <p className="text-md">Template Attributes</p>
+                                <div className="grid grid-cols-2 w-full text-sm gap-2 mt-2">
+                                  {row.attributes.map((attribute, attrIndex) => (
+                                    <p key={attrIndex} className="ms-3">
+                                      {attribute.name}
+                                    </p>
+                                  ))}
+                                </div>
+                              </div>
                             </div>
                           </TableCell>
                         </TableRow>

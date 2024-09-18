@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
-import Button from '@mui/material/Button';
 import { useAddNewProductMutation } from '../../../services/product_service';
 import { useGetAlltemplateQuery } from '../../../services/template_service';
 import { useGetAllproductCategoryQuery } from '../../../services/productCategorySerivce';
 import { useGetAllproductSubCategoryQuery } from '../../../services/productSubcategory_service';
+import { ProductSubCategoryType } from '../../../_types/productSubcategory_type';
+import { TemplateType } from '../../../_types/template_type';
 
 interface AddProductProps {
     handleCloseDialog: () => void;
@@ -15,18 +16,20 @@ interface AddProductProps {
 
 const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
     const [productName, setProductName] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState<string>('');
-    const [selectedSubCategory, setSelectedSubCategory] = useState<string>('');
+    const [selectedCategory, setSelectedCategory] = useState<number | "">(""); // Handle category as a number
+    const [selectedSubCategory, setSelectedSubCategory] = useState<number | "">("");
     const [selectedTemplate, setSelectedTemplate] = useState<string | { id: number; name: string }>('');
     const [customTemplate, setCustomTemplate] = useState('');
     const [attributes, setAttributes] = useState<{ key: string; value: string; templateAttributeId: number }[]>([]);
 
-    const { data: categories = [], isLoading: isCategoryLoading, isError: isCategoryError } = useGetAllproductCategoryQuery();
-    const { data: allSubCategories = [], isLoading: isSubCategoryLoading, isError: isSubCategoryError } = useGetAllproductSubCategoryQuery();
-    const { data: allTemplates = [], isLoading: isTemplateLoading, isError: isTemplateError } = useGetAlltemplateQuery();
+    const { data: categories = [] } = useGetAllproductCategoryQuery();
+    const { data: allSubCategories = [] } = useGetAllproductSubCategoryQuery("subcategory");
+    const { data: allTemplates = [] } = useGetAlltemplateQuery("template");
     const [addProduct, { isSuccess: isAddSuccess }] = useAddNewProductMutation();
 
-    const filteredSubCategories = allSubCategories.filter(subCategory => subCategory.categoryId === selectedCategory);
+    const filteredSubCategories = allSubCategories.filter(
+        (subCategory: ProductSubCategoryType) => subCategory.categoryId === selectedCategory
+    );
     useEffect(() => {
         if (typeof selectedTemplate === 'object' && selectedTemplate.id) {
             const selectedTemplateData = allTemplates.find(t => t.id === selectedTemplate.id);
@@ -37,21 +40,24 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
             setAttributes([]);
         }
     }, [selectedTemplate, allTemplates]);
-    const handleCategoryChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        const category = event.target.value as string;
+
+    const handleCategoryChange = (event: SelectChangeEvent<string>) => {
+        const category = Number(event.target.value); // Convert to number
         setSelectedCategory(category);
-        setSelectedSubCategory('');
+        setSelectedSubCategory("");
     };
 
-    const handleSubCategoryChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setSelectedSubCategory(event.target.value as string);
+    const handleSubCategoryChange = (event: SelectChangeEvent<string>) => {
+        setSelectedSubCategory(Number(event.target.value)); // Convert to number
     };
-    const handleTemplateChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const handleTemplateChange = (event: SelectChangeEvent<string>) => {
         const value = event.target.value;
-        if (value === 'Other') {
-            setSelectedTemplate('Other');
+        if (value === "Other") {
+            setSelectedTemplate("Other");
         } else {
-            const template = allTemplates.find(temp => temp.name === value);
+            const template = allTemplates.find(
+                (temp: TemplateType) => temp.name === value
+            );
             if (template) {
                 setSelectedTemplate(template);
             }
@@ -124,7 +130,7 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
                     variant="outlined"
                     size="small"
                     className="w-full"
-                    value={selectedCategory}
+                    value={selectedCategory.toString()}
                     onChange={handleCategoryChange}
                 >
                     {categories.map(category => (
@@ -139,7 +145,7 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
                     variant="outlined"
                     size="small"
                     className="w-full"
-                    value={selectedSubCategory}
+                    value={selectedSubCategory.toString()}
                     onChange={handleSubCategoryChange}
                 >
                     {filteredSubCategories.length > 0 ? (

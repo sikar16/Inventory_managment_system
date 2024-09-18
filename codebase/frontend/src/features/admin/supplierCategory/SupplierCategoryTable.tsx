@@ -8,27 +8,39 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useState } from 'react';
 import { supplierCategoryType } from '../../../_types/supplierCategory_type';
-const columns = [
-    { id: 'no', label: 'No', minWidth: 50 },
-    { id: 'suppliersid', label: 'Suppliers id', minWidth: 70 },
-    { id: 'category', label: 'Category', minWidth: 70, align: 'left' },
-];
+const columns: {
+    id: string;
+    label: string;
+    minWidth: number;
+    align?: "left" | "center" | "right" | "inherit" | "justify"; // Optional align property
+}[] = [
+        { id: 'no', label: 'No', minWidth: 50 },
+        { id: 'suppliersid', label: 'Suppliers id', minWidth: 70 },
+        { id: 'category', label: 'Category', minWidth: 70, align: 'left' },
+    ];
 
-function createData(no: number, suppliersid: string, category: string) {
+interface RowType {
+    no: number;
+    suppliersid: string;
+    category: string;
+}
+
+function createData(no: number, suppliersid: string, category: string): RowType {
     return { no, suppliersid, category };
 }
 
 interface SupplierCategoryProps {
-    suppliersCategorylist: supplierCategoryType;
+    suppliersCategorylist: supplierCategoryType[];
 }
+
 const SupplierCategoryTable: React.FC<SupplierCategoryProps> = ({ suppliersCategorylist }) => {
-    const rows = suppliersCategorylist.map((i) =>
+    const rows = suppliersCategorylist.map((i, index) =>  // Use index for 'no'
         createData(
-            i.id,
+            index + 1, // Assuming 'no' is the index + 1
             `${i.id}`,
-            `${i.name}`,
+            `${i.name}`
         )
-    )
+    );
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -63,16 +75,15 @@ const SupplierCategoryTable: React.FC<SupplierCategoryProps> = ({ suppliersCateg
                                 {rows
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row) => (
-                                        <TableRow hover role="checkbox" tabIndex={-1} key={row.productId}>
+                                        <TableRow hover role="checkbox" tabIndex={-1} key={row.suppliersid}>
                                             {columns.map((column) => {
-                                                const value = row[column.id];
+                                                const value = row[column.id as keyof RowType];
                                                 return (
                                                     <TableCell key={column.id} align={column.align}>
                                                         {value}
                                                     </TableCell>
                                                 );
                                             })}
-
                                         </TableRow>
                                     ))}
                             </TableBody>

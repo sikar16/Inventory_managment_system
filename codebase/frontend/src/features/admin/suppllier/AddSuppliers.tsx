@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
 import { useGetAllsupplierCategoryQuery } from '../../../services/supplierCategoryService';
-import { SupplierCategoryType } from '../../../_types/supplierCategory_type';
 import { useAddNewsupplierMutation } from '../../../services/supplier_service';
+import { supplierCategoryType } from '../../../_types/supplierCategory_type';
 
 interface AddSuppliersProps {
     handleCloseDialog: () => void;
@@ -24,10 +24,10 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
         wereda: '',
     });
 
-    const { isError, isLoading, isSuccess, data, error } = useGetAllsupplierCategoryQuery();
+    const { isSuccess, data } = useGetAllsupplierCategoryQuery("supplier category");
     const [addSupplier] = useAddNewsupplierMutation();
 
-    const categories: SupplierCategoryType[] = isSuccess ? data : [];
+    const categories: supplierCategoryType[] = isSuccess ? data : [];
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -37,10 +37,11 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
         }));
     };
 
-    const handleCategoryChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const handleCategoryChange = (event: SelectChangeEvent<string>) => {
+        // Change to SelectChangeEvent
         setFormData((prevState) => ({
             ...prevState,
-            categoryId: event.target.value as string,
+            categoryId: event.target.value,
         }));
     };
 

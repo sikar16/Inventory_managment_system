@@ -10,10 +10,17 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useState } from 'react';
+import { SetStateAction, useState } from 'react';
 import { SupplierType } from '../../../_types/supplier_type';
 
-const columns = [
+interface Column {
+    id: string;
+    label: string;
+    minWidth: number;
+    align?: 'left' | 'center' | 'right'; // Optional alignment property
+}
+
+const columns: Column[] = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'supplierId', label: 'SupplierId', minWidth: 50 },
     { id: 'supplierName', label: 'Supplier Name', minWidth: 200 },
@@ -21,14 +28,18 @@ const columns = [
     { id: 'address', label: 'Address', minWidth: 200, align: 'left' },
     { id: 'actions', label: 'Actions', minWidth: 100, align: 'center' },
 ];
-
-function createData(no: number, supplierId: string, supplierName: string, category: string, address: string) {
+interface RowType {
+    no: number;
+    supplierId: string;
+    supplierName: string;
+    category: string;
+    address: string;
+}
+function createData(no: number, supplierId: string, supplierName: string, category: string, address: string): RowType {
     return { no, supplierId, supplierName, category, address };
 }
 
 interface SuppliersTableProps {
-    anchorEl: any;
-    setAnchorEl: any;
     supplierslist: SupplierType[];
 }
 
@@ -47,21 +58,21 @@ const SupplierTable: React.FC<SuppliersTableProps> = ({ supplierslist }) => {
     console.log(rows)
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [anchorEl, setAnchorEl] = useState(null);
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [selectedRow, setSelectedRow] = useState(null);
 
-    const handleChangePage = (event, newPage) => {
+    const handleChangePage = (event: unknown, newPage: SetStateAction<number>) => {
         setPage(newPage);
     };
 
-    const handleChangeRowsPerPage = (event) => {
+    const handleChangeRowsPerPage = (event: { target: { value: string | number; }; }) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
 
-    const handleMenuClick = (event, row) => {
-        setAnchorEl(event.currentTarget);
-        setSelectedRow(row);
+    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget); // No need for type assertion now
+        setSelectedRow(selectedRow);
     };
 
     const handleMenuClose = () => {
@@ -91,7 +102,7 @@ const SupplierTable: React.FC<SuppliersTableProps> = ({ supplierslist }) => {
                                 {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                                         {columns.map((column) => {
-                                            const value = row[column.id];
+                                            const value = row[column.id as keyof RowType];
                                             return (
                                                 <TableCell key={column.id} align={column.align}>
                                                     {column.id === 'actions' ? (
@@ -100,7 +111,7 @@ const SupplierTable: React.FC<SuppliersTableProps> = ({ supplierslist }) => {
                                                                 aria-label="more"
                                                                 aria-controls="long-menu"
                                                                 aria-haspopup="true"
-                                                                onClick={(event) => handleMenuClick(event, row)}
+                                                                onClick={(event) => handleMenuClick(event)}
                                                             >
                                                                 <MoreVertIcon />
                                                             </IconButton>

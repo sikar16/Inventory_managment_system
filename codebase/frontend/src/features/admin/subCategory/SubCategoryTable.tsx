@@ -8,12 +8,17 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { ProductSubCategoryType } from "../../../_types/productSubcategory_type";
-const columns = [
-  { id: "no", label: "No", minWidth: 50 },
-  { id: "subcategoryId", label: "SubCategory Id", minWidth: 70 },
-  { id: "category", label: "Category", minWidth: 70, align: "left" },
-  { id: "subCategory", label: "SubCategory", minWidth: 70, align: "left" },
-];
+const columns: {
+  id: string;
+  label: string;
+  minWidth: number;
+  align?: "center" | "left" | "right" | "inherit" | "justify";
+}[] = [
+    { id: "no", label: "No", minWidth: 50 },
+    { id: "subcategoryId", label: "SubCategory Id", minWidth: 70 },
+    { id: "category", label: "Category", minWidth: 70, align: "left" },
+    { id: "subCategory", label: "SubCategory", minWidth: 70, align: "left" },
+  ];
 
 function createData(
   no: number,
@@ -24,6 +29,9 @@ function createData(
   return { no, subcategoryId, category, subCategory };
 }
 
+type RowData = ReturnType<typeof createData>;
+
+
 interface productSubcategoryprops {
   subcategoryList: ProductSubCategoryType[];
 }
@@ -31,7 +39,7 @@ interface productSubcategoryprops {
 const SubCategoryTable: React.FC<productSubcategoryprops> = ({
   subcategoryList,
 }) => {
-  const rows = subcategoryList.map((i) =>
+  const rows: RowData[] = subcategoryList.map((i) =>
     createData(i.id, `${i.id}`, `${i.category.name}`, `${i.name}`)
   );
   const [page, setPage] = React.useState(0);
@@ -74,10 +82,10 @@ const SubCategoryTable: React.FC<productSubcategoryprops> = ({
                       hover
                       role="checkbox"
                       tabIndex={-1}
-                      key={row.productId}
+                      key={row.category}
                     >
                       {columns.map((column) => {
-                        const value = row[column.id];
+                        const value = row[column.id as keyof RowData];
                         return (
                           <TableCell key={column.id} align={column.align}>
                             {value}

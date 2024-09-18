@@ -16,6 +16,8 @@ export interface StoreType {
     createdAt: Date;
     address: AddressType;
     storeInventory: StoreInventoryRecordType[];
+    attributes: unknown;
+
 }
 
 export interface StoreInventoryRecordType {

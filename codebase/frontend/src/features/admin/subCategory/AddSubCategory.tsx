@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
 import { useGetAllproductCategoryQuery } from '../../../services/productCategorySerivce';
@@ -14,13 +14,14 @@ interface AddSubcategoryProps {
 const AddSubCategory: React.FC<AddSubcategoryProps> = ({ handleCloseDialog }) => {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [customSubCategory, setCustomSubCategory] = useState('');
-    const { isError, isLoading, isSuccess, data, error } = useGetAllproductCategoryQuery();
-    const [addSubcategory, { isSuccess: isAddSuccess }] = useAddNewProductSubCategoryMutation();
+    const { isSuccess, data } = useGetAllproductCategoryQuery();
+    const [addSubcategory] = useAddNewProductSubCategoryMutation();
 
     const categories: ProductCategoryType[] = isSuccess ? data : [];
 
-    const handleCategoryChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setSelectedCategory(event.target.value as string);
+    const handleCategoryChange = (event: SelectChangeEvent<string>) => {
+        // Change to SelectChangeEvent
+        setSelectedCategory(event.target.value);
     };
     const handleCustomSubCategoryChange = (
         event: React.ChangeEvent<HTMLInputElement>,

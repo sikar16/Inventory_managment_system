@@ -46,7 +46,7 @@ const AddWareHouse: React.FC<AddWareHouseProps> = ({ handleCloseDialog }) => {
         <div className='mx-10 mb-10 w-[350px]'>
             <form className='space-y-2' onSubmit={handleAddWareHouse}>
                 <InputLabel id="warehouse-name">Name</InputLabel>
-                {isError && <p className='text-red-500'>{error?.message || 'An error occurred'}</p>}
+                {isError && <p className='text-red-500'>{error && 'An error occurred'}</p>}
                 <TextField
                     label="Name"
                     name="name"

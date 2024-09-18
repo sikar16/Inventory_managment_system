@@ -5,31 +5,25 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import AddProduct from './AddProduct';
 import Title from '../../../component/TablesTitle';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ProductTable from './ProductTable';
 import { useGetAllproductQuery } from '../../../services/product_service';
 import Loader from '../../../component/Loading';
 import { useGetAllproductCategoryQuery } from '../../../services/productCategorySerivce';
 import { useGetAllproductSubCategoryQuery } from '../../../services/productSubcategory_service';
 import { useGetAlltemplateQuery } from '../../../services/template_service';
+import { ProductType } from '../../../_types/product_type';
 
 export default function ProductList() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [openDialog, setOpenDialog] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<any>(null);
+    const [selectedProduct, setSelectedProduct] = useState<ProductType>();
     const [openDetails, setOpenDetails] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
     const [selectedSubCategory, setSelectedSubCategory] = useState<string | undefined>(undefined);
     const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>(undefined);
 
-    const handleCloseMenu = () => {
-        setAnchorEl(null);
-    };
-    const handleViewDetails = () => {
-        setOpenDetails(true);
-        handleCloseMenu();
-    };
     const handleCloseDetails = () => {
         setOpenDetails(false);
     };
@@ -40,23 +34,46 @@ export default function ProductList() {
         setOpenDialog(false);
     };
 
-    const { isError: isProductError, isLoading: isProductLoading, isSuccess: isProductSuccess, data: products, error: productError } = useGetAllproductQuery('product');
-    const { isError: isCategoryError, isLoading: isCategoryLoading, isSuccess: isCategorySuccess, data: productCategories, error: categoryError } = useGetAllproductCategoryQuery();
-    const { isError: isSubCategoryError, isLoading: isSubCategoryLoading, isSuccess: isSubCategorySuccess, data: productSubCategories, error: subCategoryError } = useGetAllproductSubCategoryQuery();
-    const { isError: isTemplateError, isLoading: isTemplateLoading, isSuccess: isTemplateSuccess, data: templates, error: templateError } = useGetAlltemplateQuery();
+    const { isError: isProductError, isLoading: isProductLoading, data: products, error: productError } = useGetAllproductQuery('product');
+    const { isError: isCategoryError, isLoading: isCategoryLoading, data: productCategories, error: categoryError } = useGetAllproductCategoryQuery();
+    const { isError: isSubCategoryError, isLoading: isSubCategoryLoading, data: productSubCategories, error: subCategoryError } = useGetAllproductSubCategoryQuery("product subcategory");
+    const { isError: isTemplateError, isLoading: isTemplateLoading, data: templates, error: templateError } = useGetAlltemplateQuery("template");
 
-    if (isProductError || isCategoryError || isSubCategoryError || isTemplateError) {
-        return <h1>Error: {(productError || categoryError || subCategoryError || templateError).toString()}</h1>;
+    if (
+        isProductError ||
+        isCategoryError ||
+        isSubCategoryError ||
+        isTemplateError
+    ) {
+        return (
+            <h1>
+                Error:{" "}
+                {(
+                    productError ||
+                    categoryError ||
+                    subCategoryError ||
+                    templateError
+                )?.toString() || "No errors"}
+            </h1>
+        );
     }
-    if (isProductLoading || isCategoryLoading || isSubCategoryLoading || isTemplateLoading) {
+    if (
+        isProductLoading ||
+        isCategoryLoading ||
+        isSubCategoryLoading ||
+        isTemplateLoading
+    ) {
         return <Loader />;
     }
 
-    const filteredProducts = products?.filter(product =>
-        (searchTerm === '' || product.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
-        (selectedCategory === undefined || product.categoryId === selectedCategory) &&
-        (selectedSubCategory === undefined || product.subCategoryId === selectedSubCategory) &&
-        (selectedTemplate === undefined || product.templateId === selectedTemplate)
+    const filteredProducts = products?.filter(
+        (product: ProductType) =>
+            (searchTerm === "" ||
+                product.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
+            (selectedCategory === undefined ||
+                product.category.name === selectedCategory) &&
+            (selectedSubCategory === undefined ||
+                product.subcategory.name === selectedSubCategory)
     );
 
     // console.log(filteredProducts);
@@ -122,7 +139,7 @@ export default function ProductList() {
                 />
             </div>
             <ProductTable
-                productList={filteredProducts}
+                productList={filteredProducts || []}
                 anchorEl={anchorEl}
                 setAnchorEl={setAnchorEl}
                 selectedProduct={selectedProduct}
@@ -134,9 +151,9 @@ export default function ProductList() {
                 <DialogContent>
                     {selectedProduct && (
                         <div className='grid grid-cols-2 gap-4'>
-                            <p className='text-md'> Product ID: <span className='text-sm'>{selectedProduct.productId}</span> </p>
-                            <p className='text-md'>Product: <span className='text-sm'>{selectedProduct.product} </span></p>
-                            <p className='text-md'>Category: <span className='text-sm'>{selectedProduct.category} </span></p>
+                            <p className='text-md'> Product ID: <span className='text-sm'>{selectedProduct.id}</span> </p>
+                            <p className='text-md'>Product: <span className='text-sm'>{selectedProduct.name} </span></p>
+                            <p className='text-md'>Category: <span className='text-sm'>{selectedProduct.category.name} </span></p>
                             <p className='text-md'>Template: <span className='text-sm'> </span></p>
                             <p className='text-md'>Attributes:
                                 <div className='grid grid-cols-2 w-full text-sm gap-2 mt-2'>
@@ -162,7 +179,9 @@ export default function ProductList() {
                     </DialogActions>
                 </div>
                 <DialogContent>
-                    <AddProduct />
+                    <AddProduct handleCloseDialog={() => {
+                        console.log("data");
+                    }} />
                 </DialogContent>
             </Dialog>
         </div>

@@ -8,6 +8,7 @@ import SupplierTable from './SupplierTable';
 import Title from '../../../component/TablesTitle';
 import { useGetAllsupplierQuery } from '../../../services/supplier_service';
 import Loading from '../../../component/Loading';
+import { SupplierType } from '../../../_types/supplier_type';
 
 export default function SupplierList() {
     const [openDialog, setOpenDialog] = useState(false);
@@ -27,9 +28,9 @@ export default function SupplierList() {
     if (isLoading) return <Loading />;
 
     // Filter suppliers based on searchTerm
-    const filteredSuppliers = data?.filter(supplier => {
-        const category = typeof supplier.category === 'string' ? supplier.category.toLowerCase() : '';
-        const fullName = typeof supplier.fullName === 'string' ? supplier.fullName.toLowerCase() : '';
+    const filteredSuppliers = (data as SupplierType[])?.filter((supplier) => {
+        const category = (supplier.category.name as string)?.toLowerCase() || '';
+        const fullName = (supplier.fullName as string)?.toLowerCase() || '';
         const search = searchTerm.toLowerCase();
 
         return category.includes(search) || fullName.includes(search);

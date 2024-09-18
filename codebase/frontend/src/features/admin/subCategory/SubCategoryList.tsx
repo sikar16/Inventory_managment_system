@@ -35,7 +35,7 @@ export default function SubCategoryList() {
     } = useGetAllproductSubCategoryQuery("product subcategory");
 
     if (isCategoryError || isSubCategoryError) {
-        return <h1>Error: {isCategoryError ? categoryError.toString() : subCategoryError.toString()}</h1>;
+        return <h1>Error: {isCategoryError ? categoryError.toString() : subCategoryError?.toString()}</h1>;
     }
 
     if (isCategoryLoading || isSubCategoryLoading) {
@@ -85,7 +85,7 @@ export default function SubCategoryList() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <SubCategoryTable subcategoryList={filteredSubCategories} />
+                <SubCategoryTable subcategoryList={filteredSubCategories || []} />
                 <Dialog open={openDialog} onClose={handleCloseDialog}>
                     <div className='flex justify-between me-5'>
                         <DialogTitle>Add new sub category</DialogTitle>

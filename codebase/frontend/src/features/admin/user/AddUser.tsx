@@ -1,9 +1,8 @@
-import { useState } from 'react';
 import { useAddNewuserMutation } from '../../../services/user_service';
 import { Link } from 'react-router-dom';
-import { useGetAlldepartmentQuery } from '../../../services/department_service';
 import { useForm } from 'react-hook-form';
 import { DevTool } from "@hookform/devtools";
+import { DepartmentType } from '../../../_types/department_type';
 
 type FormValues = {
   firstName: string;
@@ -19,11 +18,13 @@ type FormValues = {
   wereda: string;
   password: string;
 };
+interface AddUserProps {
+  departments: DepartmentType[]; // Define the prop type
+}
 
-function AddUser() {
+const AddUser: React.FC<AddUserProps> = ({ departments }) => {
   const { register, control, handleSubmit, formState } = useForm<FormValues>();
   const { errors } = formState;
-  const { data: departments } = useGetAlldepartmentQuery("");
 
   const [adduser] = useAddNewuserMutation();
 

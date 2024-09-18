@@ -10,7 +10,7 @@ export enum StoreInventoryActionType {
 
 // Interface for the Store model
 export interface StoreType {
-    attributes: any;
+    attributes: unknown;
     id: number;
     name: string;
     addressId: number;

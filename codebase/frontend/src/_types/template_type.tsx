@@ -1,3 +1,6 @@
+import { ProductCategoryType } from "./productCategory_type";
+import { ProductSubCategoryType } from "./productSubcategory_type";
+
 export enum AtributeDateType {
   STRING = "STRING",
   DATE_TIME = "DATE_TIME",
@@ -17,6 +20,8 @@ export interface TemplateType {
   name: string;
   createdAt: Date;
   attributes: TemplateAttributeType[];
+  categoryId: ProductCategoryType;
+  subCategoryId: ProductSubCategoryType
 }
 
 export interface ProductAttributeType {
