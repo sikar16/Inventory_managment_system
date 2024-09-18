@@ -1,10 +1,20 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { StoreType } from "../_types/store_type";
+import { getToken } from "../util/getToken";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 export const storeApi = createApi({
     reducerPath: "storeApi",
-    baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}store` }),
+    baseQuery: fetchBaseQuery({
+        baseUrl: `${baseUrl}store`,
+        prepareHeaders: async (headers) => {
+            const token = await getToken()
+            if (token) {
+                headers.set("Authorization", `${token}`);
+            }
+            return headers;
+        },
+    }),
     tagTypes: ['store'],
     endpoints: (builder) => ({
         getAllstore: builder.query<StoreType[], void>({

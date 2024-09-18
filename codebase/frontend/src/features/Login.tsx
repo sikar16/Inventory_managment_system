@@ -144,12 +144,6 @@ function Login() {
     setThemeData(prev => prev === "light" ? "dark" : "light");
   };
 
-
-
-
-
-
-
   return (
     <>
       <div className='bg-[#002A47] text-white dark:bg-[#1C1E22] dark:text-[#B7E4FF] w-full h-screen '>

@@ -6,8 +6,8 @@ export type AuthContextType = {
     isGM: boolean;
     isEmployee: boolean;
     isStoreKeeper: boolean;
-    userData: userDataType;
-    setUserData: React.Dispatch<React.SetStateAction<userDataType>>;
+    userData: UserDataType;
+    setUserData: React.Dispatch<React.SetStateAction<UserDataType>>;
     setIsAdmin: React.Dispatch<React.SetStateAction<boolean>>;
     setIsDH: React.Dispatch<React.SetStateAction<boolean>>;
     setIsFinance: React.Dispatch<React.SetStateAction<boolean>>;
@@ -20,10 +20,10 @@ export type AuthContextType = {
 };
 
 
-export type userDataType = {
+export type UserDataType = {
     id: number;
     firstName: string;
     role: string;
     token: string | null;
-} | object;
+};
 

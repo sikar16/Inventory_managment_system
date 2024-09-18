@@ -3,17 +3,21 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { ProductCategoryType } from "../_types/productCategory_type";
 import extractErrorMessage from "../util/extractErrorMessage";
+import { getToken } from "../util/getToken";
 
 const baseUrl = import.meta.env.VITE_API_URL;
+export interface AddCategoryType {
+    name: string
+}
 
 export const productCategoryApi = createApi({
     reducerPath: "productCategoryApi",
     baseQuery: fetchBaseQuery({
         baseUrl: `${baseUrl}productCategory`,
-        prepareHeaders: (headers) => {
-            const token = localStorage.getItem("token");
+        prepareHeaders: async (headers) => {
+            const token = await getToken()
             if (token) {
-                headers.set("Authorization", `Bearer ${token}`);
+                headers.set("Authorization", `${token}`);
             }
             return headers;
         },
@@ -28,16 +32,18 @@ export const productCategoryApi = createApi({
                     "Content-Type": "application/json",
                 },
             }),
-            transformResponse: (response: any) =>
-                response.success ? (response.data as ProductCategoryType[]) : ([] as ProductCategoryType[]),
+            transformResponse: (response: any) => {
+                console.log(response)
+                return response.success ? (response.data as ProductCategoryType[]) : ([] as ProductCategoryType[])
+            },
             providesTags: ['ProductCategory'],
             transformErrorResponse: (response: any) => {
-                // console.log(response);
+                console.log(response)
                 const message = response?.data?.message || "Unknown error"; // Safely access the message
                 return extractErrorMessage(message);
             },
         }),
-        addNewProductCategory: builder.mutation<void, ProductCategoryType>({
+        addNewProductCategory: builder.mutation<void, AddCategoryType>({
             query: (data) => ({
                 url: `/`,
                 method: 'POST',

@@ -73,7 +73,7 @@ export default function ProductList() {
                         onChange={(e) => setSelectedCategory(e.target.value)}
                     >
                         <option value="">All Categories</option>
-                        {productCategories.map((productCategory) => (
+                        {productCategories && productCategories.map((productCategory) => (
                             <option key={productCategory.id} value={productCategory.id}>
                                 {productCategory.name}
                             </option>
@@ -88,7 +88,7 @@ export default function ProductList() {
                         onChange={(e) => setSelectedSubCategory(e.target.value)}
                     >
                         <option value="">All Subcategories</option>
-                        {productSubCategories.map((productSubCategory) => (
+                        {productSubCategories && productSubCategories.map((productSubCategory) => (
                             <option key={productSubCategory.id} value={productSubCategory.id}>
                                 {productSubCategory.name}
                             </option>
@@ -103,7 +103,7 @@ export default function ProductList() {
                         onChange={(e) => setSelectedTemplate(e.target.value)}
                     >
                         <option value="">All Templates</option>
-                        {templates.map((template) => (
+                        {templates && templates.map((template) => (
                             <option key={template.id} value={template.id}>
                                 {template.name}
                             </option>

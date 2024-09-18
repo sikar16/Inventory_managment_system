@@ -1,13 +1,18 @@
 import { useState, useEffect, useContext, createContext } from "react";
 import getAuth from "../util/authHeader";
-import { AuthContextType, userDataType } from "../_types/context_type";
+import { AuthContextType, UserDataType } from "../_types/context_type";
 
 // // create auth context
 const AuthContext = createContext<AuthContextType | null>(null);
 
 // // prepare auth provider
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [userData, setUserData] = useState<userDataType>({});
+  const [userData, setUserData] = useState<UserDataType>({
+    firstName: "",
+    id: 0,
+    role: "",
+    token: null
+  });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isEmployee, setIsEmployee] = useState(false);
@@ -44,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         setUserData(response);
       }
+
     });
   };
 

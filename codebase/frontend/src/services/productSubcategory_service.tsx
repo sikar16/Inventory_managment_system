@@ -1,11 +1,21 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { ProductSubCategoryType } from "../_types/productSubcategory_type";
 import extractErrorMessage from "../util/extractErrorMessage";
+import { getToken } from "../util/getToken";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 export const productSubcategoryApi = createApi({
     reducerPath: "productSubcategoryApi",
-    baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}productSubCategory` }),
+    baseQuery: fetchBaseQuery({
+        baseUrl: `${baseUrl}productSubCategory`,
+        prepareHeaders: async (headers) => {
+            const token = await getToken()
+            if (token) {
+                headers.set("Authorization", `${token}`);
+            }
+            return headers;
+        },
+    }),
     tagTypes: ['productSubCategory'],
     endpoints: (builder) => ({
         getAllproductSubCategory: builder.query({

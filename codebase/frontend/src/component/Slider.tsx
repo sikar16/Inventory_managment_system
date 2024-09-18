@@ -6,14 +6,17 @@ import "swiper/css/pagination";
 import CardList from "./CardList";
 import { useGetAlldepartmentQuery } from "../services/department_service";
 
-function Slider({ usersByDepartment }) {
+interface SliderProps {
+    usersByDepartment: Record<number, number>
+}
+
+const Slider: React.FC<SliderProps> = ({ usersByDepartment }) => {
     const {
         isError,
         isLoading,
         isSuccess,
         data: departments,
-        error,
-    } = useGetAlldepartmentQuery();
+    } = useGetAlldepartmentQuery("all department");
 
     return (
         <>

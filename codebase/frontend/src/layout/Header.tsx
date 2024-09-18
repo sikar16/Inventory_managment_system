@@ -11,7 +11,6 @@ import LogoContainer from "../component/LogoContainer";
 import { AppBar } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import React from "react";
-import { Link } from "react-router-dom";
 interface ChildComponentProps {
     setOpen: (value: boolean) => void;
 }
@@ -54,6 +53,7 @@ const Header: React.FC<ChildComponentProps> = ({ setOpen }) => {
                         handler={toggleThemeData}
                         Icon={getThemeIcon()}
                         iconsClassName="my-custom-icon-class"
+                        children={null}
                     />
                     <IoNotificationsOutline className='w-[22px] h-[22px]' />
                     <RiAccountCircleLine className='w-[25px] h-[25px] cursor-pointer' onClick={() => { }} />

@@ -13,7 +13,7 @@ const Bottem = () => {
         localStorage.removeItem(
             "token2",
         );
-        setUserData({ firstName: null, id: null, role: null, token: null });
+        setUserData({ firstName: "", id: 0, role: "", token: null });
         navigator("/login")
 
     }

@@ -20,12 +20,15 @@ export default function CategoryList() {
     const handleCloseDialog = () => setOpenDialog(false);
 
     // Ensure that the query key is consistent
-    const { isError, isLoading, isSuccess, data: categories = [], error } = useGetAllproductCategoryQuery(userData.token);
+    const { isError, isLoading, isSuccess, data: categories, error } = useGetAllproductCategoryQuery();
+
+    console.log(categories)
+
 
     if (isError) {
         return (
             <div>
-                <h1>Error: {error?.message || 'An error occurred'}</h1>
+                <h1>Error: {error?.toString() || 'An error occurred'}</h1>
             </div>
         );
     }

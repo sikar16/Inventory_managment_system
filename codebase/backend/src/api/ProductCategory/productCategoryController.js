@@ -41,7 +41,7 @@ const productCategoryController = {
       return res.status(200).json({
         success: true,
         message: "fetch all product category",
-        date: productCategory,
+        data: productCategory,
       });
     } catch (error) {
       console.log(error);

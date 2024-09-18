@@ -18,18 +18,21 @@ export const AdminLayout = () => {
     const { isAdmin, userData } = useAuth();
     const navigate = useNavigate();
 
-
-    const handleDrawerClose = () => {
-        setOpen(false);
-    };
     useEffect(() => {
 
-        if (userData == null || userData.token == null) {
+        if (userData == null) {
+            navigate("/login");
+        }
+        else if (userData.token == null) {
             navigate("/login");
         }
 
 
     }, [userData]);
+    const handleDrawerClose = () => {
+        setOpen(false);
+    };
+
     if (isAdmin) {
         return (
             <>

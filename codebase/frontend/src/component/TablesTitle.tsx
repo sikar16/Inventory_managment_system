@@ -1,8 +1,8 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 interface TitleProps {
     tableName: string;
+    action: string;
     onClick: () => void;
 }
 

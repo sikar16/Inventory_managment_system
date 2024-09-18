@@ -17,7 +17,7 @@ console.log(`${token}`)
 
     const user = await prisma.users.findFirst({
       where: {
-        id: +payLoad.userId,
+        id: +payLoad.id,
       },
     });
     if (!user) {

@@ -1,12 +1,22 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import extractErrorMessage from "../util/extractErrorMessage";
 import { SupplierType } from "../_types/supplier_type";
+import { getToken } from "../util/getToken";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 
 export const supplierApi = createApi({
     reducerPath: "supplierApi",
-    baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}supplier` }),
+    baseQuery: fetchBaseQuery({
+        baseUrl: `${baseUrl}supplier`,
+        prepareHeaders: async (headers) => {
+            const token = await getToken()
+            if (token) {
+                headers.set("Authorization", `${token}`);
+            }
+            return headers;
+        },
+    }),
     tagTypes: ['supplier'], // Define the tags
     endpoints: (builder) => ({
         getAllsupplier: builder.query({

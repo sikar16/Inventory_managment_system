@@ -1,12 +1,22 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { ProductType } from "../_types/product_type";
 import extractErrorMessage from "../util/extractErrorMessage";
+import { getToken } from "../util/getToken";
 
 
 const baseUrl = import.meta.env.VITE_API_URL;
 export const productApi = createApi({
     reducerPath: "productApi",
-    baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}product` }),
+    baseQuery: fetchBaseQuery({
+        baseUrl: `${baseUrl}product`,
+        prepareHeaders: async (headers) => {
+            const token = await getToken()
+            if (token) {
+                headers.set("Authorization", `${token}`);
+            }
+            return headers;
+        },
+    }),
     tagTypes: ['product'],
     endpoints: (builder) => ({
         getAllproduct: builder.query({

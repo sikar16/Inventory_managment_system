@@ -1,17 +1,14 @@
 // Function to read the data from the user's local storage
-interface userDataType {
-  id: number,
-  firstName: string,
-  role: string,
-  token: string | null,
-}
+
+
+import { UserDataType } from "../_types/context_type";
 
 const getAuth = async () => {
   // console.log(localStorage.getItem("token"));
   const token = localStorage.getItem("token");
   if (token != null) {
     const userInfo = await JSON.parse(token);
-    const userData: userDataType = {
+    const userData: UserDataType = {
       id: 0,
       firstName: "",
       role: "",

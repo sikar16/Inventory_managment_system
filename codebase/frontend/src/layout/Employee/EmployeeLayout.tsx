@@ -9,7 +9,6 @@ import Divider from '@mui/material/Divider';
 import LogoContainer from "../../component/LogoContainer";
 import Bottem from "../Bottem";
 import { useState } from "react";
-import EmployeeSidebar from "./EmployeeSidebar";
 import { Outlet } from "react-router-dom";
 const EmployeeLayout = () => {
     const [open, setOpen] = useState(false);

@@ -9,16 +9,18 @@ import IconContainer from "../../component/icon/Icon_container";
 import { useThemeData } from "../../context/them_context";
 import LogoContainer from "../../component/LogoContainer";
 import { AppBar } from "@mui/material";
-import MenuIcon from '@mui/icons-material/Menu';
-import React from "react";
 import { Link } from "react-router-dom";
-interface ChildComponentProps {
-    setOpen: (value: boolean) => void;
-}
+import { useState } from "react";
+// interface ChildComponentProps {
+//     setOpen: (value: boolean) => void;
+// }
 
-const DepartmentHeader: React.FC<ChildComponentProps> = ({ setOpen }) => {
+const DepartmentHeader = () => {
     const { themeData, setThemeData } = useThemeData();
-
+    const [currentView, setCurrentView] = useState('');
+    const handleToggleView = (view: string) => {
+        setCurrentView(currentView === view ? '' : view);
+    };
     // const handleDrawerOpen = () => {
     //     setOpen(true);
     // };
@@ -60,6 +62,7 @@ const DepartmentHeader: React.FC<ChildComponentProps> = ({ setOpen }) => {
                         handler={toggleThemeData}
                         Icon={getThemeIcon()}
                         iconsClassName="my-custom-icon-class"
+                        children={null}
                     />
                     <IoNotificationsOutline className='w-[22px] h-[22px]' />
                     <RiAccountCircleLine className='w-[25px] h-[25px] cursor-pointer' onClick={() => { }} />

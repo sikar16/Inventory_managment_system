@@ -2,6 +2,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { UserType } from "../_types/user_type";
 import extractErrorMessage from "../util/extractErrorMessage";
+import { getToken } from "../util/getToken";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 interface FormDataType {
@@ -32,7 +33,16 @@ interface LoginDataType {
 
 export const userApi = createApi({
   reducerPath: "userApi",
-  baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}user` }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${baseUrl}user`,
+    prepareHeaders: async (headers) => {
+      const token = await getToken()
+      if (token) {
+        headers.set("Authorization", `${token}`);
+      }
+      return headers;
+    },
+  }),
   tagTypes: ['user'],
   endpoints: (builder) => ({
     getAllUsers: builder.query({

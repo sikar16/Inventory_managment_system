@@ -9,23 +9,35 @@ import IconContainer from "../../component/icon/Icon_container";
 import { useThemeData } from "../../context/them_context";
 import LogoContainer from "../../component/LogoContainer";
 import { AppBar } from "@mui/material";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Buttom from "../Bottem"
-interface ChildComponentProps {
-    setOpen: (value: boolean) => void;
-}
+import { useAuth } from "../../context/AuthContext";
+// interface ChildComponentProps {
+//     setOpen: (value: boolean) => void;
+// }
 
-const Header: React.FC<ChildComponentProps> = ({ setOpen }) => {
+const Header = () => {
     const { themeData, setThemeData } = useThemeData();
     const [isOpen, setIsOpen] = useState(false);
+    const [currentView, setCurrentView] = useState('');
+    const handleToggleView = (view: string) => {
+        setCurrentView(currentView === view ? '' : view);
+    };
+    const { userData } = useAuth();
     const navigate = useNavigate();
 
+    useEffect(() => {
 
-    const handleDrawerOpen = () => {
-        setOpen(true);
-    };
+        if (userData == null) {
+            navigate("/login");
+        }
+        else if (userData.token == null) {
+            navigate("/login");
+        }
 
+
+    }, [userData]);
 
     const getThemeIcon = () => {
         if (themeData === "light") {
@@ -62,6 +74,7 @@ const Header: React.FC<ChildComponentProps> = ({ setOpen }) => {
                         handler={toggleThemeData}
                         Icon={getThemeIcon()}
                         iconsClassName="my-custom-icon-class"
+                        children={null}
                     />
                     <IoNotificationsOutline className='w-[22px] h-[22px]' />
                     <RiAccountCircleLine

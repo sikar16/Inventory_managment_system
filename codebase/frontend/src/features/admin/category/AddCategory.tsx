@@ -4,28 +4,32 @@ import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
 import { useAddNewProductCategoryMutation } from '../../../services/productCategorySerivce';
 interface AddCategoryProps {
-    handleCloseDialog: boolean
+    handleCloseDialog: () => void
 }
 
 const AddCategory: React.FC<AddCategoryProps> = ({ handleCloseDialog }) => {
     const [customCategory, setCustomCategory] = useState('');
     const [addCategory, { isError, isSuccess, isLoading, error }] = useAddNewProductCategoryMutation();
     // console.log(response)
+
+
     const handleCustomCategoryChange = (
-        event: React.MouseEvent<HTMLButtonElement>,
+        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> // Change to ChangeEvent
     ) => {
-        setCustomCategory((event.target as HTMLInputElement).value);
+        setCustomCategory(event.target.value);
     };
 
 
     const handleAddCategory = async () => {
         const formdata = {
-            "name": customCategory
+            "name": customCategory,
         }
         console.log(formdata);
         await addCategory(formdata)
     };
-    if (isSuccess) handleCloseDialog()
+    if (isSuccess) {
+        handleCloseDialog();
+    }
     const handleDiscard = () => {
         handleCloseDialog();
     };

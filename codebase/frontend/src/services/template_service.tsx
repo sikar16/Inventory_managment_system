@@ -1,12 +1,22 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { TemplateType } from "../_types/template_type";
 import extractErrorMessage from "../util/extractErrorMessage";
+import { getToken } from "../util/getToken";
 
 
 const baseUrl = import.meta.env.VITE_API_URL;
 export const templateApi = createApi({
     reducerPath: "templateApi",
-    baseQuery: fetchBaseQuery({ baseUrl: `${baseUrl}temeplate` }),
+    baseQuery: fetchBaseQuery({
+        baseUrl: `${baseUrl}temeplate`,
+        prepareHeaders: async (headers) => {
+            const token = await getToken()
+            if (token) {
+                headers.set("Authorization", `${token}`);
+            }
+            return headers;
+        },
+    }),
     tagTypes: ['template'], // Define the tags
     endpoints: (builder) => ({
         getAlltemplate: builder.query({

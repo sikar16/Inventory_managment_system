@@ -6,7 +6,7 @@ productCategoryRoute.get(
   "/:id",
   productCategoryController.getSigleproductCategory
 );
-productCategoryRoute.get("", productCategoryController.getAllproductCategory);
+productCategoryRoute.get("/", productCategoryController.getAllproductCategory);
 productCategoryRoute.post(
   "/",
   [isAdmin],

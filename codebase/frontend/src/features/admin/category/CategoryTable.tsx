@@ -10,24 +10,30 @@ import { useState } from 'react';
 import { ProductCategoryType } from '../../../_types/productCategory_type';
 import { useDeleteProductCategoryMutation } from '../../../services/productCategorySerivce';
 
-const columns = [
-    { id: 'no', label: 'No', minWidth: 50 },
-    { id: 'categoryId', label: 'Category Id', minWidth: 70 },
-    { id: 'category', label: 'Category', minWidth: 70, align: 'left' },
-];
+const columns: {
+    id: string;
+    label: string;
+    minWidth: number;
+    align?: "center" | "left" | "right" | "inherit" | "justify";
+}[] = [
+        { id: "no", label: "No", minWidth: 50 },
+        { id: "categoryId", label: "Category Id", minWidth: 70 },
+        { id: "category", label: "Category", minWidth: 70, align: "left" },
+    ];
 
 function createData(no: number, categoryId: string, category: string) {
     return { no, categoryId, category };
 }
+
+type RowData = ReturnType<typeof createData>;
+
 interface ProductCategoryProps {
-    anchorEl: any;
-    setAnchorEl: any;
     productCategorylist?: ProductCategoryType[]; // Optional to handle undefined
 }
 const CategoryTable: React.FC<ProductCategoryProps> = ({
     productCategorylist = [] // Default to empty array
 }) => {
-    const rows = productCategorylist.map((i, index) =>
+    const rows: RowData[] = productCategorylist.map((i, index) =>
         createData(
             index + 1, // Use index as the row number
             `${i.id}`,
@@ -79,7 +85,7 @@ const CategoryTable: React.FC<ProductCategoryProps> = ({
                                 .map((row) => (
                                     <TableRow hover role="checkbox" tabIndex={-1} key={row.categoryId}>
                                         {columns.map((column) => {
-                                            const value = row[column.id];
+                                            const value = row[column.id as keyof RowData];
                                             return (
                                                 <TableCell key={column.id} align={column.align}>
                                                     {value}
