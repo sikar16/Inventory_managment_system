@@ -20,7 +20,7 @@ const EmployeeLayout = () => {
             <Box sx={{ display: open ? 'flex' : 'block ' }}>
                 <CssBaseline />
                 <MenuIcon />
-                <Header setOpen={setOpen} />
+                <Header />
                 <Drawer
                     sx={{
                         width: drawerWidth,

@@ -83,14 +83,16 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
     setRows(newRows);
   }, [userList]);
 
-  const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement>, newPage: number) => {
+  const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setRowsPerPage(Number(event.target.value)); // Ensure the value is a number
     setPage(0);
   };
+
+  console.log(handleChangeRowsPerPage)
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>, row: RowData) => {
     setMenuAnchorEl(event.currentTarget);
@@ -190,8 +192,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
         count={rows.length}
         rowsPerPage={rowsPerPage}
         page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
+        onPageChange={handleChangePage} // Keep as is
       />
     </Paper>
   );

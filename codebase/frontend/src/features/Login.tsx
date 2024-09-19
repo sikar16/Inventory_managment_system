@@ -32,7 +32,8 @@ function Login() {
   const { userData, fetchData } = useAuth();
   const [login, { isLoading }] = useLoginUserMutation();
   const navigate = useNavigate();
-  const { setToastData } = useToast();
+  const { toastData, setToastData } = useToast();
+  console.log(toastData)
 
   useEffect(() => {
 
