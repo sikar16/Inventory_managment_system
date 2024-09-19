@@ -10,4 +10,5 @@ export interface UserType {
   departmentId: number;
   profile: ProfileType;
   department: DepartmentType;
+  password: string
 }

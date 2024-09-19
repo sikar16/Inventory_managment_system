@@ -8,6 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { ProductSubCategoryType } from "../../../_types/productSubcategory_type";
+import { useDeleteProductSubCategoryMutation } from "../../../services/productSubcategory_service";
 const columns: {
   id: string;
   label: string;
@@ -55,6 +56,12 @@ const SubCategoryTable: React.FC<productSubcategoryprops> = ({
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+  const [deleteProductSubCategory] = useDeleteProductSubCategoryMutation();
+
+  const handleDelete = (id: string) => {
+    console.log(id)
+    deleteProductSubCategory(id);
+  };
   return (
     <>
       <div className="flex mx-[7%]">
@@ -72,6 +79,7 @@ const SubCategoryTable: React.FC<productSubcategoryprops> = ({
                       {column.label}
                     </TableCell>
                   ))}
+                  <TableCell align="center">Actions</TableCell> {/* Add Actions column */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -92,6 +100,9 @@ const SubCategoryTable: React.FC<productSubcategoryprops> = ({
                           </TableCell>
                         );
                       })}
+                      <TableCell align="center">
+                        <button onClick={() => handleDelete(row.subcategoryId)}>Delete</button>
+                      </TableCell>
                     </TableRow>
                   ))}
               </TableBody>

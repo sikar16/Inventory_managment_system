@@ -20,7 +20,6 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
     const [selectedCategory, setSelectedCategory] = useState<number | "">(""); // Handle category as a number
     const [selectedSubCategory, setSelectedSubCategory] = useState<number | "">("");
     const [selectedTemplate, setSelectedTemplate] = useState<string | { id: number; name: string }>('');
-    const [customTemplate, setCustomTemplate] = useState('');
     const [attributes, setAttributes] = useState<{ key: string; value: string; templateAttributeId: number }[]>([]);
 
     const { data: categories = [] } = useGetAllproductCategoryQuery();
@@ -64,9 +63,6 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
             }
         }
     };
-    const handleCustomTemplateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setCustomTemplate(event.target.value);
-    };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -89,7 +85,7 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
             name: productName,
             category: selectedCategory,
             subcategoryId: subCategoryId,
-            template: selectedTemplate === 'Other' ? customTemplate : selectedTemplate,
+            template: selectedTemplate === selectedTemplate,
             items,
         };
 
@@ -102,6 +98,7 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
         } catch (error) {
             console.error('Error adding product:', error);
         }
+        handleCloseDialog();
     };
 
 
@@ -173,18 +170,7 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
                             {template.name}
                         </MenuItem>
                     ))}
-                    <MenuItem value="Other">Other</MenuItem>
                 </Select>
-                {selectedTemplate === 'Other' && (
-                    <TextField
-                        label="New Template"
-                        variant="outlined"
-                        size="small"
-                        value={customTemplate}
-                        onChange={handleCustomTemplateChange}
-                        className="w-full"
-                    />
-                )}
                 {attributes.length > 0 && (
                     <div className='w-full'>
                         <p className='mt-4 mb-2'>Attributes</p>

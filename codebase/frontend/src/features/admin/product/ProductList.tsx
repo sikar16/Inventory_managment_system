@@ -13,6 +13,8 @@ import { useGetAllproductCategoryQuery } from '../../../services/productCategory
 import { useGetAllproductSubCategoryQuery } from '../../../services/productSubcategory_service';
 import { useGetAlltemplateQuery } from '../../../services/template_service';
 import { ProductType } from '../../../_types/product_type';
+import { ProductCategoryType } from '../../../_types/productCategory_type';
+import { ProductSubCategoryType } from '../../../_types/productSubcategory_type';
 
 export default function ProductList() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -20,8 +22,8 @@ export default function ProductList() {
     const [selectedProduct, setSelectedProduct] = useState<ProductType>();
     const [openDetails, setOpenDetails] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
-    const [selectedSubCategory, setSelectedSubCategory] = useState<string | undefined>(undefined);
+    const [selectedCategory, setSelectedCategory] = useState<ProductCategoryType>();
+    const [selectedSubCategory, setSelectedSubCategory] = useState<ProductSubCategoryType>();
     const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>(undefined);
 
     const handleCloseDetails = () => {
@@ -65,16 +67,16 @@ export default function ProductList() {
     ) {
         return <Loader />;
     }
-
     const filteredProducts = products?.filter(
         (product: ProductType) =>
             (searchTerm === "" ||
-                product.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
+                product.name?.toLowerCase().includes(searchTerm.toLowerCase())) &&
             (selectedCategory === undefined ||
-                product.category.name === selectedCategory) &&
+                product.subcategory?.category.name === selectedCategory) &&
             (selectedSubCategory === undefined ||
-                product.subcategory.name === selectedSubCategory)
+                product.subcategory?.name === selectedSubCategory)
     );
+
 
     // console.log(filteredProducts);
 
@@ -84,7 +86,7 @@ export default function ProductList() {
             <div className='flex flex-wrap gap-2 mt-10 mb-5'>
                 <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
                     <p className='me-3 text-gray-500'>Category :</p>
-                    <select
+                    {/* <select
                         className='bg-[#faf9f9] text-gray-700'
                         value={selectedCategory}
                         onChange={(e) => setSelectedCategory(e.target.value)}
@@ -95,7 +97,20 @@ export default function ProductList() {
                                 {productCategory.name}
                             </option>
                         ))}
+                    </select> */}
+                    <select
+                        className='bg-[#faf9f9] text-gray-700'
+                        value={selectedCategory || ''}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                    >
+                        <option value="">All Categories</option>
+                        {productCategories && productCategories.map((productCategory) => (
+                            <option key={productCategory.id} value={productCategory.id}>
+                                {productCategory.name}
+                            </option>
+                        ))}
                     </select>
+
                 </div>
                 <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
                     <p className='me-3 text-gray-500'>Sub Category :</p>
@@ -147,28 +162,72 @@ export default function ProductList() {
                 setOpenDetails={setOpenDetails}
             />
             <Dialog open={openDetails} onClose={handleCloseDetails}>
-                <DialogTitle><strong>Product Details</strong></DialogTitle>
+                <div className='flex justify-between'>
+                    <DialogTitle><strong>Product Details</strong></DialogTitle>
+                    <DialogActions>
+                        <Button onClick={handleCloseDetails} color="primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width={30} height={30} viewBox="0 0 24 24">
+                                <path fill="#002a47" d="m8.401 16.333l-.734-.727L11.266 12L7.667 8.42l.734-.728L12 11.29l3.574-3.597l.734.727L12.709 12l3.599 3.606l-.734.727L12 12.737z"></path>
+                            </svg>
+                        </Button>
+                    </DialogActions>
+                </div>
                 <DialogContent>
                     {selectedProduct && (
                         <div className='grid grid-cols-2 gap-4'>
-                            <p className='text-md'> Product ID: <span className='text-sm'>{selectedProduct.id}</span> </p>
-                            <p className='text-md'>Product: <span className='text-sm'>{selectedProduct.name} </span></p>
-                            <p className='text-md'>Category: <span className='text-sm'>{selectedProduct.category.name} </span></p>
-                            <p className='text-md'>Template: <span className='text-sm'> </span></p>
-                            <p className='text-md'>Attributes:
-                                <div className='grid grid-cols-2 w-full text-sm gap-2 mt-2'>
-                                    <p className='ms-3'>ROM  - 8GB</p>
-                                    <p className='ms-3'>Graphics  - 8GB</p>
-                                    <p className='ms-3'>Screen size  - 8GB</p>
-                                </div>
+                            {/* Product ID */}
+                            <p className='text-md'>
+                                Product ID: <span className='text-sm'>{selectedProduct.id}</span>
                             </p>
+
+                            {/* Product Name */}
+                            <p className='text-md'>
+                                Product: <span className='text-sm'>{selectedProduct?.name || 'N/A'}</span>
+                            </p>
+
+                            {/* Category */}
+                            <p className='text-md'>
+                                Category: <span className='text-sm'>{selectedProduct?.subcategory?.category?.name || 'N/A'}</span>
+                            </p>
+
+                            {/* Sub Category */}
+                            <p className='text-md'>
+                                Sub Category: <span className='text-sm'>{selectedProduct?.subcategory?.name || 'N/A'}</span>
+                            </p>
+
+                            {/* Template */}
+                            <p className='text-md col-span-2'>
+                                Template:
+                                <span className='text-sm'>
+                                    {
+                                        Array.isArray(selectedProduct?.templateAttributeType) && selectedProduct.templateAttributeType.length > 0
+                                            ? selectedProduct.templateAttributeType.map((k) => k.name).join(', ')
+                                            : 'N/A'
+                                    }
+                                </span>
+                            </p>
+
+                            {/* Attributes Section */}
+                            <p className='text-md col-span-2 font-semibold'>
+                                Attributes:
+                            </p>
+                            <div className='grid grid-cols-2 gap-4 mt-2 col-span-2'>
+                                {selectedProduct.productAttributes && selectedProduct.productAttributes.length > 0 ? (
+                                    selectedProduct.productAttributes.map((attribute, index) => (
+                                        <p key={index} className='text-sm'>
+                                            <span className='font-medium'>{attribute.templateAttribute.name}</span> - {attribute.value}
+                                        </p>
+                                    ))
+                                ) : (
+                                    <p className='text-sm col-span-2'>No Attributes Available</p>
+                                )}
+                            </div>
                         </div>
+
                     )}
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDetails} color="primary">Close</Button>
-                </DialogActions>
             </Dialog>
+
             <Dialog open={openDialog} onClose={handleCloseDialog}>
                 <div className='flex justify-between me-5'>
                     <DialogTitle>Add New Product</DialogTitle>

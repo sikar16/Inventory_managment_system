@@ -1,29 +1,32 @@
 import { ProductCategoryType } from "./productCategory_type";
 import { ProductSubCategoryType } from "./productSubcategory_type";
 
-export enum AtributeDateType {
+export enum AttributeDataType {
   STRING = "STRING",
   DATE_TIME = "DATE_TIME",
   DOUBLE = "DOUBLE",
   INT = "INT",
 }
 
+// Template Attribute Type
 export interface TemplateAttributeType {
   id: number;
   templateId: number;
   name: string;
-  dataType: string;
+  dataType: AttributeDataType;
 }
 
+// Template Type
 export interface TemplateType {
   id: number;
   name: string;
   createdAt: Date;
   attributes: TemplateAttributeType[];
   categoryId: ProductCategoryType;
-  subCategoryId: ProductSubCategoryType
+  subCategoryId: ProductSubCategoryType;
 }
 
+// Product Attribute Type
 export interface ProductAttributeType {
   id: number;
   productId: number;

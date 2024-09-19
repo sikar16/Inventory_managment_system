@@ -46,7 +46,21 @@ export const productSubcategoryApi = createApi({
                 return extractErrorMessage(response.data.message as string);
             },
         }),
+        deleteProductSubCategory: builder.mutation<void, string>({
+            query: (id) => ({
+                url: `/${id}`,
+                method: 'DELETE',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }),
+            invalidatesTags: ['productSubCategory'],
+            transformErrorResponse: (response: any) => {
+                const message = response?.data?.message || "Unknown error"; // Safely access the message
+                return extractErrorMessage(message);
+            },
+        }),
     })
 })
 
-export const { useGetAllproductSubCategoryQuery, useAddNewProductSubCategoryMutation } = productSubcategoryApi
+export const { useGetAllproductSubCategoryQuery, useAddNewProductSubCategoryMutation, useDeleteProductSubCategoryMutation } = productSubcategoryApi

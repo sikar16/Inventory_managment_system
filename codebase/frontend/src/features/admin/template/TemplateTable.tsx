@@ -112,7 +112,7 @@ const TemplateTable: React.FC<Templateprops> = ({ templateList }) => {
                             className="flex items-center"
                             onClick={() => handleToggle(index)}
                           >
-                            <div className="mr-5 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/5 text-primary dark:bg-white/5">
+                            <div className=" flex h-10 w-10 items-center justify-center rounded-lg bg-primary/5 text-primary dark:bg-white/5">
                               {openFaqIndex === index ? (
                                 <ExpandLessIcon />
                               ) : (
@@ -129,12 +129,14 @@ const TemplateTable: React.FC<Templateprops> = ({ templateList }) => {
                               id={`faq-content-${index}`}
                               className="pl-[62px] bg-gray-100 h-[150px]"
                             >
-                              <div className="grid grid-cols-2 gap-4">
-                                <p className="text-md">Template Attributes</p>
-                                <div className="grid grid-cols-2 w-full text-sm gap-2 mt-2">
+                              <div className=" ">
+                                <p className="text-[16px] text-black font-semibold" >Template Attributes</p>
+                                <div className="grid grid-cols-2 w-full text-[14px] gap-2 mt-2">
                                   {row.attributes.map((attribute, attrIndex) => (
                                     <p key={attrIndex} className="ms-3">
-                                      {attribute.name}
+                                      <span className="me-3">{attribute.name}</span>
+                                      <span>{attribute.dataType}</span>
+
                                     </p>
                                   ))}
                                 </div>

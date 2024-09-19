@@ -72,7 +72,7 @@ export const userApi = createApi({
 
     addNewuser: builder.mutation({
       query: (body: FormDataType) => ({
-        url: `http://localhost:8888/api/user/register/`,
+        url: `/register`,
         method: 'POST',
         body,
       }),

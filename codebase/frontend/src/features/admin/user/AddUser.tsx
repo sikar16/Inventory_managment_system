@@ -2,7 +2,7 @@ import { useAddNewuserMutation } from '../../../services/user_service';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { DevTool } from "@hookform/devtools";
-import { DepartmentType } from '../../../_types/department_type';
+import { useGetAlldepartmentQuery } from '../../../services/department_service';
 
 type FormValues = {
   firstName: string;
@@ -18,28 +18,30 @@ type FormValues = {
   wereda: string;
   password: string;
 };
-interface AddUserProps {
-  departments: DepartmentType[];
-}
 
-const AddUser: React.FC<AddUserProps> = ({ departments }) => {
+
+const AddUser = () => {
   const { register, control, handleSubmit, formState } = useForm<FormValues>();
   const { errors } = formState;
 
   const [adduser] = useAddNewuserMutation();
+  const { data: department = [] } = useGetAlldepartmentQuery("department");
+
 
   const onSubmit = async (data: FormValues) => {
     try {
       const formattedData = {
         ...data,
+        password: data.password,  // Ensure password is included
         departmentId: Number(data.departmentId),
       };
-      await adduser(formattedData);
+      await adduser(formattedData); // Pass the formatted data
       console.log("User added:", formattedData);
     } catch (error) {
       console.error("Error adding user:", error);
     }
   };
+
 
   return (
     <>
@@ -167,6 +169,26 @@ const AddUser: React.FC<AddUserProps> = ({ departments }) => {
                     />
                     <p className="text-red-600 text-[13px] mt-1">{errors.subCity?.message}</p>
                   </div>
+                  <div className="w-full md:w-[30%]">
+                    <input
+                      placeholder="Wereda"
+                      type="text"
+                      id="wereda"
+                      {...register('wereda', { required: 'Wereda is required' })}
+                      className="focus:outline-none mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
+                    />
+                    <p className="text-red-600 text-[13px] mt-1">{errors.wereda?.message}</p>
+                  </div>
+                </div>
+                <div className="w-full md:w-[30%]">
+                  <input
+                    placeholder="Password"
+                    type="password"
+                    id="password"
+                    {...register('password', { required: 'password is required' })}
+                    className="focus:outline-none mt-1 text-sm ps-3 block w-full rounded-md border-gray-300 shadow-sm bg-slate-100 py-[7px]"
+                  />
+                  <p className="text-red-600 text-[13px] mt-1">{errors.password?.message}</p>
                 </div>
 
                 {/* Department */}
@@ -178,8 +200,8 @@ const AddUser: React.FC<AddUserProps> = ({ departments }) => {
                     className="focus:outline-none bg-slate-100 w-full py-2 rounded-md"
                   >
                     <option value="">Select Department</option>
-                    {departments?.map(department => (
-                      <option key={department.id} value={department.id}>{department.name}</option>
+                    {department?.map((dep) => (
+                      <option key={dep.id} value={dep.id}>{dep.name}</option>
                     ))}
                   </select>
                   <p className="text-red-600 text-[13px] mt-1">{errors.departmentId?.message}</p>

@@ -14,7 +14,7 @@ import Bottem from "../Bottem";
 import { useAuth } from "../../context/AuthContext";
 import UnauthorizedPage from "../../component/UnauthorizedPage";
 export const AdminLayout = () => {
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(false);
     const { isAdmin, userData } = useAuth();
     const navigate = useNavigate();
 

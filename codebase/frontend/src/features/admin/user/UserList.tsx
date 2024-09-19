@@ -6,6 +6,7 @@ import Loading from "../../../component/Loading";
 import AddUser from "./AddUser";
 import Slider from "../../../component/Slider";
 import { DepartmentType } from "../../../_types/department_type";
+import { useGetAlldepartmentQuery } from "../../../services/department_service";
 interface AddUserProps {
   departments: DepartmentType[]; // Assuming departments should be an array of DepartmentType
 }
@@ -18,6 +19,7 @@ const UserList: React.FC<AddUserProps> = ({ departments }) => {
 
 
   const { data, isLoading, isError, error } = useGetAllUsersQuery("user");
+  const { data: department = [] } = useGetAlldepartmentQuery("department");
 
   if (isError) return <h1>Error: {error.toString()}</h1>;
   if (isLoading) return <Loading />;
@@ -80,7 +82,7 @@ const UserList: React.FC<AddUserProps> = ({ departments }) => {
                 >
                   All users
                 </li>
-                {departments?.map((department) => (
+                {department?.map((department) => (
                   <li
                     key={department.id}
                     className={`cursor-pointer ${selectedDepartment === department.id ? 'font-bold' : ''}`}
@@ -105,7 +107,7 @@ const UserList: React.FC<AddUserProps> = ({ departments }) => {
           <UsersTable userList={filteredUsers ?? []} />
         </>
       ) : (
-        <AddUser departments={departments} />
+        <AddUser />
       )}
     </div>
   );

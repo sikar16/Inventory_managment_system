@@ -152,8 +152,14 @@ const userController = {
       console.log(isAddressExist);
 
       // Hash the password
-      const hashedPassword = await bcrypt.hashSync(data.password, 10);
-
+      if (!data.password) {
+        return res.status(400).json({
+          success: false,
+          message: "Password is required",
+        });
+      }
+  
+      const hashedPassword = bcrypt.hashSync(data.password, 10);
       // Create the user
       const newUser = await prisma.users.create({
         include: {
@@ -191,7 +197,7 @@ const userController = {
     } catch (error) {
       return res.status(500).json({
         success: false,
-        message: `${error}`,
+        message: `Error - ${error}`,
       });
     }
   },
