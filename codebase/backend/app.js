@@ -7,11 +7,20 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(urlencoded({ extended: true }));
-
+const allowedOrigins = [
+  "https://bluesparks.inventory.huludelala.com",
+  "http://localhost:5173",
+];
 app.use(
   cors({
-    origin: true, // Allow requests from any origin
-    allowedHeaders: ["Content-Type", "Authorization"], // Specify the allowed headers
+    origin: (origin, callback) => {
+      if (allowedOrigins.includes(origin) || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
