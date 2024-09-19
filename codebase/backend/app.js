@@ -10,7 +10,7 @@ app.use(urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: "*", // Allow requests from any origin
+    origin: true, // Allow requests from any origin
     allowedHeaders: ["Content-Type", "Authorization"], // Specify the allowed headers
     credentials: true,
   })
