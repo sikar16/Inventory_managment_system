@@ -130,9 +130,9 @@ const WareHouseTable: React.FC<StoreProps> = ({ storeList }) => {
                                                             <p className="text-md">Store Name: <span className="text-sm">{storeList[index].name}</span></p>
                                                             <p className="text-md">Attributes:</p>
                                                             <div className="col-span-2 grid grid-cols-2 text-sm gap-2">
-                                                                {storeList[index].attributes?.map((attr: { name: string | number | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<unknown>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; value: string | number | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<unknown>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }, idx: React.Key | null | undefined) => (
+                                                                {/* {storeList && storeList[index].attributes && storeList[index].attributes?.map((attr: { name: string | number | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<unknown>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; value: string | number | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<unknown>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }, idx: React.Key | null | undefined) => (
                                                                     <p key={idx} className="ms-3">{attr.name} - {attr.value}</p>
-                                                                ))}
+                                                                ))} */}
                                                             </div>
                                                         </div>
                                                     </div>

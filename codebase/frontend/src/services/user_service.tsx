@@ -77,11 +77,11 @@ export const userApi = createApi({
         body,
       }),
       invalidatesTags: ['user'],
-      transformResponse: (response: Response) => {
+      transformResponse: (response: any) => {
         console.log(response);
         return response.success ? response.message : "something happened";
       },
-      transformErrorResponse: (response: Response) => {
+      transformErrorResponse: (response: any) => {
         const message = response?.data?.message;
         return extractErrorMessage(message);
       },
@@ -135,7 +135,7 @@ export const userApi = createApi({
       transformResponse: (response: LoginResponse) => {
         return response;
       },
-      transformErrorResponse: (response: { data: any }) => {
+      transformErrorResponse: (response: any) => {
         return response.data;
       },
     })

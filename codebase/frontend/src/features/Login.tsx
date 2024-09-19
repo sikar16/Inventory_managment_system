@@ -76,7 +76,7 @@ function Login() {
       console.log('API Response:', response); // Log the entire response
 
       setToastData({
-        message: response.message,
+        message: response.message || "",
         success: response.success,
       }
       );
