@@ -1,4 +1,3 @@
-import logo from '../assets/logo.png';
 import LogoContainer from '../component/LogoContainer';
 import { useThemeData } from '../context/them_context';
 import {
@@ -37,7 +36,9 @@ function ForgetPassword() {
                     handler={toggleThemeData}
                     Icon={getThemeIcon()}
                     iconsClassName="my-custom-icon-class"
-                />            </div>
+                    children={null}
+                />
+            </div>
             <div className='w-full max-w-md p-6 shadow-md dark:shadow-neutral-100 rounded-lg  text-center mt-10 m-auto'>
                 <div className='flex flex-col items-center justify-center mb-8'>
                     <h3 className='text-4xl font-medium mb-6'>Forget Password</h3>

@@ -42,7 +42,15 @@ export default function TemplateList() {
   const { isError, isLoading, data, error } = useGetAlltemplateQuery("template");
 
   if (isCategoryError || isSubCategoryError || isError) {
-    return <h1>Error: {isCategoryError ? categoryError.toString() : isSubCategoryError ? subCategoryError.toString() : error.toString()}</h1>;
+    return (
+      <h1>
+        Error: {isCategoryError
+          ? categoryError?.toString() || "Unknown category error"
+          : isSubCategoryError
+            ? subCategoryError?.toString() || "Unknown subcategory error"
+            : error?.toString() || "Unknown error"}
+      </h1>
+    );
   }
 
   if (isCategoryLoading || isSubCategoryLoading || isLoading) return <Loader />;

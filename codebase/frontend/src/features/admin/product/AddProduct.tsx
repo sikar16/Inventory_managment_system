@@ -12,6 +12,7 @@ import { TemplateType } from '../../../_types/template_type';
 
 interface AddProductProps {
     handleCloseDialog: () => void;
+
 }
 
 const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {

@@ -14,7 +14,14 @@ import { ProductType } from "../../../_types/product_type";
 import { useDeleteProductMutation } from "../../../services/product_service";
 import { IconButton } from '@mui/material';
 
-const columns = [
+type ColumnType = {
+  id: string;
+  label: string;
+  minWidth: number;
+  align?: "left" | "center" | "right" | "inherit" | "justify";
+};
+
+const columns: ColumnType[] = [
   { id: "no", label: "No", minWidth: 50 },
   { id: "productId", label: "Product Id", minWidth: 70 },
   { id: "product", label: "Product", minWidth: 70, align: "left" },
@@ -32,22 +39,21 @@ function createData(
   return { no, productId, product, category, subCategory };
 }
 
-interface Productprops {
+interface ProductProps {
   productList: ProductType[];
-  anchorEl: any;
-  setAnchorEl: any;
-  setSelectedProduct: any;
-  setOpenDetails: any;
-  selectedProduct: any
+  anchorEl: null | HTMLElement;
+  setAnchorEl: (value: null | HTMLElement) => void;
+  setSelectedProduct: (product: ProductType) => void;
+  setOpenDetails: (open: boolean) => void;
+  selectedProduct: ProductType | null;
 }
 
-const ProductTable: React.FC<Productprops> = ({
+const ProductTable: React.FC<ProductProps> = ({
   productList,
   anchorEl,
   setAnchorEl,
   setSelectedProduct,
   setOpenDetails,
-  selectedProduct
 }) => {
   const rows = productList.map((i) =>
     createData(
@@ -62,7 +68,7 @@ const ProductTable: React.FC<Productprops> = ({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
@@ -75,7 +81,7 @@ const ProductTable: React.FC<Productprops> = ({
 
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement>,
-    product: any
+    product: ProductType
   ) => {
     setAnchorEl(event.currentTarget);
     setSelectedProduct(product);
@@ -90,32 +96,17 @@ const ProductTable: React.FC<Productprops> = ({
     handleCloseMenu();
   };
 
+
   const [deleteProduct] = useDeleteProductMutation();
 
-  // const handleDelete = async (id: string) => {
-  //   try {
-  //     await deleteProduct(id).unwrap(); // Assuming 'unwrap' is used to handle resolved/rejected state
-  //     console.log("Product deleted successfully");
-  //   } catch (error) {
-  //     console.error("Failed to delete product:", error);
-  //   }
-  // };
-
-
-
-  async function handleDelete(id) {
+  const handleDelete = async (id: string) => {
     try {
-      // await fetch(`https://inventory.huludelala.com/api/product/${id}`, {
-      await fetch(`http://localhost:8888/api/product/${id}`, {
-        method: "DELETE"
-      })
-      setSelectedProduct((selectedProduct) => selectedProduct.filter((selectedProduct) => selectedProduct.id !== id))
-      console.log(id)
+      await deleteProduct(id).unwrap();
+      console.log("Product deleted successfully");
+    } catch (error) {
+      console.error("Failed to delete product:", error);
     }
-    catch (error) {
-      throw new Error("Error while deleting user")
-    }
-  }
+  };
 
 
   return (
@@ -139,46 +130,52 @@ const ProductTable: React.FC<Productprops> = ({
           <TableBody>
             {rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => (
-                <TableRow
-                  hover
-                  role="checkbox"
-                  tabIndex={-1}
-                  key={row.productId}
-                >
-                  {columns.map((column) => {
-                    const value = row[column.id];
-                    return (
-                      <TableCell key={column.id} align={column.align}>
-                        {value}
-                      </TableCell>
-                    );
-                  })}
-                  <TableCell>
-                    <IconButton
-                      aria-label="more"
-                      aria-controls="long-menu"
-                      aria-haspopup="true"
-                      onClick={(event) => handleClick(event, row)}
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
-                    <Menu
-                      anchorEl={anchorEl}
-                      open={Boolean(anchorEl)}
-                      onClose={handleCloseMenu}
-                    >
-                      <MenuItem onClick={handleViewDetails}>
-                        View Details
-                      </MenuItem>
-                      <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
-                      <MenuItem onClick={() => handleDelete(row.productId)}>
-                        Delete
-                      </MenuItem>
-                    </Menu>
-                  </TableCell>
-                </TableRow>
-              ))}
+              .map((row, index) => {
+                const product = productList[index]; // Get the product corresponding to the row index
+                return (
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={row.productId}
+                  >
+                    {columns.map((column) => {
+                      const value = row[column.id as keyof typeof row];
+                      return (
+                        <TableCell
+                          key={column.id}
+                          align={column.align || "left"}
+                        >
+                          {value}
+                        </TableCell>
+                      );
+                    })}
+                    <TableCell>
+                      <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={(event) => handleClick(event, product)} // Pass the full product object
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
+                      <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={handleCloseMenu}
+                      >
+                        <MenuItem onClick={handleViewDetails}>
+                          View Details
+                        </MenuItem>
+                        <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
+                        <MenuItem onClick={() => handleDelete(row.productId)}>
+                          Delete
+                        </MenuItem>
+                      </Menu>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </Table>
       </TableContainer>

@@ -61,7 +61,7 @@ const SupplierTable: React.FC<SuppliersTableProps> = ({ supplierslist }) => {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [selectedRow, setSelectedRow] = useState(null);
 
-    const handleChangePage = (event: unknown, newPage: SetStateAction<number>) => {
+    const handleChangePage = (_event: unknown, newPage: SetStateAction<number>) => {
         setPage(newPage);
     };
 

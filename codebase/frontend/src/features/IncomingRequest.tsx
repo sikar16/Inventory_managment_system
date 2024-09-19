@@ -16,10 +16,16 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import MaterialRequistForm from '../MaterialRequistForm';
+import MaterialRequistForm from './MaterialRequistForm';
 
-const columns = [
+interface Column {
+    id: string;
+    label: string;
+    minWidth: number;
+    align?: 'left' | 'right' | 'center';
+}
+
+const columns: Column[] = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'orderId', label: 'Order Id', minWidth: 70 },
     { id: 'requestedEmployee', label: 'Requested Employee', minWidth: 70, align: 'left' },
@@ -29,7 +35,17 @@ const columns = [
     { id: 'dateOfRequest', label: 'Date of request', minWidth: 70, align: 'left' },
 ];
 
-function createData(no: number, orderId: string, requestedEmployee: string, product: string, quantity: string, status: string, dateOfRequest: string) {
+interface Data {
+    no: number;
+    orderId: string;
+    requestedEmployee: string;
+    product: string;
+    quantity: string;
+    status: string;
+    dateOfRequest: string;
+}
+
+function createData(no: number, orderId: string, requestedEmployee: string, product: string, quantity: string, status: string, dateOfRequest: string): Data {
     return { no, orderId, requestedEmployee, product, quantity, status, dateOfRequest };
 }
 
@@ -44,14 +60,13 @@ const rows = [
 ];
 
 export default function IncomingRequest() {
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [page, setPage] = React.useState<number>(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState<number>(5);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const [openDialog, setOpenDialog] = React.useState(false);
-    const [openDetails, setOpenDetails] = React.useState(false);
-    const [selectedProduct, setSelectedProduct] = React.useState<any>(null);
+    const [openDialog, setOpenDialog] = React.useState<boolean>(false);
+    const [selectedProduct, setSelectedProduct] = React.useState<Data | null>(null);
 
-    const handleChangePage = (event: unknown, newPage: number) => {
+    const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
 
@@ -60,7 +75,7 @@ export default function IncomingRequest() {
         setPage(0);
     };
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, product: any) => {
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, product: Data) => {
         setAnchorEl(event.currentTarget);
         setSelectedProduct(product);
     };
@@ -70,9 +85,9 @@ export default function IncomingRequest() {
     };
 
 
-    const handleCloseDetails = () => {
-        setOpenDetails(false);
-    };
+    // const handleCloseDetails = () => {
+    //     setOpenDetails(false);
+    // };
 
     const handleOpenDialog = () => {
         setOpenDialog(true);
@@ -80,6 +95,14 @@ export default function IncomingRequest() {
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
+    };
+    const handleEdit = () => {
+        if (selectedProduct) {
+            // Logic to edit the selected product
+            console.log("Editing product:", selectedProduct);
+            handleCloseMenu();
+            handleOpenDialog(); // Open the dialog to edit the product
+        }
     };
 
     return (
@@ -112,9 +135,9 @@ export default function IncomingRequest() {
                             {rows
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.productId}>
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.no}>
                                         {columns.map((column) => {
-                                            const value = row[column.id];
+                                            const value = row[column.id as keyof Data];
                                             return (
                                                 <TableCell key={column.id} align={column.align}>
                                                     {value}
@@ -135,7 +158,7 @@ export default function IncomingRequest() {
                                                 open={Boolean(anchorEl)}
                                                 onClose={handleCloseMenu}
                                             >
-                                                <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
+                                                <MenuItem onClick={handleEdit}>Edit</MenuItem>
                                                 <MenuItem onClick={handleCloseMenu}>Delete</MenuItem>
                                             </Menu>
                                         </TableCell>
@@ -157,7 +180,7 @@ export default function IncomingRequest() {
 
 
 
-            <Dialog open={openDialog} onClose={handleCloseDialog}
+            <Dialog
                 open={openDialog}
                 onClose={handleCloseDialog}
                 PaperProps={{

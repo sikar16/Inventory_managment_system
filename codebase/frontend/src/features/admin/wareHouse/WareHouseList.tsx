@@ -26,6 +26,7 @@ export default function WareHouseList() {
     if (isError) return <h1>Error: {error.toString()}</h1>;
     if (isLoading) return <Loader />;
 
+
     const filteredData = data?.filter(store => {
         const { name, address } = store;
         // Check if address exists to avoid accessing properties of undefined

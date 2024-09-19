@@ -30,7 +30,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const { themeData, setThemeData } = useThemeData();
   const { userData, fetchData } = useAuth();
-  const [login, { isError, isSuccess, isLoading }] = useLoginUserMutation();
+  const [login, { isLoading }] = useLoginUserMutation();
   const navigate = useNavigate();
   const { setToastData } = useToast();
 
@@ -141,7 +141,13 @@ function Login() {
   };
 
   const toggleThemeData = () => {
-    setThemeData(prev => prev === "light" ? "dark" : "light");
+    if (themeData === "light") {
+      setThemeData("dark");
+    } else if (themeData === "dark") {
+      setThemeData("light");
+    } else if (themeData === "system") {
+      setThemeData("dark");
+    }
   };
 
   return (
@@ -153,6 +159,7 @@ function Login() {
             handler={toggleThemeData}
             Icon={getThemeIcon()}
             iconsClassName="my-custom-icon-class"
+            children={null}
           />
         </div>
         <div className='w-full max-w-md p-6 shadow-md rounded-lg text-center m-auto'>

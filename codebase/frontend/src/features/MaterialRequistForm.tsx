@@ -1,15 +1,40 @@
-import React, { useState, useRef, useEffect } from 'react';
-import AddProduct from '../features/admin/product/AddProduct';
+import { useState, useRef, useEffect } from 'react';
+import AddProduct from './admin/product/AddProduct';
 import { FaPlus } from 'react-icons/fa';
 import DialogTitle from '@mui/material/DialogTitle';
 
-const MaterialRequestForm = () => {
-    const categories = [
+interface Category {
+    id: number;
+    name: string;
+    subcategories: string[];
+}
+
+interface Product {
+    id: number;
+    name: string;
+    attributes: {
+        RAM: string;
+        ROM: string;
+    };
+}
+
+interface FormData {
+    category: string;
+    subcategory: string;
+    products: number[];
+    quantity: string;
+    unit: string;
+    desiredDate: string;
+    reason: string;
+}
+
+const MaterialRequestForm: React.FC = () => {
+    const categories: Category[] = [
         { id: 1, name: 'Electronics', subcategories: ['Computer', 'Smartphone'] },
         { id: 2, name: 'Furniture', subcategories: ['Chair', 'Table'] },
     ];
 
-    const productsData = {
+    const productsData: Record<string, Product[]> = {
         'Computer': [
             { id: 1, name: 'Laptop', attributes: { RAM: '8GB', ROM: '256GB' } },
             { id: 2, name: 'Desktop', attributes: { RAM: '16GB', ROM: '512GB' } },
@@ -25,7 +50,7 @@ const MaterialRequestForm = () => {
         ],
     };
 
-    const initialFormData = {
+    const initialFormData: FormData = {
         category: '',
         subcategory: '',
         products: [],
@@ -35,11 +60,11 @@ const MaterialRequestForm = () => {
         reason: '',
     };
 
-    const [formData, setFormData] = useState(initialFormData);
-    const [requests, setRequests] = useState([]);
-    const categoryRef = useRef(null);
-    const [isAddProductOpen, setIsAddProductOpen] = useState(false);
-    const [errors, setErrors] = useState({});
+    const [formData, setFormData] = useState<FormData>(initialFormData);
+    const [requests, setRequests] = useState<FormData[]>([]);
+    const categoryRef = useRef<HTMLSelectElement | null>(null);
+    const [isAddProductOpen, setIsAddProductOpen] = useState<boolean>(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const toggleAddProduct = () => {
         setIsAddProductOpen(!isAddProductOpen);
@@ -52,7 +77,7 @@ const MaterialRequestForm = () => {
     }, [requests.length]);
 
     const validateForm = () => {
-        const newErrors = {};
+        const newErrors: Record<string, string> = {};
 
         if (!formData.category) {
             newErrors.category = 'Category is required';
@@ -66,7 +91,7 @@ const MaterialRequestForm = () => {
             newErrors.products = 'Please select at least one product';
         }
 
-        if (!formData.quantity || formData.quantity <= 0) {
+        if (!formData.quantity || Number(formData.quantity) <= 0) {
             newErrors.quantity = 'Quantity must be greater than 0';
         }
 
@@ -98,22 +123,22 @@ const MaterialRequestForm = () => {
         setFormData(initialFormData);
     };
 
-    const handleInputChange = (e) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleCategoryChange = (e) => {
+    const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const category = e.target.value;
         setFormData({ ...formData, category, subcategory: '', products: [] });
     };
 
-    const handleSubcategoryChange = (e) => {
+    const handleSubcategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const subcategory = e.target.value;
         setFormData({ ...formData, subcategory });
     };
 
-    const handleCheckboxChange = (productId) => {
+    const handleCheckboxChange = (productId: number) => {
         setFormData(prevFormData => {
             const updatedProducts = prevFormData.products.includes(productId)
                 ? prevFormData.products.filter(id => id !== productId)
@@ -183,7 +208,7 @@ const MaterialRequestForm = () => {
                                 <option value="">Select Subcategory</option>
                                 {categories
                                     .find(category => category.name === formData.category)
-                                    .subcategories.map(sub => (
+                                    ?.subcategories.map(sub => (
                                         <option key={sub} value={sub}>
                                             {sub}
                                         </option>
@@ -302,9 +327,9 @@ const MaterialRequestForm = () => {
 
             {isAddProductOpen && (
                 <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
-                    <div className="bg-white p-6 rounded-lg  w-[500px]">
+                    <div className="bg-white p-6 rounded-lg w-[500px]">
                         <DialogTitle>Add Product</DialogTitle>
-                        <AddProduct onClose={toggleAddProduct} />
+                        <AddProduct handleCloseDialog={toggleAddProduct} />
                     </div>
                 </div>
             )}

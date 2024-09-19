@@ -58,7 +58,7 @@ const TemplateTable: React.FC<Templateprops> = ({ templateList }) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 

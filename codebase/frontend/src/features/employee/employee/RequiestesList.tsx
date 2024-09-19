@@ -11,13 +11,18 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import logo from "../../../../public/vite.svg"
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import MaterialRequestForm from '../../../component/MaterialRequistForm';
-const columns = [
+import MaterialRequestForm from '../../MaterialRequistForm';
+interface Column {
+    id: string;
+    label: string;
+    minWidth: number;
+    align?: 'left' | 'right' | 'center';
+}
+const columns: Column[] = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'orderId', label: 'Order Id', minWidth: 200 },
     { id: 'category', label: 'Category', minWidth: 200, align: 'left' },
@@ -25,11 +30,21 @@ const columns = [
     { id: 'quantity', label: 'Quantity', minWidth: 200, align: 'left' },
     { id: 'status', label: 'Status', minWidth: 200, align: 'left' },
     { id: 'createdAt', label: 'Created at', minWidth: 200, align: 'left' },
-    { id: 'status', label: 'Status', minWidth: 200, align: 'left' },
     { id: 'actions', label: 'Actions', minWidth: 50, align: 'center' },
 ];
 
-function createData(no: number, orderId: string, category: string, product: string, quantity: string, status: string, createdAt: string) {
+interface Data {
+    no: number;
+    orderId: string;
+    category: string;
+    product: string;
+    quantity: string;
+    status: string;
+    createdAt: string;
+}
+
+
+function createData(no: number, orderId: string, category: string, product: string, quantity: string, status: string, createdAt: string): Data {
     return { no, orderId, category, product, quantity, status, createdAt };
 }
 
@@ -48,23 +63,24 @@ const rows = [
 export default function RequiestesList() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [selectedRow, setSelectedRow] = React.useState(null);
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [selectedRow, setSelectedRow] = React.useState<Data | null>(null);
     const [openDialog, setOpenDialog] = React.useState(false);
-
-    const handleChangePage = (event, newPage) => {
+    console.log(selectedRow)
+    const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
 
-    const handleChangeRowsPerPage = (event) => {
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
 
-    const handleMenuClick = (event, row) => {
+    const handleMenuClick = (event: React.MouseEvent<HTMLElement>, row: Data) => {
         setAnchorEl(event.currentTarget);
         setSelectedRow(row);
     };
+
 
     const handleMenuClose = () => {
         setAnchorEl(null);
@@ -123,7 +139,7 @@ export default function RequiestesList() {
                                 {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                                         {columns.map((column) => {
-                                            const value = row[column.id];
+                                            const value = row[column.id as keyof Data];
                                             return (
                                                 <TableCell key={column.id} align={column.align}>
                                                     {column.id === 'actions' ? (

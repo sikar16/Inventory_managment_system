@@ -10,11 +10,22 @@ import TableRow from '@mui/material/TableRow';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { StoreType } from '../../../_types/store_type';
+
+
+
 interface Column {
-    id: string;
+    id: keyof RowData;
     label: string;
     minWidth?: number;
     align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
+}
+
+interface RowData {
+    no: number;
+    storeName: string;
+    city: string;
+    subCity: string;
+    wereda: string;
 }
 
 const columns: Column[] = [
@@ -25,7 +36,7 @@ const columns: Column[] = [
     { id: 'wereda', label: 'Wereda', minWidth: 200, align: 'left' },
 ];
 
-function createData(no: number, storeName: string, city: string, subCity: string, wereda: string) {
+function createData(no: number, storeName: string, city: string, subCity: string, wereda: string): RowData {
     return { no, storeName, city, subCity, wereda };
 }
 
@@ -34,7 +45,7 @@ interface StoreProps {
 }
 
 const WareHouseTable: React.FC<StoreProps> = ({ storeList }) => {
-    const rows = storeList.map((store, index) =>
+    const rows: RowData[] = storeList.map((store, index) =>
         createData(
             index + 1,
             store.name,
@@ -52,7 +63,7 @@ const WareHouseTable: React.FC<StoreProps> = ({ storeList }) => {
         setOpenFaqIndex(openFaqIndex === index ? null : index);
     };
 
-    const handleChangePage = (event: unknown, newPage: number) => {
+    const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
 
@@ -60,8 +71,6 @@ const WareHouseTable: React.FC<StoreProps> = ({ storeList }) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
-
-    console.log(rows)
 
     return (
         <div className="flex mx-[7%]">
@@ -91,7 +100,7 @@ const WareHouseTable: React.FC<StoreProps> = ({ storeList }) => {
                                     <React.Fragment key={index}>
                                         <TableRow hover role="checkbox" tabIndex={-1}>
                                             {columns.map((column) => {
-                                                const value = row[column.id as keyof typeof row];
+                                                const value = row[column.id];
                                                 return (
                                                     <TableCell key={column.id} align={column.align}>
                                                         {value}

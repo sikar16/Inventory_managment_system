@@ -59,6 +59,7 @@ function ConfirmPassword() {
                             handler={toggleThemeData}
                             Icon={getThemeIcon()}
                             iconsClassName="my-custom-icon-class"
+                            children={null}
                         />
                     </div>
                 </div>

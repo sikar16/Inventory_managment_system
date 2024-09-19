@@ -40,9 +40,9 @@ function createData(
   phone: string,
   gender: string,
   address: string,
-  isActive: boolean
+  actions: boolean
 ) {
-  return { no, fullName, department, email, phone, gender, address, isActive };
+  return { no, fullName, department, email, phone, gender, address, actions };
 }
 
 interface UsersTableProps {
@@ -61,18 +61,17 @@ interface RowData {
 }
 
 const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedRow, setSelectedRow] = useState<unknown>(null);
+  const [selectedRow, setSelectedRow] = useState<RowData | null>(null);
   const [rows, setRows] = useState<RowData[]>([]);
   console.log(selectedRow)
-  // Update the rows state whenever userList changes
   useEffect(() => {
     const newRows = userList.map((i) =>
       createData(
         i.id,
-        `${i.profile.firstName} ${i.profile.middleName} ${i.profile.lastName}`,
+        `${i.profile.firstName} ${i.profile.middleName || ''} ${i.profile.lastName}`,
         `${i.department.name}`,
         `${i.email}`,
         `${i.profile.phone}`,
@@ -84,7 +83,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
     setRows(newRows);
   }, [userList]);
 
-  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => {
+  const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement>, newPage: number) => {
     setPage(newPage);
   };
 
@@ -93,7 +92,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
     setPage(0);
   };
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>, row: unknown) => {
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>, row: RowData) => {
     setMenuAnchorEl(event.currentTarget);
     setSelectedRow(row);
   };
@@ -102,8 +101,6 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
     setMenuAnchorEl(null);
     setSelectedRow(null);
   };
-
-
 
   const handleDelete = async (id: number) => {
     try {
@@ -119,20 +116,6 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
     }
   };
 
-  // const handleDelete = async (id: number) => {
-  //   try {
-  //     await fetch(`http://localhost:8888/api/user/${id}`, {
-  //       method: "DELETE",
-  //     });
-  //     console.log(`User with id ${id} deleted`);
-
-  //     setRows((prevRows) => prevRows.filter((row) => row.no !== id));
-  //     setMenuAnchorEl(null);
-  //   } catch (error) {
-  //     console.error("Error deleting user:", error);
-  //   }
-  // };
-
   const activeStatus = (id: number) => {
     setRows((prevRows) =>
       prevRows.map((row) =>
@@ -145,14 +128,14 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
   return (
     <Paper sx={{ width: "100%", overflow: "hidden", padding: "30px" }}>
       <TableContainer sx={{ maxHeight: 440 }}>
-        <Table>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               {columns.map((column) => (
                 <TableCell
                   key={column.id}
                   align={column.align}
-                  style={{ minWidth: column.minWidth }}
+                  style={{ minWidth: column.minWidth, maxWidth: column.maxWidth }}
                 >
                   {column.label}
                 </TableCell>
@@ -209,7 +192,6 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-
       />
     </Paper>
   );

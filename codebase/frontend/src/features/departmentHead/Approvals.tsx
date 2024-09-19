@@ -13,23 +13,35 @@ import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
 // import MaterialRequistForm from '../MaterialRequistForm';
 
-const columns = [
+interface Column {
+    id: string;
+    label: string;
+    minWidth?: number;
+    align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
+}
+
+const columns: Column[] = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'orderId', label: 'Order Id', minWidth: 70 },
     { id: 'requestedEmployee', label: 'Requested Employee', minWidth: 70, align: 'left' },
     { id: 'product', label: 'Product', minWidth: 70, align: 'left' },
     { id: 'quantity', label: 'Quantity', minWidth: 70, align: 'left' },
     { id: 'status', label: 'Status', minWidth: 70, align: 'left' },
-    { id: 'dateOfRequest', label: 'Date of request', minWidth: 70, align: 'left' },
+    { id: 'dateOfRequest', label: 'Date of Request', minWidth: 70, align: 'left' },
 ];
+interface RowData {
+    no: number;
+    orderId: string;
+    requestedEmployee: string;
+    product: string;
+    quantity: string;
+    status: string;
+    dateOfRequest: string;
+}
 
-function createData(no: number, orderId: string, requestedEmployee: string, product: string, quantity: string, status: string, dateOfRequest: string) {
+function createData(no: number, orderId: string, requestedEmployee: string, product: string, quantity: string, status: string, dateOfRequest: string): RowData {
     return { no, orderId, requestedEmployee, product, quantity, status, dateOfRequest };
 }
 
@@ -48,9 +60,9 @@ export default function Approvals() {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [openDialog, setOpenDialog] = React.useState(false);
-    const [selectedProduct, setSelectedProduct] = React.useState<any>(null);
-
-    const handleChangePage = (event: unknown, newPage: number) => {
+    const [selectedProduct, setSelectedProduct] = React.useState<unknown>(null);
+    console.log(selectedProduct)
+    const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
 
@@ -59,7 +71,7 @@ export default function Approvals() {
         setPage(0);
     };
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, product: any) => {
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, product: RowData) => {
         setAnchorEl(event.currentTarget);
         setSelectedProduct(product);
     };
@@ -105,9 +117,9 @@ export default function Approvals() {
                             {rows
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.productId}>
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.no}>
                                         {columns.map((column) => {
-                                            const value = row[column.id];
+                                            const value = row[column.id as keyof RowData];
                                             return (
                                                 <TableCell key={column.id} align={column.align}>
                                                     {value}
@@ -128,7 +140,7 @@ export default function Approvals() {
                                                 open={Boolean(anchorEl)}
                                                 onClose={handleCloseMenu}
                                             >
-                                                <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
+                                                <MenuItem onClick={handleOpenDialog}>Edit</MenuItem>
                                                 <MenuItem onClick={handleCloseMenu}>Delete</MenuItem>
                                             </Menu>
                                         </TableCell>
@@ -147,7 +159,7 @@ export default function Approvals() {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
-            <Dialog open={openDialog} onClose={handleCloseDialog}
+            <Dialog
                 open={openDialog}
                 onClose={handleCloseDialog}
                 PaperProps={{

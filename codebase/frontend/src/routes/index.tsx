@@ -9,7 +9,7 @@ import TemplateList from '../features/admin/template/TemplateList'
 import SupplierList from '../features/admin/suppllier/SuppliersList'
 import WareHouseList from '../features/admin/wareHouse/WareHouseList'
 import IncomingRequest from '../features/departmentHead/IncomingRequest'
-import MaterialRequestForm from '../component/MaterialRequistForm'
+import MaterialRequestForm from '../features/MaterialRequistForm'
 import RequiestDetail from '../features/employee/employee/RequiestDetail'
 import Login from '../features/Login'
 import ConfirmPassword from '../features/ConfirmPassword'
@@ -38,8 +38,8 @@ export const router = createBrowserRouter(
             {/* admin section */}
             <Route path='/admin' element={<AdminLayout />}>
                 <Route path='/admin/dashbord' element={<><h1>dashbord</h1></>} />
-                <Route path='/admin/user' element={<UserList />} />
-                <Route path='/admin/add-user' element={<AddUser />} />
+                <Route path='/admin/user' element={<UserList departments={[]} />} />
+                <Route path='/admin/add-user' element={<AddUser departments={[]} />} />
                 <Route path='/admin/product' element={<ProductList />} />
                 <Route path='/admin/category' element={<CategoryList />} />
                 <Route path='/admin/sub-category' element={<SubCategoryList />} />

@@ -19,7 +19,7 @@ type FormValues = {
   password: string;
 };
 interface AddUserProps {
-  departments: DepartmentType[]; // Define the prop type
+  departments: DepartmentType[];
 }
 
 const AddUser: React.FC<AddUserProps> = ({ departments }) => {

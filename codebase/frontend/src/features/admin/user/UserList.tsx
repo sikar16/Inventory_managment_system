@@ -3,19 +3,19 @@ import UsersTable from "./UsersTable";
 import { Link } from "react-router-dom";
 import { useGetAllUsersQuery } from "../../../services/user_service";
 import Loading from "../../../component/Loading";
-import { useGetAlldepartmentQuery } from "../../../services/department_service";
 import AddUser from "./AddUser";
 import Slider from "../../../component/Slider";
-
-export default function UserList() {
+import { DepartmentType } from "../../../_types/department_type";
+interface AddUserProps {
+  departments: DepartmentType[]; // Assuming departments should be an array of DepartmentType
+}
+const UserList: React.FC<AddUserProps> = ({ departments }) => {
   const [isAddingUser, setIsAddingUser] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [selectedDepartment, setSelectedDepartment] = React.useState<number | null>(null);
 
 
-  const {
-    data: departments,
-  } = useGetAlldepartmentQuery("department");
+
 
   const { data, isLoading, isError, error } = useGetAllUsersQuery("user");
 
@@ -110,3 +110,5 @@ export default function UserList() {
     </div>
   );
 }
+
+export default UserList

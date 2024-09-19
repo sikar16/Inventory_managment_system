@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 
 // Sample data
-const columns = [
+interface Column {
+    id: string;
+    label: string;
+    minWidth: number;
+    align?: 'left' | 'right' | 'center'; // Optional align property
+}
+
+const columns: Column[] = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'category', label: 'Category', minWidth: 70 },
     { id: 'product', label: 'Product', minWidth: 70, align: 'left' },
@@ -11,19 +18,36 @@ const columns = [
     { id: 'dateOfRequest', label: 'Date of Request', minWidth: 70, align: 'left' },
 ];
 
-function createData(no, category, product, quantity, unit, remark, dateOfRequest) {
-    return { no, category, product, quantity, unit, remark, dateOfRequest };
+interface Data {
+    no: number; // Assuming 'no' is a number
+    category: string;
+    product: string;
+    quantity: number; // Assuming 'quantity' is a number
+    unit: string;
+    remark: string;
+    dateOfRequest: string; // Assuming date is represented as a string
 }
 
+function createData(
+    no: number,
+    category: string,
+    product: string,
+    quantity: number,
+    unit: string,
+    remark: string,
+    dateOfRequest: string
+): Data {
+    return { no, category, product, quantity, unit, remark, dateOfRequest };
+}
 const rows = [
-    createData(1, "Electronics", "Hp laptop", "20", 'pices', '...', "8-26-2024"),
-    createData(2, "Electronics", "Dell laptop", "15", '-', '-', "8-25-2024"),
+    createData(1, "Electronics", "Hp laptop", 20, 'pices', '...', "8-26-2024"),
+    createData(2, "Electronics", "Dell laptop", 15, '-', '-', "8-25-2024"),
 ];
 
-const RequestDetail = () => {
-    const [expandedRow, setExpandedRow] = useState(null);
+const RequestDetail: React.FC = () => {
+    const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
-    const handleToggleDetails = (no) => {
+    const handleToggleDetails = (no: number) => {
         setExpandedRow(expandedRow === no ? null : no);
     };
 
@@ -57,7 +81,7 @@ const RequestDetail = () => {
                             <tr>
                                 {columns.map((column) => (
                                     <td key={column.id} className="p-2" style={{ textAlign: column.align }}>
-                                        {row[column.id]}
+                                        {row[column.id as keyof Data]}
                                     </td>
                                 ))}
                                 <td className="p-2">

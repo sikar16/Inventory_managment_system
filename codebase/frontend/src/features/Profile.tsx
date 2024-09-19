@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import LogoContainer from '../component/LogoContainer';
 
 
@@ -10,7 +9,6 @@ function Profile() {
         month: 'long',
         year: 'numeric'
     });
-    const navigate = useNavigate()
     return (
         <>
             <div className=' text-white  items-center justify-center ' >

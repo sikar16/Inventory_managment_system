@@ -142,7 +142,7 @@ export default function ProductList() {
                 productList={filteredProducts || []}
                 anchorEl={anchorEl}
                 setAnchorEl={setAnchorEl}
-                selectedProduct={selectedProduct}
+                selectedProduct={selectedProduct || null}
                 setSelectedProduct={setSelectedProduct}
                 setOpenDetails={setOpenDetails}
             />
