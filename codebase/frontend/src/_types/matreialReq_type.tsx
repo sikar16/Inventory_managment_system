@@ -1,13 +1,13 @@
+import { ProductType } from "./product_type";
 import { UserType } from "./user_type";
 
 export interface MaterialRequestType {
-    userId: number,
+    userId: UserType;
     departmentHeadId: number;
     items: {
-        productId: number;
+        productId: ProductType;
         quantityRequested: number;
         remark: string;
     }[];
-    userType: UserType
-
+    // userType: UserType;
 }

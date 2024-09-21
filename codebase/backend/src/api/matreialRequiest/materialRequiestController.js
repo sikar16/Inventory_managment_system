@@ -61,6 +61,57 @@ const materialRequiestController = {
     }
   },
 
+  // getAllMaterialRequests: async (req, res, next) => {
+  //   try {
+  //     const materialReqs = await prisma.materialRequest.findMany({
+  //       include: {
+  //         _count: true,
+  //         employee: {
+  //           include: {
+  //             profile: true,
+  //           },
+  //         },
+  //         departmentHead: {
+  //           include: {
+  //             profile: true,
+  //             department: true,
+  //           },
+  //         },
+  //         items: {
+  //           where: {
+  //             product: {
+  //               isNot: null,  // Correctly filter out null products
+  //             },
+  //           },
+  //           include: {
+  //             _count: true,
+  //             product: {
+  //               include: {
+  //                 materialRequestItem: true,
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     });
+      
+      
+
+  
+  //     return res.status(200).json({
+  //       success: true,
+  //       message: "Fetched all material requests",
+  //       data: materialReqs,
+  //     });
+  //   } catch (error) {
+  //     return res.status(500).json({
+  //       success: false,
+  //       message: `Error - ${error.message}`,
+  //     });
+  //   }
+  // },
+  
+
   getAllMaterialRequests: async (req, res, next) => {
     try {
       const materialReqs = await prisma.materialRequest.findMany({
@@ -80,11 +131,13 @@ const materialRequiestController = {
           items: {
             include: {
               _count: true,
-              product: {
-                include: {
-                  productAttributes: true,
-                },
-              },
+              // product:true
+              // {
+              //   include:{
+              //     materialRequestItem:true
+              //   }
+              // }
+
             },
           },
         },

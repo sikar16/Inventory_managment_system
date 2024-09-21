@@ -64,7 +64,6 @@ const CategoryTable: React.FC<ProductCategoryProps> = ({
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
-
     const handleClick = (
         event: MouseEvent<HTMLButtonElement>,
         category: ProductCategoryType

@@ -3,14 +3,14 @@ import { MaterialRequestType } from "../_types/matreialReq_type";
 import { getToken } from "../util/getToken";
 import extractErrorMessage from "../util/extractErrorMessage";
 
-
 const baseUrl = import.meta.env.VITE_API_URL;
+
 export const materialReqApi = createApi({
     reducerPath: "materialReqApi",
     baseQuery: fetchBaseQuery({
         baseUrl: `${baseUrl}materialReq`,
         prepareHeaders: async (headers) => {
-            const token = await getToken()
+            const token = await getToken();
             if (token) {
                 headers.set("Authorization", `${token}`);
             }
@@ -28,20 +28,32 @@ export const materialReqApi = createApi({
                 },
             }),
             transformResponse: (response: any) => {
-                console.log(response)
-                return response.success ? (response.data as MaterialRequestType[]) : ([] as MaterialRequestType[])
+                return response.success ? (response.data as MaterialRequestType[]) : [];
             },
             providesTags: ['MaterialReq'],
             transformErrorResponse: (response: any) => {
-                console.log(response)
-                const message = response?.data?.message || "Unknown error"; // Safely access the message
+                const message = response?.data?.message || "Unknown error";
                 return extractErrorMessage(message);
             },
         }),
 
-
+        addNewMaterialReq: builder.mutation<void, MaterialRequestType>({
+            query: (data) => ({
+                url: `/`,
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: data,
+            }),
+            invalidatesTags: ['MaterialReq'],
+            transformErrorResponse: (response: any) => {
+                console.log(response);
+                const message = response?.data?.message || "Unknown error"; // Safely access the message
+                return extractErrorMessage(message);
+            },
+        }),
     }),
 });
 
-
-export const { useGetAllMaterialReqQuery } = materialReqApi;
+export const { useGetAllMaterialReqQuery, useAddNewMaterialReqMutation } = materialReqApi;

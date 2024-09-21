@@ -7,6 +7,7 @@ interface AddCategoryProps {
     handleCloseDialog: () => void
 }
 
+
 const AddCategory: React.FC<AddCategoryProps> = ({ handleCloseDialog }) => {
     const [customCategory, setCustomCategory] = useState('');
     const [addCategory, { isError, isSuccess, isLoading, error }] = useAddNewProductCategoryMutation();

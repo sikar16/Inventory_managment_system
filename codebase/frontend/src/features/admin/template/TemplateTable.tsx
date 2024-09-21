@@ -61,7 +61,7 @@ const TemplateTable: React.FC<TemplateProps> = ({ templateList }) => {
 
   // Pagination and row expansion states
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [openFaqIndex, setOpenFaqIndex] = React.useState<number | null>(null);
 
   // Toggle row expansion
@@ -184,7 +184,7 @@ const TemplateTable: React.FC<TemplateProps> = ({ templateList }) => {
 
         {/* Pagination */}
         <TablePagination
-          rowsPerPageOptions={[5, 10, 15]}
+          rowsPerPageOptions={[10, 15, 20]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}

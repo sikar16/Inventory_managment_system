@@ -8,7 +8,7 @@ import { ProductType } from '../_types/product_type';
 import { useGetAllproductQuery } from '../services/product_service';
 import { TemplateAttributeType } from '../_types/template_type';
 import { useGetAllproductCategoryQuery } from '../services/productCategorySerivce';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface FormData {
     categoryId: string;
@@ -21,15 +21,15 @@ interface FormData {
 }
 
 const MaterialRequestForm: React.FC = () => {
-    const { isSuccess, data: categoryList = [] } = useGetAllproductCategoryQuery();
+    const { isSuccess: isCategorySuccess, data: categoryList = [] } = useGetAllproductCategoryQuery();
     const { data: subCategoriesList = [] } = useGetAllproductSubCategoryQuery('subcategory');
     const { data: productList = [] } = useGetAllproductQuery('product');
-    // const { data: attributesList = [] } = useGetAlltemplateQuery('product');
+
     const [selectedProductAttributes, setSelectedProductAttributes] = useState<{ [key: number]: TemplateAttributeType[] }>({});
 
-    const categories: ProductCategoryType[] = isSuccess ? categoryList : [];
-    const subCategories: ProductSubCategoryType[] = isSuccess ? subCategoriesList : [];
-    const products: ProductType[] = isSuccess ? productList : [];
+    const categories: ProductCategoryType[] = isCategorySuccess ? categoryList : [];
+    const subCategories: ProductSubCategoryType[] = subCategoriesList || [];
+    const products: ProductType[] = productList || [];
 
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm<FormData>({
         defaultValues: {
@@ -49,13 +49,13 @@ const MaterialRequestForm: React.FC = () => {
 
     const addProductToRequest = (data: FormData) => {
         setRequests(prev => [...prev, data]);
-        reset(); // Reset form after adding product
+        reset(); // Reset form after adding a product
     };
 
     const submitRequest = () => {
-        // Handle the submission of all requests (e.g., API call)
+        // Handle the submission of all requests
         console.log("Submitting requests:", requests);
-        // Add your submission logic here
+        // Add submission logic here (e.g., API call)
     };
 
     // Fetch product attributes when subcategory changes
@@ -77,21 +77,21 @@ const MaterialRequestForm: React.FC = () => {
         }).join(', ');
     };
 
+    const navigate = useNavigate();
+
     return (
         <div className="px-6 bg-white rounded-lg pb-8">
             {/* Request List Section */}
             <div className="mb-10">
-                <div className='flex justify-between'>
-                    <p className='text-[#002A47] rounded-e-full pe-20 ps-2 py-[10px] w-1/2 mb-6 text-2xl'>
+                <div className="flex justify-between">
+                    <p className="text-[#002A47] rounded-e-full pe-20 ps-2 py-[10px] w-1/2 mb-6 text-2xl">
                         Material Request Form
                     </p>
-                    <Link to="/department-head/incoming-requests">
-                        <p className="hover:underline text-black text-sm flex justify-start">
-                            Back
-                        </p>
-                    </Link>
+                    <p className="hover:underline text-black text-sm flex justify-start" onClick={() => navigate(-1)}>
+                        Back
+                    </p>
                 </div>
-                <div className='flex gap-4'>
+                <div className="flex gap-4">
                     <p>Requests List</p>
                 </div>
                 <table className="w-full border border-gray-300 rounded-lg">
@@ -172,13 +172,13 @@ const MaterialRequestForm: React.FC = () => {
                                             <label className="text-gray-700 text-sm cursor-pointer">{prod.name}</label>
                                         </td>
                                         <td className="border px-4 py-2 text-sm">
-                                            {selectedProductAttributes[prod.id]?.length > 0 && (
+                                            {selectedProductAttributes[prod.id]?.length > 0 ? (
                                                 <ul>
                                                     {selectedProductAttributes[prod.id].map(attr => (
                                                         <li key={attr.id}>{attr.name}:</li>
                                                     ))}
                                                 </ul>
-                                            )}
+                                            ) : 'No attributes available'}
                                         </td>
                                     </tr>
                                 ))}
@@ -213,31 +213,41 @@ const MaterialRequestForm: React.FC = () => {
                     </div>
                 </div>
 
-                <div>
-                    <label className="block text-gray-700 font-medium mb-2">Desired Date:</label>
-                    <input
-                        type="date"
-                        {...register('desiredDate', { required: 'Desired date is required' })}
-                        className="border border-gray-300 p-3 rounded-lg w-full focus:outline-none"
-                    />
-                    {errors.desiredDate && <p className="text-red-500 text-sm">{errors.desiredDate.message}</p>}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="block text-gray-700 font-medium mb-2">Desired Date:</label>
+                        <input
+                            type="date"
+                            {...register('desiredDate', { required: 'Desired date is required' })}
+                            className="border border-gray-300 p-3 rounded-lg w-full focus:outline-none"
+                        />
+                        {errors.desiredDate && <p className="text-red-500 text-sm">{errors.desiredDate.message}</p>}
+                    </div>
+
+                    <div>
+                        <label className="block text-gray-700 font-medium mb-2">Reason:</label>
+                        <textarea
+                            {...register('reason', { required: 'Reason is required' })}
+                            className="border border-gray-300 p-3 rounded-lg w-full focus:outline-none"
+                            rows={3}
+                        />
+                        {errors.reason && <p className="text-red-500 text-sm">{errors.reason.message}</p>}
+                    </div>
                 </div>
 
-                <div>
-                    <label className="block text-gray-700 font-medium mb-2">Reason:</label>
-                    <textarea
-                        {...register('reason', { required: 'Reason is required' })}
-                        className="border border-gray-300 p-3 rounded-lg w-full focus:outline-none"
-                    />
-                    {errors.reason && <p className="text-red-500 text-sm">{errors.reason.message}</p>}
-                </div>
-                <button type="button" onClick={handleSubmit(addProductToRequest)} className="flex items-center justify-center text-[#002a47]  rounded-lg py-2 px-4">
-                    <FaPlus className="mr-2" /> Add Product
-                </button>
-                <div className="gap-4">
-
-                    <button type="button" onClick={submitRequest} className="bg-[#002a47] text-white rounded-lg py-[6px] px-4 w-full mt-4">
-                        Submit Request
+                <div className="flex justify-between">
+                    <button
+                        type="submit"
+                        className="text-[#002a47]  px-6 py-2 rounded-lg  transition-colors"
+                    >
+                        Add Request
+                    </button>
+                    <button
+                        type="button"
+                        onClick={submitRequest}
+                        className="bg-[#002a47] text-white px-6 py-2 rounded-lg  transition-colors"
+                    >
+                        Submit All Requests
                     </button>
                 </div>
             </form>

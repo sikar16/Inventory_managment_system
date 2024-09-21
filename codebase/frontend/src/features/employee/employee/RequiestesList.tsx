@@ -16,12 +16,16 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import MaterialRequestForm from '../../MaterialRequistForm';
+import { Link } from 'react-router-dom';
+import { useGetAllMaterialReqQuery } from '../../../services/materialReq_service';
+
 interface Column {
     id: string;
     label: string;
     minWidth: number;
     align?: 'left' | 'right' | 'center';
 }
+
 const columns: Column[] = [
     { id: 'no', label: 'No', minWidth: 50 },
     { id: 'orderId', label: 'Order Id', minWidth: 200 },
@@ -33,40 +37,16 @@ const columns: Column[] = [
     { id: 'actions', label: 'Actions', minWidth: 50, align: 'center' },
 ];
 
-interface Data {
-    no: number;
-    orderId: string;
-    category: string;
-    product: string;
-    quantity: string;
-    status: string;
-    createdAt: string;
-}
-
-
-function createData(no: number, orderId: string, category: string, product: string, quantity: string, status: string, createdAt: string): Data {
-    return { no, orderId, category, product, quantity, status, createdAt };
-}
-
-const rows = [
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-    createData(1, "#12345", "Electronics", "Lenevo", "20", "Active", "16-08-2024"),
-];
-
-export default function RequiestesList() {
+export default function RequestsList() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const [selectedRow, setSelectedRow] = React.useState<Data | null>(null);
+    const [selectedRow, setSelectedRow] = React.useState<null | null>(null);
     const [openDialog, setOpenDialog] = React.useState(false);
-    console.log(selectedRow)
+
+    // Fetching data using the hook
+    const { data: materialReq, error, isLoading, isSuccess } = useGetAllMaterialReqQuery();
+
     const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
@@ -76,11 +56,10 @@ export default function RequiestesList() {
         setPage(0);
     };
 
-    const handleMenuClick = (event: React.MouseEvent<HTMLElement>, row: Data) => {
+    const handleMenuClick = (event: React.MouseEvent<HTMLElement>, row: any) => {
         setAnchorEl(event.currentTarget);
         setSelectedRow(row);
     };
-
 
     const handleMenuClose = () => {
         setAnchorEl(null);
@@ -93,144 +72,104 @@ export default function RequiestesList() {
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
+
     return (
-        <div>
-            {/* <div className='w-full bg-[#002a47]'>
-                <div className='ms-10 pt-5 flex justify-between'>
-                    <img src={logo} alt="" className='w-24 md:w-40' />
-                    <svg className='me-10' xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 20 20"><path fill="#ffffff" d="M8.6 3.4L14.2 9H2v2h12.2l-5.6 5.6L10 18l8-8l-8-8z"></path></svg>
-                </div>
-            </div> */}
-            <div className='mx-10 pt-6'>
-                <div>
-                    <div className='flex justify-between mb-3 mx-2'>
-                        <p className='text-[#002a47] text-4xl font-medium'>Requests</p>
-                        <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Create request</button>
-                    </div>
-                </div>
-                <div className='flex gap-8 text-gray-400 mt-8 mb-1'>
-                    <button className='hover:underline hover:text-black'>All requests</button>
-                    <button className='hover:underline hover:text-black'>Accepted requests</button>
-                    <button className='hover:underline hover:text-black'>Pending requests</button>
-                    <button className='hover:underline hover:text-black'>Rejected requests</button>
-                </div>
-                <hr className='w-full text-black bg-black' />
-                <div className='my-4'>
-                    <input type="text" placeholder='Search' className='w-full bg-white rounded-md py-[5px] px-3 outline-none' />
-                </div>
-
-                <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                    <TableContainer sx={{ maxHeight: 440 }}>
-                        <Table stickyHeader aria-label="sticky table">
-                            <TableHead>
-                                <TableRow>
-                                    {columns.map((column) => (
-                                        <TableCell
-                                            key={column.id}
-                                            align={column.align}
-                                            style={{ minWidth: column.minWidth }}
-                                        >
-                                            {column.label}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                                        {columns.map((column) => {
-                                            const value = row[column.id as keyof Data];
-                                            return (
-                                                <TableCell key={column.id} align={column.align}>
-                                                    {column.id === 'actions' ? (
-                                                        <IconButton
-                                                            aria-label="more"
-                                                            aria-controls="long-menu"
-                                                            aria-haspopup="true"
-                                                            onClick={(event) => handleMenuClick(event, row)}
-                                                        >
-                                                            <MoreVertIcon />
-                                                        </IconButton>
-                                                    ) : (
-                                                        value
-                                                    )}
-                                                </TableCell>
-                                            );
-                                        })}
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 15]}
-                        component="div"
-                        count={rows.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </Paper>
-
-                <Dialog
-                    open={openDialog}
-                    onClose={handleCloseDialog}
-                    PaperProps={{
-                        style: {
-                            width: '70vw',
-                            maxWidth: '70vw',
-                        }
-                    }} className="relative mx-auto"
-                >
-                    <div className='flex justify-between p-4'>
-                        <DialogTitle
-                        >
-                            <p className='bg-[#002a47] text-white rounded-e-full pe-20 ps-2 py-[5px] '>
-                                Material Request Form
-                            </p>
-                            {/* Material Request Form */}
-                        </DialogTitle>
-                        <DialogActions>
-                            <svg
-                                onClick={handleCloseDialog}
-                                xmlns="http://www.w3.org/2000/svg"
-                                width={25}
-                                height={25}
-                                viewBox="0 0 24 24"
-                                className="cursor-pointer"
-                            >
-                                <path
-                                    fill="none"
-                                    stroke="black"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={1.5}
-                                    d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"
-                                ></path>
-                            </svg>
-                        </DialogActions>
-                    </div>
-                    <div>
-                        <DialogContent>
-                            <MaterialRequestForm />
-                        </DialogContent>
-                    </div>
-                </Dialog>
-
-
-
-                <Menu
-                    id="long-menu"
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={Boolean(anchorEl)}
-                    onClose={handleMenuClose}
-                >
-                    <MenuItem>Update</MenuItem>
-                    <MenuItem>Delete</MenuItem>
-                </Menu>
+        <div className="mx-10 pt-6">
+            <div className="flex justify-between mb-3 mx-2">
+                <p className="text-[#002a47] text-4xl font-medium">Requests</p>
+                <Link to='/employee/create-requests'>
+                    <button className='bg-[#002A47] px-3 py-1 text-white rounded-md'>Create request</button>
+                </Link>
             </div>
+
+            <div className="flex gap-8 text-gray-400 mt-8 mb-1">
+                <button className="hover:underline hover:text-black">All requests</button>
+                <button className="hover:underline hover:text-black">Accepted requests</button>
+                <button className="hover:underline hover:text-black">Pending requests</button>
+                <button className="hover:underline hover:text-black">Rejected requests</button>
+            </div>
+
+            <hr className="w-full text-black bg-black" />
+
+            <div className="my-4">
+                <input type="text" placeholder='Search' className='w-full bg-white rounded-md py-[5px] px-3 outline-none' />
+            </div>
+
+            <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                <TableContainer sx={{ maxHeight: 440 }}>
+                    <Table stickyHeader aria-label="sticky table">
+                        <TableHead>
+                            <TableRow>
+                                {columns.map((column) => (
+                                    <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
+                                        {column.label}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {isLoading && (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} align="center">
+                                        Loading...
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                            {error && (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} align="center">
+                                        Error fetching data
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                            {isSuccess && materialReq?.map((row: any, index: number) => (
+                                <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                                    {columns.map((column) => {
+                                        const value = row[column.id];
+                                        return (
+                                            <TableCell key={column.id} align={column.align}>
+                                                {value}
+                                            </TableCell>
+                                        );
+                                    })}
+                                    <TableCell align="center">
+                                        <IconButton onClick={(event) => handleMenuClick(event, row)}>
+                                            <MoreVertIcon />
+                                        </IconButton>
+                                        <Menu
+                                            anchorEl={anchorEl}
+                                            open={Boolean(anchorEl)}
+                                            onClose={handleMenuClose}
+                                        >
+                                            <MenuItem onClick={handleOpenDialog}>View Details</MenuItem>
+                                            <MenuItem onClick={handleMenuClose}>Edit</MenuItem>
+                                        </Menu>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={materialReq?.length || 0}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+            </Paper>
+
+            <Dialog open={openDialog} onClose={handleCloseDialog}>
+                <DialogTitle>View Request Details</DialogTitle>
+                <DialogContent>
+                    jjj
+                </DialogContent>
+                <DialogActions>
+                    <button onClick={handleCloseDialog}>Close</button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 }
