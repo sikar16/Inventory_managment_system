@@ -7,6 +7,7 @@ export type ThemeProviderProps = {
 };
 
 export type ThemeProviderState = {
+  muiTheme: Theme;
   themeData: Theme;
   setThemeData: (themeData: Theme) => void;
 };

@@ -4,8 +4,10 @@ import {
   Theme,
   ThemeProviderState,
 } from "../_types/them_type";
+import { createTheme } from "@mui/material";
 
 const initialState: ThemeProviderState = {
+  muiTheme: "dark",
   themeData: "system",
   setThemeData: () => null,
 };
@@ -21,6 +23,11 @@ export const ThemeProvider = ({
   const [themeData, setThemeData] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   );
+  const muiTheme = createTheme({
+    palette: {
+      mode: themeData == "dark" ? "dark" : "light",
+    },
+  });
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -40,6 +47,7 @@ export const ThemeProvider = ({
   }, [themeData]);
 
   const value = {
+    muiTheme,
     themeData,
     setThemeData: (themeData: Theme) => {
       localStorage.setItem(storageKey, themeData);

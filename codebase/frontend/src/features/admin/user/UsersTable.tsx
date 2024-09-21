@@ -12,13 +12,15 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { UserType } from "../../../_types/user_type";
+import { ThemeProvider } from "@mui/material";
+import { useThemeData } from "../../../context/them_context";
 
 interface Column {
   id: keyof RowData;
   label: string;
   minWidth?: number;
   maxWidth?: number;
-  align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
+  align?: "inherit" | "left" | "center" | "right" | "justify";
 }
 
 const columns: Column[] = [
@@ -66,12 +68,14 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedRow, setSelectedRow] = useState<RowData | null>(null);
   const [rows, setRows] = useState<RowData[]>([]);
-  console.log(selectedRow)
+  console.log(selectedRow);
   useEffect(() => {
     const newRows = userList.map((i) =>
       createData(
         i.id,
-        `${i.profile.firstName} ${i.profile.middleName || ''} ${i.profile.lastName}`,
+        `${i.profile.firstName} ${i.profile.middleName || ""} ${
+          i.profile.lastName
+        }`,
         `${i.department.name}`,
         `${i.email}`,
         `${i.profile.phone}`,
@@ -83,18 +87,26 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
     setRows(newRows);
   }, [userList]);
 
-  const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+  const handleChangePage = (
+    _event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setRowsPerPage(Number(event.target.value)); // Ensure the value is a number
     setPage(0);
   };
 
-  console.log(handleChangeRowsPerPage)
+  console.log(handleChangeRowsPerPage);
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>, row: RowData) => {
+  const handleMenuClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    row: RowData
+  ) => {
     setMenuAnchorEl(event.currentTarget);
     setSelectedRow(row);
   };
@@ -137,7 +149,10 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
                 <TableCell
                   key={column.id}
                   align={column.align}
-                  style={{ minWidth: column.minWidth, maxWidth: column.maxWidth }}
+                  style={{
+                    minWidth: column.minWidth,
+                    maxWidth: column.maxWidth,
+                  }}
                 >
                   {column.label}
                 </TableCell>
@@ -145,44 +160,56 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-              <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                {columns.map((column) => {
-                  const value = row[column.id];
-                  return (
-                    <TableCell key={column.id} align={column.align}>
-                      {column.id === "actions" ? (
-                        <>
-                          <IconButton
-                            aria-label="more"
-                            aria-controls="long-menu"
-                            aria-haspopup="true"
-                            onClick={(event) => handleMenuClick(event, row)}
-                          >
-                            <MoreVertIcon />
-                          </IconButton>
-                          <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
-                            <MenuItem>Edit</MenuItem>
-                            <MenuItem onClick={() => handleDelete(row.no)}>Delete</MenuItem>
-                            {row.actions ? (
-                              <MenuItem onClick={() => activeStatus(row.no)}>
-                                <button className="text-red-600">Deactivate</button>
+            {rows
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row, index) => (
+                <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                  {columns.map((column) => {
+                    const value = row[column.id];
+                    return (
+                      <TableCell key={column.id} align={column.align}>
+                        {column.id === "actions" ? (
+                          <>
+                            <IconButton
+                              aria-label="more"
+                              aria-controls="long-menu"
+                              aria-haspopup="true"
+                              onClick={(event) => handleMenuClick(event, row)}
+                            >
+                              <MoreVertIcon />
+                            </IconButton>
+                            <Menu
+                              anchorEl={menuAnchorEl}
+                              open={Boolean(menuAnchorEl)}
+                              onClose={handleCloseMenu}
+                            >
+                              <MenuItem>Edit</MenuItem>
+                              <MenuItem onClick={() => handleDelete(row.no)}>
+                                Delete
                               </MenuItem>
-                            ) : (
-                              <MenuItem onClick={() => activeStatus(row.no)}>
-                                <button className="text-green-600">Activate</button>
-                              </MenuItem>
-                            )}
-                          </Menu>
-                        </>
-                      ) : (
-                        value
-                      )}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))}
+                              {row.actions ? (
+                                <MenuItem onClick={() => activeStatus(row.no)}>
+                                  <button className="text-red-600">
+                                    Deactivate
+                                  </button>
+                                </MenuItem>
+                              ) : (
+                                <MenuItem onClick={() => activeStatus(row.no)}>
+                                  <button className="text-green-600">
+                                    Activate
+                                  </button>
+                                </MenuItem>
+                              )}
+                            </Menu>
+                          </>
+                        ) : (
+                          value
+                        )}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
