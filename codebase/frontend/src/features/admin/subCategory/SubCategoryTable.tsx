@@ -9,6 +9,9 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { ProductSubCategoryType } from "../../../_types/productSubcategory_type";
 import { useDeleteProductSubCategoryMutation } from "../../../services/productSubcategory_service";
+import { IconButton, Menu, MenuItem } from "@mui/material";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+
 const columns: {
   id: string;
   label: string;
@@ -35,14 +38,19 @@ type RowData = ReturnType<typeof createData>;
 
 interface productSubcategoryprops {
   subcategoryList: ProductSubCategoryType[];
+  anchorEl: null | HTMLElement;
+  setAnchorEl: (value: null | HTMLElement) => void;
+  setSelectedSubCategory: (product: ProductSubCategoryType) => void;
+  selectedSubCategory: ProductSubCategoryType | null;
 }
 
 const SubCategoryTable: React.FC<productSubcategoryprops> = ({
-  subcategoryList,
+  subcategoryList, setSelectedSubCategory, anchorEl, setAnchorEl, selectedSubCategory
 }) => {
   const rows: RowData[] = subcategoryList.map((i) =>
     createData(i.id, `${i.id}`, `${i.category.name}`, `${i.name}`)
   );
+  console.log(selectedSubCategory?.id)
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -56,11 +64,27 @@ const SubCategoryTable: React.FC<productSubcategoryprops> = ({
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+  const handleClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    subCategory: ProductSubCategoryType
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedSubCategory(subCategory);
+  };
   const [deleteProductSubCategory] = useDeleteProductSubCategoryMutation();
 
-  const handleDelete = (id: string) => {
-    console.log(id)
-    deleteProductSubCategory(id);
+  const handleDelete = async (id: string) => {
+    console.log("Deleting category with ID:", id);  // Log to check if the correct id is passed
+    try {
+      await deleteProductSubCategory(id).unwrap(); // Ensure the correct ID is being used
+      console.log("Category deleted successfully");
+    } catch (error) {
+      console.error("Failed to delete category:", error);
+    }
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
   };
   return (
     <>
@@ -85,27 +109,44 @@ const SubCategoryTable: React.FC<productSubcategoryprops> = ({
               <TableBody>
                 {rows
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={row.category}
-                    >
-                      {columns.map((column) => {
-                        const value = row[column.id as keyof RowData];
-                        return (
-                          <TableCell key={column.id} align={column.align}>
-                            {value}
-                          </TableCell>
-                        );
-                      })}
-                      <TableCell align="center">
-                        <button onClick={() => handleDelete(row.subcategoryId)}>Delete</button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  .map((row, index) => {
+                    const category = subcategoryList[index]; // Ensure the correct product is accessed for each row
+
+                    return (
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.category}>
+                        {columns.map((column) => {
+                          const value = row[column.id as keyof RowData];
+                          return (
+                            <TableCell key={column.id} align={column.align || 'left'}>
+                              {value}
+                            </TableCell>
+                          );
+                        })}
+                        <TableCell align="center">
+                          <IconButton
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            onClick={(event) => handleClick(event, category)} // Pass the correct category object here
+                          >
+                            <MoreVertIcon />
+                          </IconButton>
+                          <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleCloseMenu}
+                          >
+                            <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
+                            <MenuItem onClick={() => handleDelete(row.subcategoryId)}> {/* Pass the correct id */}
+                              Delete
+                            </MenuItem>
+                          </Menu>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
+
             </Table>
           </TableContainer>
           <TablePagination

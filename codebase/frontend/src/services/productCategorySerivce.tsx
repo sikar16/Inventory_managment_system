@@ -61,18 +61,26 @@ export const productCategoryApi = createApi({
         }),
         deleteProductCategory: builder.mutation<void, string>({
             query: (id) => ({
-                url: `/${id}`,
+                url: `/${id}`,  // Ensure this matches your backend route
                 method: 'DELETE',
                 headers: {
                     "Content-Type": "application/json",
+                    // Assuming token is required, it should already be attached in `prepareHeaders`
                 },
             }),
-            invalidatesTags: ['ProductCategory'],
+            invalidatesTags: ['ProductCategory'],  // This should trigger a refresh after deletion
             transformErrorResponse: (response: any) => {
-                const message = response?.data?.message || "Unknown error"; // Safely access the message
-                return extractErrorMessage(message);
+                console.log("Delete error response: ", response);
+                try {
+                    const message = response?.data?.message || "Error occurred while deleting";
+                    return extractErrorMessage(message);
+                } catch (error) {
+                    console.error('Error in transformErrorResponse:', error);
+                    return 'An unexpected error occurred while processing your request.';
+                }
             },
         }),
+
     }),
 });
 

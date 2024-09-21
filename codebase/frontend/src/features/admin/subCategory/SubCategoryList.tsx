@@ -9,10 +9,13 @@ import Title from '../../../component/TablesTitle';
 import Loader from '../../../component/Loading';
 import { useGetAllproductCategoryQuery } from '../../../services/productCategorySerivce';
 import { useGetAllproductSubCategoryQuery } from '../../../services/productSubcategory_service';
+import { ProductSubCategoryType } from '../../../_types/productSubcategory_type';
 
 export default function SubCategoryList() {
     const [openDialog, setOpenDialog] = React.useState(false);
     const [searchTerm, setSearchTerm] = React.useState('');
+    const [selectedSubCategory, setSelectedSubCategory] = React.useState<ProductSubCategoryType>();
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleOpenDialog = () => setOpenDialog(true);
     const handleCloseDialog = () => setOpenDialog(false);
@@ -85,7 +88,12 @@ export default function SubCategoryList() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <SubCategoryTable subcategoryList={filteredSubCategories || []} />
+                <SubCategoryTable
+                    subcategoryList={filteredSubCategories || []}
+                    anchorEl={anchorEl}
+                    setAnchorEl={setAnchorEl}
+                    selectedSubCategory={selectedSubCategory || null}
+                    setSelectedSubCategory={setSelectedSubCategory} />
                 <Dialog open={openDialog} onClose={handleCloseDialog}>
                     <div className='flex justify-between me-5'>
                         <DialogTitle>Add new sub category</DialogTitle>

@@ -9,6 +9,7 @@ import { productApi } from "../services/product_service";
 import { templateApi } from "../services/template_service";
 import { storeApi } from "../services/store_service";
 import { departmentApi } from "../services/department_service";
+import { materialReqApi } from "../services/materialReq_service";
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
     [templateApi.reducerPath]: templateApi.reducer,
     [storeApi.reducerPath]: storeApi.reducer,
     [departmentApi.reducerPath]: departmentApi.reducer,
+    [materialReqApi.reducerPath]: materialReqApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -33,7 +35,8 @@ export const store = configureStore({
       .concat(productApi.middleware)
       .concat(templateApi.middleware)
       .concat(storeApi.middleware)
-      .concat(departmentApi.middleware),
+      .concat(departmentApi.middleware)
+      .concat(materialReqApi.middleware),
 });
 
 setupListeners(store.dispatch);

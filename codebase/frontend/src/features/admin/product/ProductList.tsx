@@ -72,9 +72,9 @@ export default function ProductList() {
             (searchTerm === "" ||
                 product.name?.toLowerCase().includes(searchTerm.toLowerCase())) &&
             (selectedCategory === undefined ||
-                product.subcategory?.category.name === selectedCategory) &&
+                product.subcategory?.category?.id === selectedCategory?.id) && // Fix the comparison here
             (selectedSubCategory === undefined ||
-                product.subcategory?.name === selectedSubCategory)
+                product.subcategory?.id === selectedSubCategory?.id) // Fix for subcategory comparison
     );
 
 
@@ -86,22 +86,17 @@ export default function ProductList() {
             <div className='flex flex-wrap gap-2 mt-10 mb-5'>
                 <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
                     <p className='me-3 text-gray-500'>Category :</p>
-                    {/* <select
-                        className='bg-[#faf9f9] text-gray-700'
-                        value={selectedCategory}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                    >
-                        <option value="">All Categories</option>
-                        {productCategories && productCategories.map((productCategory) => (
-                            <option key={productCategory.id} value={productCategory.id}>
-                                {productCategory.name}
-                            </option>
-                        ))}
-                    </select> */}
+
                     <select
                         className='bg-[#faf9f9] text-gray-700'
-                        value={selectedCategory || ''}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        value={selectedCategory?.id || ''}
+                        onChange={(e) => {
+                            const selectedId = e.target.value;
+                            if (productCategories) {
+                                const selectedCategoryObj = productCategories.find((category) => category.id === Number(selectedId));
+                                setSelectedCategory(selectedCategoryObj || undefined); // Set the found category or undefined
+                            }
+                        }}
                     >
                         <option value="">All Categories</option>
                         {productCategories && productCategories.map((productCategory) => (
@@ -111,13 +106,23 @@ export default function ProductList() {
                         ))}
                     </select>
 
+
+
                 </div>
                 <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
                     <p className='me-3 text-gray-500'>Sub Category :</p>
                     <select
                         className='bg-[#faf9f9] text-gray-700'
-                        value={selectedSubCategory}
-                        onChange={(e) => setSelectedSubCategory(e.target.value)}
+                        value={selectedSubCategory?.id || ''}
+                        onChange={(e) => {
+                            const selectedId = e.target.value;
+                            if (productSubCategories) {
+                                const selectedSubCategoryObj = productSubCategories.find(
+                                    (subCategory) => subCategory.id === Number(selectedId) // Convert to number
+                                );
+                                setSelectedSubCategory(selectedSubCategoryObj || undefined); // Set the found subcategory or undefined
+                            }
+                        }}
                     >
                         <option value="">All Subcategories</option>
                         {productSubCategories && productSubCategories.map((productSubCategory) => (
@@ -126,6 +131,7 @@ export default function ProductList() {
                             </option>
                         ))}
                     </select>
+
                 </div>
                 <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
                     <p className='me-3 text-gray-500'>Template :</p>

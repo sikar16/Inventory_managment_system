@@ -12,12 +12,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import MaterialRequistForm from '../MaterialRequistForm';
-import Title from '../../component/TablesTitle';
+import { Link } from 'react-router-dom';
 
 interface Column {
     id: string;
@@ -65,7 +60,6 @@ export default function IncomingRequest() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const [openDialog, setOpenDialog] = React.useState(false);
     const [selectedProduct, setSelectedProduct] = React.useState<RowType | null>(null);
     console.log(selectedProduct)
     const handleChangePage = (_event: unknown, newPage: number) => {
@@ -86,21 +80,29 @@ export default function IncomingRequest() {
         setAnchorEl(null);
     };
 
-    const handleOpenDialog = () => {
-        setOpenDialog(true);
+
+    const [addMaterialReq, setAddMaterialReq] = React.useState(false);
+    console.log(addMaterialReq)
+    const handleAddMaterialReq = () => {
+        setAddMaterialReq(true); // Set to true when adding a user
     };
 
-    const handleCloseDialog = () => {
-        setOpenDialog(false);
-    };
 
     return (
         <div className='mt-10 mx-7'>
-            {/* <div className='flex justify-between mb-3 mx-2'>
-                <p className='text-[#002a47] text-4xl font-medium'>Incoming request</p>
-                <button className='bg-[#002A47] px-3 py-1 text-white rounded-md' onClick={handleOpenDialog}>Add Product</button>
-            </div> */}
-            <Title tableName={"Incoming request"} action={'Create req'} onClick={handleOpenDialog} />
+
+            {/* <Link onClick={handleOpenDialog} to="/employee/create-requests">
+                <Title tableName={"Incoming request"} action={'Create req'} />
+            </Link> */}
+
+            <div className='flex justify-between mb-3 mx-4'>
+                <p className='text-[#002a47] dark:text-gray-200 text-4xl font-medium'>Incoming Requestes</p>
+                <Link to='/department-head/material-request'>
+                    <button onClick={handleAddMaterialReq} className='bg-[#002A47] dark:bg-[#313131] hover:dark:bg-[#5a5a5a] dark:text-gray-200 px-3 py-1 text-white rounded-md'>
+                        Material Req
+                    </button>
+                </Link>
+            </div>
             <hr className='w-full text-black bg-black' />
             <div className='my-4'>
                 <input type="text" placeholder='Search' className='w-[80%] bg-[#f5f5f5] rounded-2xl py-[5px] px-3' />
@@ -167,7 +169,7 @@ export default function IncomingRequest() {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
-            <Dialog
+            {/* <Dialog
                 open={openDialog}
                 onClose={handleCloseDialog}
                 PaperProps={{
@@ -192,7 +194,9 @@ export default function IncomingRequest() {
                 <DialogContent>
                     <MaterialRequistForm />
                 </DialogContent>
-            </Dialog>
+            </Dialog> */}
+
+
         </div>
     );
 }

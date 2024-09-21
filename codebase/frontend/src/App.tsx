@@ -8,7 +8,7 @@ function App() {
   return (
     <>
       <ToastNotification />
-      <div className='bg-[#F3F3F6] text-[#002A47] dark:bg-zinc-950 dark:text-white  w-full h-[100%]  items-center justify-center'>
+      <div className='bg-white text-[#002A47] dark:bg-zinc-950 dark:text-white  w-full h-[100%]  items-center justify-center'>
         <RouterProvider router={router} />
       </div>
     </>

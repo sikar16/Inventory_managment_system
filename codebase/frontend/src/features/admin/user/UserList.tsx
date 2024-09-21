@@ -10,7 +10,7 @@ import { useGetAlldepartmentQuery } from "../../../services/department_service";
 interface AddUserProps {
   departments: DepartmentType[]; // Assuming departments should be an array of DepartmentType
 }
-const UserList: React.FC<AddUserProps> = ({ departments }) => {
+const UserList: React.FC<AddUserProps> = () => {
   const [isAddingUser, setIsAddingUser] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [selectedDepartment, setSelectedDepartment] = React.useState<number | null>(null);

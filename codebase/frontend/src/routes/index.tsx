@@ -39,7 +39,7 @@ export const router = createBrowserRouter(
             <Route path='/admin' element={<AdminLayout />}>
                 <Route path='/admin/dashbord' element={<><h1>dashbord</h1></>} />
                 <Route path='/admin/user' element={<UserList departments={[]} />} />
-                <Route path='/admin/add-user' element={<AddUser departments={[]} />} />
+                <Route path='/admin/add-user' element={<AddUser />} />
                 <Route path='/admin/product' element={<ProductList />} />
                 <Route path='/admin/category' element={<CategoryList />} />
                 <Route path='/admin/sub-category' element={<SubCategoryList />} />
@@ -53,20 +53,13 @@ export const router = createBrowserRouter(
             </Route>
 
             {/* employees section */}
-
-
-
-
-            {/* employees section */}
-
             <Route path='/employee' element={<EmployeeLayout />}>
                 <Route path='/employee/requests-list' element={<RequiestesList />} />
                 <Route path='/employee/create-requests' element={<MaterialRequestForm />} />
             </Route>
-
+            {/* employees section */}
 
             {/* {department section} */}
-
             <Route path='/department-head' element={<DepartmentHeadLayout />}>
                 <Route path='/department-head/incoming-requests' element={<IncomingRequest />} />
                 <Route path='/department-head/material-request' element={<MaterialRequestForm />} />
@@ -76,7 +69,6 @@ export const router = createBrowserRouter(
             </Route>
 
             {/* {logeistic section} */}
-
             <Route path='/logestics' element={<LogesticsLayout />}>
                 <Route path='/logestics/dashbord' element={<p>logestics dashbord</p>} />
                 <Route path='/logestics/incoming-requests' element={<IncomingRequest />} />

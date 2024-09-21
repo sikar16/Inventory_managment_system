@@ -5,6 +5,7 @@ import extractErrorMessage from "../util/extractErrorMessage";
 import { getToken } from "../util/getToken";
 const baseUrl = import.meta.env.VITE_API_URL;
 
+
 interface FormDataType {
   firstName: string;
   middleName: string;

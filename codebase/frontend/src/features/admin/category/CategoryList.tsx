@@ -9,10 +9,14 @@ import Title from '../../../component/TablesTitle';
 import { useGetAllproductCategoryQuery } from '../../../services/productCategorySerivce'; // Ensure you're importing correctly
 import Loading from '../../../component/Loading';
 import { useAuth } from '../../../context/AuthContext';
+import { ProductCategoryType } from '../../../_types/productCategory_type';
 
 export default function CategoryList() {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [openDialog, setOpenDialog] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState<ProductCategoryType>();
+
     const { userData, isAdmin } = useAuth();
     console.log(userData)
 
@@ -71,7 +75,13 @@ export default function CategoryList() {
                         />
                     </div>
 
-                    <CategoryTable productCategorylist={filteredCategories} />
+                    <CategoryTable
+                        productCategorylist={filteredCategories}
+                        setAnchorEl={setAnchorEl}
+                        anchorEl={anchorEl}
+                        selectedCategory={selectedCategory || null}
+                        setSelectedCategory={setSelectedCategory}
+                    />
 
                     <Dialog open={openDialog} onClose={handleCloseDialog}>
                         <div className='flex justify-between me-5'>
