@@ -319,24 +319,6 @@ CREATE TABLE `_MaterialRequestItemToProductAttribute` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `_PurceasedRequestedItemToPurchasedRequest` (
-    `A` INTEGER NOT NULL,
-    `B` INTEGER NOT NULL,
-
-    UNIQUE INDEX `_PurceasedRequestedItemToPurchasedRequest_AB_unique`(`A`, `B`),
-    INDEX `_PurceasedRequestedItemToPurchasedRequest_B_index`(`B`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `_PurchasedOrderToPurchasedOrderItem` (
-    `A` INTEGER NOT NULL,
-    `B` INTEGER NOT NULL,
-
-    UNIQUE INDEX `_PurchasedOrderToPurchasedOrderItem_AB_unique`(`A`, `B`),
-    INDEX `_PurchasedOrderToPurchasedOrderItem_B_index`(`B`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `_OfferItemToProduct` (
     `A` INTEGER NOT NULL,
     `B` INTEGER NOT NULL,
@@ -409,13 +391,13 @@ ALTER TABLE `MaterialRequestItem` ADD CONSTRAINT `MaterialRequestItem_productId_
 ALTER TABLE `PurchasedRequest` ADD CONSTRAINT `PurchasedRequest_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `PurceasedRequestedItem` ADD CONSTRAINT `PurceasedRequestedItem_purchasedRequestId_fkey` FOREIGN KEY (`purchasedRequestId`) REFERENCES `MaterialRequest`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `PurceasedRequestedItem` ADD CONSTRAINT `PurceasedRequestedItem_purchasedRequestId_fkey` FOREIGN KEY (`purchasedRequestId`) REFERENCES `PurchasedRequest`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `PurchasedOrder` ADD CONSTRAINT `PurchasedOrder_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `PurchasedOrderItem` ADD CONSTRAINT `PurchasedOrderItem_purchasOrderId_fkey` FOREIGN KEY (`purchasOrderId`) REFERENCES `MaterialRequest`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `PurchasedOrderItem` ADD CONSTRAINT `PurchasedOrderItem_purchasOrderId_fkey` FOREIGN KEY (`purchasOrderId`) REFERENCES `PurchasedOrder`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `SupplayerOffer` ADD CONSTRAINT `SupplayerOffer_purchasedOrderId_fkey` FOREIGN KEY (`purchasedOrderId`) REFERENCES `PurchasedOrder`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -464,18 +446,6 @@ ALTER TABLE `_MaterialRequestItemToProductAttribute` ADD CONSTRAINT `_MaterialRe
 
 -- AddForeignKey
 ALTER TABLE `_MaterialRequestItemToProductAttribute` ADD CONSTRAINT `_MaterialRequestItemToProductAttribute_B_fkey` FOREIGN KEY (`B`) REFERENCES `ProductAttribute`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_PurceasedRequestedItemToPurchasedRequest` ADD CONSTRAINT `_PurceasedRequestedItemToPurchasedRequest_A_fkey` FOREIGN KEY (`A`) REFERENCES `PurceasedRequestedItem`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_PurceasedRequestedItemToPurchasedRequest` ADD CONSTRAINT `_PurceasedRequestedItemToPurchasedRequest_B_fkey` FOREIGN KEY (`B`) REFERENCES `PurchasedRequest`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_PurchasedOrderToPurchasedOrderItem` ADD CONSTRAINT `_PurchasedOrderToPurchasedOrderItem_A_fkey` FOREIGN KEY (`A`) REFERENCES `PurchasedOrder`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_PurchasedOrderToPurchasedOrderItem` ADD CONSTRAINT `_PurchasedOrderToPurchasedOrderItem_B_fkey` FOREIGN KEY (`B`) REFERENCES `PurchasedOrderItem`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_OfferItemToProduct` ADD CONSTRAINT `_OfferItemToProduct_A_fkey` FOREIGN KEY (`A`) REFERENCES `OfferItem`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
