@@ -7,7 +7,7 @@ import {
 import { createTheme } from "@mui/material";
 
 const initialState: ThemeProviderState = {
-  muiTheme: "dark",
+  muiTheme: createTheme({}),
   themeData: "system",
   setThemeData: () => null,
 };

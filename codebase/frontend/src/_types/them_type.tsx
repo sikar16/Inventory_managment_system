@@ -1,3 +1,5 @@
+import { Theme as MuiTheme } from "@mui/material";
+
 export type Theme = "dark" | "light" | "system";
 
 export type ThemeProviderProps = {
@@ -7,7 +9,7 @@ export type ThemeProviderProps = {
 };
 
 export type ThemeProviderState = {
-  muiTheme: Theme;
+  muiTheme: MuiTheme;
   themeData: Theme;
   setThemeData: (themeData: Theme) => void;
 };

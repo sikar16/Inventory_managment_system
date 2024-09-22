@@ -1,178 +1,273 @@
-import React, { useEffect, useState } from 'react';
-import { useGetSingleMaterialReqQuery } from '../../../services/materialReq_service';
-import { useParams } from 'react-router-dom';
-import Loader from '../../../component/Loading';
+import React, { useState } from "react";
+import { useGetSingleMaterialReqQuery } from "../../../services/materialReq_service";
+import { useLocation } from "react-router-dom";
+import Loader from "../../../component/Loading";
 
 // Sample data
 interface Column {
-    id: string;
-    label: string;
-    minWidth: number;
-    align?: 'left' | 'right' | 'center'; // Optional align property
+  id: string;
+  label: string;
+  minWidth: number;
+  align?: "left" | "right" | "center"; // Optional align property
 }
 
 const columns: Column[] = [
-    { id: 'no', label: 'No', minWidth: 50 },
-    { id: 'product', label: 'Product', minWidth: 70, align: 'left' },
-    { id: 'subCategory', label: 'Sub-Category', minWidth: 70 },
-    { id: 'category', label: 'Category', minWidth: 70 },
-    { id: 'quantity', label: 'Quantity', minWidth: 70, align: 'left' },
-    { id: 'remark', label: 'Remark', minWidth: 70, align: 'left' },
+  { id: "no", label: "No", minWidth: 50 },
+  { id: "product", label: "Product", minWidth: 70, align: "left" },
+  { id: "subCategory", label: "Sub-Category", minWidth: 70 },
+  { id: "category", label: "Category", minWidth: 70 },
+  { id: "quantity", label: "Quantity", minWidth: 70, align: "left" },
+  { id: "remark", label: "Remark", minWidth: 70, align: "left" },
 ];
 
-
-
-
 interface Data {
-    no: number; // Assuming 'no' is a number
-    product: string;
-    subCategory: string;
-    category: string;
-    quantity: number; // Assuming 'quantity' is a number
-    remark: string;
+  no: number; // Assuming 'no' is a number
+  product: string;
+  subCategory: string;
+  category: string;
+  quantity: number; // Assuming 'quantity' is a number
+  remark: string;
 }
 
 function createData(
-    no: number,
-    product: string,
-    subCategory: string,
-    category: string,
-    quantity: number,
-    remark: string,
+  no: number,
+  product: string,
+  subCategory: string,
+  category: string,
+  quantity: number,
+  remark: string
 ): Data {
-    return { no, product, subCategory, category, quantity, remark };
+  return { no, product, subCategory, category, quantity, remark };
 }
 
-
-
 const RequestDetail: React.FC = () => {
-    const { id } = useParams()
-    const [expandedRow, setExpandedRow] = useState<number | null>(null);
+  const location = useLocation();
+  const { id } = location.state || {}; // Use optional chaining to avoid errors
 
-    const handleToggleDetails = (no: number) => {
-        setExpandedRow(expandedRow === no ? null : no);
-    };
+  console.log(`id : ${id}`);
 
-    const {
-        data: materialReq,
-        isError,
-        error,
-        isLoading,
-        isSuccess,
-    } = useGetSingleMaterialReqQuery(`1`);
+  const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
-    const rows = isSuccess ? materialReq.items.map((item) => createData(item.id, item.product.name, item.product.subcategory.name, item.product.subcategory.category.name, parseInt(item.quantityRequested), item.remark)) : [];
+  const handleToggleDetails = (no: number) => {
+    setExpandedRow(expandedRow === no ? null : no);
+  };
 
-    console.log(1)
+  const {
+    data: materialReq,
+    isError,
+    error,
+    isLoading,
+    isSuccess,
+  } = useGetSingleMaterialReqQuery(id);
 
-    if (isError) {
-        return <p> `${error} ` </p>
-    }
+  const rows = isSuccess
+    ? materialReq.items.map((item) =>
+        createData(
+          item.id,
+          item.product.name,
+          item.product.subcategory.name,
+          item.product.subcategory.category.name,
+          parseInt(item.quantityRequested),
+          item.remark
+        )
+      )
+    : [];
 
-    if (isLoading) {
-        return <Loader />
-    }
-    if (isSuccess) {
-        return (
-            <div>
-                <header className="text-[#002a47] text-2xl py-2.5 px-2 rounded-e-full">
-                    <h2>Employee Information</h2>
-                </header>
-                <div className="p-5 text-sm">
-                    <p>Name: {materialReq.employee.profile.firstName} {materialReq.employee.profile.lastName} {materialReq.employee.profile.middleName}</p>
-                    <p>Role: {materialReq.employee.role}</p>
-                    <p>Department: {materialReq.employee.department.name}</p>
-                    <p>Email: {materialReq.employee.email}</p>
-                    <p>Phone: {materialReq.employee.profile.phone}</p>
-                </div>
+  console.log(1);
 
-                <h2 className="text-[#002a47] py-2.5 px-2 rounded-e-full mb-5 text-2xl">Material Request Overview</h2>
-                <table className="w-full border-collapse">
-                    <thead>
-                        <tr className="bg-gray-200">
-                            {columns.map((column) => (
-                                <td key={column.id} className="p-2 font-medium" style={{ minWidth: column.minWidth }}>
-                                    {column.label}
-                                </td>
-                            ))}
-                            <th className="p-2"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {rows.map((row) => (
-                            <React.Fragment key={row.no}>
-                                <tr>
-                                    {columns.map((column) => (
-                                        <td key={column.id} className="p-2" style={{ textAlign: column.align }}>
-                                            {row[column.id as keyof Data]}
-                                        </td>
-                                    ))}
-                                    <td className="p-2">
-                                        <button
-                                            className=""
-                                            onClick={() => handleToggleDetails(row.no)}
-                                        >
-                                            {expandedRow === row.no ? (
-                                                <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 256 256" ><path fill="#002A47" d="M210.83 162.83a4 4 0 0 1-5.66 0L128 85.66l-77.17 77.17a4 4 0 0 1-5.66-5.66l80-80a4 4 0 0 1 5.66 0l80 80a4 4 0 0 1 0 5.66"></path></svg>
-                                            ) : (<svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 256 256"><path fill="#002A47" d="m210.83 98.83l-80 80a4 4 0 0 1-5.66 0l-80-80a4 4 0 0 1 5.66-5.66L128 170.34l77.17-77.17a4 4 0 1 1 5.66 5.66"></path></svg>)}
-                                        </button>
-                                    </td>
-                                </tr>
+  if (isError) {
+    return <p> `${error.toString()}` </p>;
+  }
 
-                                {expandedRow === row.no && (
-                                    <tr>
-                                        <td colSpan={columns.length + 1} className="p-4 bg-gray-50 border-t border-gray-200 shadow-lg ">
-                                            <div className=" space-y-4  w-[85%] justify-center m-auto p-5" >
-                                                <div className='flex justify-between'>
-                                                    <div className="flex gap-4">
-                                                        <p className=" text-gray-700"><strong>Category:</strong></p>
-                                                        <p className="text-gray-600">{row.category}</p>
-                                                    </div>
-                                                    <div className="flex gap-4">
-                                                        <p className=" text-gray-700"><strong>Sub-Category:</strong></p>
-                                                        <p className="text-gray-600">{row.subCategory}</p>
-                                                    </div>
-                                                    <div className="flex justify-between">
-                                                        <p className=" text-gray-700"><strong>Product Name:</strong></p>
-                                                        <p className="text-gray-600">{row.product}</p>
-                                                    </div>
-                                                </div>
+  if (isLoading) {
+    return <Loader />;
+  }
+  if (isSuccess) {
+    return (
+      <div>
+        <header className="text-[#002a47] text-2xl py-2.5 px-2 rounded-e-full">
+          <h2>Employee Information</h2>
+        </header>
+        <div className="p-5 text-sm">
+          <p>
+            Name: {materialReq.employee.profile.firstName}{" "}
+            {materialReq.employee.profile.lastName}{" "}
+            {materialReq.employee.profile.middleName}
+          </p>
+          <p>Role: {materialReq.employee.role}</p>
+          <p>Department: {materialReq.employee.department.name}</p>
+          <p>Email: {materialReq.employee.email}</p>
+          <p>Phone: {materialReq.employee.profile.phone}</p>
+        </div>
 
-                                                <div className="flex justify-between">
-                                                    <div className="flex justify-between gap-4">
-                                                        <p className=" text-gray-700"><strong>Quantity:</strong></p>
-                                                        <p className="text-gray-600">{row.quantity}</p>
-                                                    </div>
-                                                    <div className="flex justify-between gap-4">
-                                                        <p className=" text-gray-700"><strong>Remark:</strong></p>
-                                                        <p className="text-gray-600">{row.remark}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex gap-4">
-                                                    <p className=" text-gray-700"><strong>Date of Request:</strong></p>
-                                                    <p className="text-gray-600">{materialReq.createdAt}</p>
-                                                </div>
+        <h2 className="text-[#002a47] py-2.5 px-2 rounded-e-full mb-5 text-2xl">
+          Material Request Overview
+        </h2>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-200">
+              {columns.map((column) => (
+                <td
+                  key={column.id}
+                  className="p-2 font-medium"
+                  style={{ minWidth: column.minWidth }}
+                >
+                  {column.label}
+                </td>
+              ))}
+              <th className="p-2"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <React.Fragment key={row.no}>
+                <tr>
+                  {columns.map((column) => (
+                    <td
+                      key={column.id}
+                      className="p-2"
+                      style={{ textAlign: column.align }}
+                    >
+                      {row[column.id as keyof Data]}
+                    </td>
+                  ))}
+                  <td className="p-2">
+                    <button
+                      className=""
+                      onClick={() => handleToggleDetails(row.no)}
+                    >
+                      {expandedRow === row.no ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width={24}
+                          height={24}
+                          viewBox="0 0 256 256"
+                        >
+                          <path
+                            fill="#002A47"
+                            d="M210.83 162.83a4 4 0 0 1-5.66 0L128 85.66l-77.17 77.17a4 4 0 0 1-5.66-5.66l80-80a4 4 0 0 1 5.66 0l80 80a4 4 0 0 1 0 5.66"
+                          ></path>
+                        </svg>
+                      ) : (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width={24}
+                          height={24}
+                          viewBox="0 0 256 256"
+                        >
+                          <path
+                            fill="#002A47"
+                            d="m210.83 98.83l-80 80a4 4 0 0 1-5.66 0l-80-80a4 4 0 0 1 5.66-5.66L128 170.34l77.17-77.17a4 4 0 1 1 5.66 5.66"
+                          ></path>
+                        </svg>
+                      )}
+                    </button>
+                  </td>
+                </tr>
+                {expandedRow === row.no && (
+                  <tr>
+                    <td
+                      colSpan={columns.length + 1}
+                      className="p-4 bg-gray-50 border-t border-gray-200 shadow-lg "
+                    >
+                      <div className=" space-y-4  w-[85%] justify-center m-auto p-5">
+                        <div className="flex justify-between">
+                          <div className="flex gap-4">
+                            <p className=" text-gray-700">
+                              <strong>Category:</strong>
+                            </p>
+                            <p className="text-gray-600">{row.category}</p>
+                          </div>
+                          <div className="flex gap-4">
+                            <p className=" text-gray-700">
+                              <strong>Sub-Category:</strong>
+                            </p>
+                            <p className="text-gray-600">{row.subCategory}</p>
+                          </div>
+                          <div className="flex justify-between">
+                            <p className=" text-gray-700">
+                              <strong>Product Name:</strong>
+                            </p>
+                            <p className="text-gray-600">{row.product}</p>
+                          </div>
+                        </div>
 
-                                            </div>
-                                            <div>
-                                                {  const data= materialReq.items.find(i => i.id==row.no);
+                        <div className="flex justify-between">
+                          <div className="flex justify-between gap-4">
+                            <p className=" text-gray-700">
+                              <strong>Quantity:</strong>
+                            </p>
+                            <p className="text-gray-600">{row.quantity}</p>
+                          </div>
+                          <div className="flex justify-between gap-4">
+                            <p className=" text-gray-700">
+                              <strong>Remark:</strong>
+                            </p>
+                            <p className="text-gray-600">{row.remark}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-4">
+                          <p className=" text-gray-700">
+                            <strong>Date of Request:</strong>
+                          </p>
+                          <p className="text-gray-600">
+                            {materialReq.createdAt}
+                          </p>
+                        </div>
+                      </div>
+                      {/* Detail of product */}
 
-                                              }
-                                                <div className="flex justify-between gap-4">
-                                                    <p className=" text-gray-700"><strong>Reason for Request:</strong></p>
-                                                    <p className="text-gray-600">{materialReq.}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                )}
-                            </React.Fragment>
-                        ))}
-                    </tbody>
-                </table >
-            </div >
-        );
-    }
+                      <div className=" space-y-4  w-[85%] justify-center m-auto p-5">
+                        {materialReq.items.findIndex((i) => i.id === row.no) !==
+                          -1 && (
+                          <div className="flex gap-10">
+                            <p className=" text-gray-700">
+                              <strong>Key:</strong>
+                              <ul>
+                                {materialReq.items[
+                                  materialReq.items.findIndex(
+                                    (i) => i.id === row.no
+                                  )
+                                ].product.productAttributes &&
+                                  materialReq.items[
+                                    materialReq.items.findIndex(
+                                      (i) => i.id === row.no
+                                    )
+                                  ].product.productAttributes.map((item) => (
+                                    <li>{item.templateAttribute.name}</li>
+                                  ))}
+                              </ul>
+                            </p>
+                            <p className=" text-gray-700">
+                              <strong>Value:</strong>
+                              <ul>
+                                {materialReq.items[
+                                  materialReq.items.findIndex(
+                                    (i) => i.id === row.no
+                                  )
+                                ].product.productAttributes &&
+                                  materialReq.items[
+                                    materialReq.items.findIndex(
+                                      (i) => i.id === row.no
+                                    )
+                                  ].product.productAttributes.map((item) => (
+                                    <li>{item.value}</li>
+                                  ))}
+                              </ul>
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
 };
 
 export default RequestDetail;

@@ -16,8 +16,12 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import { Link, useNavigate } from "react-router-dom";
-import { useDeleteMaterialReqMutation, useGetAllMaterialReqQuery } from "../../../services/materialReq_service";
-import { MaterialRequest_type } from "../../../_types/matreialReq_type";
+import {
+  useDeleteMaterialReqMutation,
+  useGetAllMaterialReqQuery,
+} from "../../../services/materialReq_service";
+import { MaterialRequest_type } from "../../../_types/materialReq_type";
+
 interface Column {
   id: string;
   label: string;
@@ -28,44 +32,54 @@ interface Column {
 const columns: Column[] = [
   { id: "no", label: "No", minWidth: 50 },
   { id: "requestId", label: "Request Id", minWidth: 200 },
-  { id: "departmentHeadId", label: "department Head Id", minWidth: 200, align: "left" },
+  {
+    id: "departmentHeadId",
+    label: "Department Head Id",
+    minWidth: 200,
+    align: "left",
+  },
   { id: "createdAt", label: "Created at", minWidth: 200, align: "left" },
   { id: "isApprovedBy", label: "Approved By", minWidth: 50, align: "center" },
 ];
 
-function createData(no: number, requestId: string, departmentHeadId: string, isApprovedBy: string, createdAt: string) {
+function createData(
+  no: number,
+  requestId: string,
+  departmentHeadId: string,
+  isApprovedBy: string,
+  createdAt: string
+) {
   return { no, requestId, departmentHeadId, isApprovedBy, createdAt };
 }
 
 type RowData = ReturnType<typeof createData>;
+
 export default function RequestsList() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  // const [selectedRow, setSelectedRow] = React.useState<null | null>(null);
   const [openDialog, setOpenDialog] = React.useState(false);
-  const [matReq, setMatReq] = React.useState<MaterialRequest_type>();
-
+  const [matReq, setMatReq] = React.useState<MaterialRequest_type | null>(null);
 
   // Fetching data using the hook
   const {
     data: materialReq,
-    error,
+    isError,
     isLoading,
     isSuccess,
   } = useGetAllMaterialReqQuery();
 
-  const rows: RowData[] = isSuccess ? materialReq.map((i, index) =>
-    createData(
-      index + 1, // Use index as the row number
-      `${i.id}`,
-      `${i.departmentHeadId}`,
-      `${i.isApproviedByDH}`,
-      `${i.createdAt}`,
-    )
-  ) : [];
-
-  console.log(materialReq)
+  const rows: RowData[] = isSuccess
+    ? materialReq.map((i, index) =>
+        createData(
+          index + 1, // Use index as the row number
+          `${i.id}`,
+          `${i.departmentHeadId}`,
+          `${i.isApproviedByDH}`,
+          `${i.createdAt}`
+        )
+      )
+    : [];
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -77,6 +91,7 @@ export default function RequestsList() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
@@ -86,43 +101,41 @@ export default function RequestsList() {
     singleMaterialRequest: MaterialRequest_type
   ) => {
     setAnchorEl(event.currentTarget);
-    setMatReq(singleMaterialRequest);
+    setMatReq(singleMaterialRequest); // Store the selected request
   };
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
 
-
   const [deleteMaterialReq] = useDeleteMaterialReqMutation();
 
   const handleDelete = async (id: string) => {
     try {
-      console.log("Deleting category with ID:", id);  // Add logging for better debugging
-      await deleteMaterialReq(id).unwrap();  // Trigger the delete mutation
-      console.log('Category deleted successfully');
+      console.log("Deleting category with ID:", id);
+      await deleteMaterialReq(id).unwrap(); // Trigger the delete mutation
+      console.log("Category deleted successfully");
     } catch (error) {
-      console.error('Failed to delete category:', error);
+      console.error("Failed to delete category:", error);
     }
   };
 
   const handleEdit = async (i: MaterialRequest_type) => {
+    console.log(i);
     try {
-
-      console.log('Category Edit successfully');
+      console.log("Category Edit successfully");
     } catch (error) {
-      console.error('Failed to delete category:', error);
+      console.error("Failed to edit category:", error);
     }
   };
-  const naviget = useNavigate()
-  const handleViwe = async (i: MaterialRequest_type) => {
-    naviget("/employee/requests-Detaile", { state: { id: i.id } })
-    // try {
 
-    //   console.log('Category Edit successfully');
-    // } catch (error) {
-    //   console.error('Failed to delete category:', error);
-    // }
+  const navigate = useNavigate();
+
+  const handleView = async () => {
+    if (matReq) {
+      console.log(`Viewing request with id: ${matReq.id}`);
+      navigate("/employee/requests-Detaile", { state: { id: matReq.id } });
+    }
   };
 
   return (
@@ -160,6 +173,7 @@ export default function RequestsList() {
           className="w-full bg-white rounded-md py-[5px] px-3 outline-none"
         />
       </div>
+
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="sticky table">
@@ -184,51 +198,70 @@ export default function RequestsList() {
                   </TableCell>
                 </TableRow>
               )}
-              {error && (
+              {isError && (
                 <TableRow>
                   <TableCell colSpan={columns.length} align="center">
                     Error fetching data
                   </TableCell>
                 </TableRow>
               )}
-              {isSuccess && rows
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const singleMaterialRequest = materialReq[index]; // Get the product corresponding to the row index
-
-                  return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={row.requestId}>
-                      {columns.map((column) => {
-                        const value = row[column.id as keyof RowData];
-                        return (
-                          <TableCell key={column.id} align={column.align || 'left'}>
-                            {value}
-                          </TableCell>
-                        );
-                      })}
-                      <TableCell align="center">
-                        <IconButton
-                          aria-label="more"
-                          aria-controls="long-menu"
-                          aria-haspopup="true"
-                          onClick={(event) => handleClick(event, singleMaterialRequest)} // Pass the full product object
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
-                        <Menu
-                          anchorEl={anchorEl}
-                          open={Boolean(anchorEl)}
-                          onClose={handleCloseMenu}
-                        >
-                          <MenuItem onClick={() => handleViwe(singleMaterialRequest)}>View detaile</MenuItem>
-                          <MenuItem onClick={() => handleEdit(singleMaterialRequest)}>Edit</MenuItem>
-                          <MenuItem onClick={() => handleDelete(row.requestId)}>Delete</MenuItem>
-                        </Menu>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-
+              {isSuccess &&
+                rows
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => {
+                    const singleMaterialRequest = materialReq[index];
+                    return (
+                      <TableRow
+                        hover
+                        role="checkbox"
+                        tabIndex={-1}
+                        key={row.requestId}
+                      >
+                        {columns.map((column) => {
+                          const value = row[column.id as keyof RowData];
+                          return (
+                            <TableCell
+                              key={column.id}
+                              align={column.align || "left"}
+                            >
+                              {value}
+                            </TableCell>
+                          );
+                        })}
+                        <TableCell align="center">
+                          <IconButton
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            onClick={(event) =>
+                              handleClick(event, singleMaterialRequest)
+                            }
+                          >
+                            <MoreVertIcon />
+                          </IconButton>
+                          <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleCloseMenu}
+                          >
+                            <MenuItem onClick={handleView}>
+                              View detail
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() => handleEdit(singleMaterialRequest)}
+                            >
+                              Edit
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() => handleDelete(row.requestId)}
+                            >
+                              Delete
+                            </MenuItem>
+                          </Menu>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
             </TableBody>
           </Table>
         </TableContainer>
@@ -245,7 +278,7 @@ export default function RequestsList() {
 
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>View Request Details</DialogTitle>
-        <DialogContent>jjj</DialogContent>
+        <DialogContent>Details go here...</DialogContent>
         <DialogActions>
           <button onClick={handleCloseDialog}>Close</button>
         </DialogActions>
