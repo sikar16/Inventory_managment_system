@@ -5,6 +5,7 @@ const materialRequiestController = {
   getSinglematerialRequiest: async (req, res, next) => {
     try {
       const materialReqId = parseInt(req.params.id, 10);
+      console.log(req.params.id)
       if (isNaN(materialReqId)) {
         return res.status(400).json({
           success: false,
@@ -17,107 +18,23 @@ const materialRequiestController = {
           id: materialReqId,
         },
         include: {
-          _count: true,
-          employee: {
-            include: {
-              profile: true,
-            },
-          },
-          departmentHead: {
-            include: {
-              profile: true,
-              department: true,
-            },
-          },
           items: {
             include: {
               _count: true,
               product: {
-                include: {
-                  productAttributes: true,
-                },
+                include:{
+                  subcategory:{
+                    include:{
+                      category:true
+                    }
+                  },
+                  productAttributes:{
+                    include:{
+                      templateAttribute:true
+                    }
+                  }
+                }
               },
-            },
-          },
-        },
-      });
-
-      if (!materialReq) {
-        return res.status(404).json({
-          success: false,
-          message: "Material request not found",
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        message: "Material request fetched successfully",
-        data: materialReq,
-      });
-    } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: `Error - ${error.message}`,
-      });
-    }
-  },
-
-  // getAllMaterialRequests: async (req, res, next) => {
-  //   try {
-  //     const materialReqs = await prisma.materialRequest.findMany({
-  //       include: {
-  //         _count: true,
-  //         employee: {
-  //           include: {
-  //             profile: true,
-  //           },
-  //         },
-  //         departmentHead: {
-  //           include: {
-  //             profile: true,
-  //             department: true,
-  //           },
-  //         },
-  //         items: {
-  //           where: {
-  //             product: {
-  //               isNot: null,  // Correctly filter out null products
-  //             },
-  //           },
-  //           include: {
-  //             _count: true,
-  //             product: {
-  //               include: {
-  //                 materialRequestItem: true,
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     });
-
-  //     return res.status(200).json({
-  //       success: true,
-  //       message: "Fetched all material requests",
-  //       data: materialReqs,
-  //     });
-  //   } catch (error) {
-  //     return res.status(500).json({
-  //       success: false,
-  //       message: `Error - ${error.message}`,
-  //     });
-  //   }
-  // },
-
-  getAllMaterialRequests: async (req, res, next) => {
-    try {
-      console.log(req.user);
-      const materialRequest = await prisma.materialRequest.findMany({
-        include: {
-          items: {
-            include: {
-              _count: true,
-              // product: true,
             },
           },
           employee: {
@@ -142,35 +59,55 @@ const materialRequiestController = {
         },
       });
 
-      // const materialReqs = await prisma.materialRequest.findMany({
-      //   include: {
-      //     _count: true,
-      //     employee: {
-      //       include: {
-      //         profile: true,
-      //       },
-      //     },
-      //     departmentHead: {
-      //       include: {
-      //         profile: true,
-      //         department: true,
-      //       },
-      //     },
-      //     items: {
-      //       include: {
-      //         _count: true,
-      //         // product:true
-      //         // {
-      //         //   include:{
-      //         //     materialRequestItem:true
-      //         //   }
-      //         // }
-      //       },
-      //     },
-      //   },
-      // });
+      if (!materialReq) {
+        return res.status(404).json({
+          success: false,
+          message: "Material request not found",
+        });
+      }
 
-      // console.log(materialReqs);
+      return res.status(200).json({
+        success: true,
+        message: "Material request fetched successfully",
+        data: materialReq,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: `Error - ${error.message}`,
+      });
+    }
+  },
+
+
+  getAllMaterialRequests: async (req, res, next) => {
+    try {
+      console.log(req.user);
+      const materialRequest = await prisma.materialRequest.findMany({
+        include: {
+         
+          employee: {
+            include: {
+              profile: true,
+              department: true,
+            },
+          },
+          logisticSupervisor: {
+            include: {
+              profile: true,
+              department: true,
+            },
+          },
+          departmentHead: {
+            include: {
+              profile: true,
+              department: true,
+            },
+          },
+          _count: true,
+        },
+      });
+
 
       return res.status(200).json({
         success: true,

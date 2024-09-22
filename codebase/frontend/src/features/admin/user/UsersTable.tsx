@@ -12,8 +12,6 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { UserType } from "../../../_types/user_type";
-import { ThemeProvider } from "@mui/material";
-import { useThemeData } from "../../../context/them_context";
 
 interface Column {
   id: keyof RowData;
@@ -73,8 +71,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
     const newRows = userList.map((i) =>
       createData(
         i.id,
-        `${i.profile.firstName} ${i.profile.middleName || ""} ${
-          i.profile.lastName
+        `${i.profile.firstName} ${i.profile.middleName || ""} ${i.profile.lastName
         }`,
         `${i.department.name}`,
         `${i.email}`,

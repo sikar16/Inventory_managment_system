@@ -56,6 +56,7 @@ export const router = createBrowserRouter(
             <Route path='/employee' element={<EmployeeLayout />}>
                 <Route path='/employee/requests-list' element={<RequiestesList />} />
                 <Route path='/employee/create-requests' element={<MaterialRequestForm />} />
+                <Route path='/employee/requests-Detaile' element={<RequiestDetail />} />
             </Route>
             {/* employees section */}
 

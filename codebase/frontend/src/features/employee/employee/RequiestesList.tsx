@@ -15,10 +15,9 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-import { Link } from "react-router-dom";
-import { useGetAllMaterialReqQuery } from "../../../services/materialReq_service";
-
-import { useThemeData } from "../../../context/them_context";
+import { Link, useNavigate } from "react-router-dom";
+import { useDeleteMaterialReqMutation, useGetAllMaterialReqQuery } from "../../../services/materialReq_service";
+import { MaterialRequest_type } from "../../../_types/matreialReq_type";
 interface Column {
   id: string;
   label: string;
@@ -28,22 +27,25 @@ interface Column {
 
 const columns: Column[] = [
   { id: "no", label: "No", minWidth: 50 },
-  { id: "orderId", label: "Order Id", minWidth: 200 },
-  { id: "category", label: "Category", minWidth: 200, align: "left" },
-  { id: "product", label: "Product", minWidth: 200, align: "left" },
-  { id: "quantity", label: "Quantity", minWidth: 200, align: "left" },
-  { id: "status", label: "Status", minWidth: 200, align: "left" },
+  { id: "requestId", label: "Request Id", minWidth: 200 },
+  { id: "departmentHeadId", label: "department Head Id", minWidth: 200, align: "left" },
   { id: "createdAt", label: "Created at", minWidth: 200, align: "left" },
-  { id: "actions", label: "Actions", minWidth: 50, align: "center" },
+  { id: "isApprovedBy", label: "Approved By", minWidth: 50, align: "center" },
 ];
 
+function createData(no: number, requestId: string, departmentHeadId: string, isApprovedBy: string, createdAt: string) {
+  return { no, requestId, departmentHeadId, isApprovedBy, createdAt };
+}
+
+type RowData = ReturnType<typeof createData>;
 export default function RequestsList() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [selectedRow, setSelectedRow] = React.useState<null | null>(null);
+  // const [selectedRow, setSelectedRow] = React.useState<null | null>(null);
   const [openDialog, setOpenDialog] = React.useState(false);
-  const { muiTheme } = useThemeData();
+  const [matReq, setMatReq] = React.useState<MaterialRequest_type>();
+
 
   // Fetching data using the hook
   const {
@@ -52,6 +54,18 @@ export default function RequestsList() {
     isLoading,
     isSuccess,
   } = useGetAllMaterialReqQuery();
+
+  const rows: RowData[] = isSuccess ? materialReq.map((i, index) =>
+    createData(
+      index + 1, // Use index as the row number
+      `${i.id}`,
+      `${i.departmentHeadId}`,
+      `${i.isApproviedByDH}`,
+      `${i.createdAt}`,
+    )
+  ) : [];
+
+  console.log(materialReq)
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -63,22 +77,52 @@ export default function RequestsList() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
-  const handleMenuClick = (event: React.MouseEvent<HTMLElement>, row: any) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedRow(row);
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
   };
 
-  const handleMenuClose = () => {
+  const handleClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    singleMaterialRequest: MaterialRequest_type
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setMatReq(singleMaterialRequest);
+  };
+
+  const handleCloseMenu = () => {
     setAnchorEl(null);
   };
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
+
+  const [deleteMaterialReq] = useDeleteMaterialReqMutation();
+
+  const handleDelete = async (id: string) => {
+    try {
+      console.log("Deleting category with ID:", id);  // Add logging for better debugging
+      await deleteMaterialReq(id).unwrap();  // Trigger the delete mutation
+      console.log('Category deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete category:', error);
+    }
   };
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
+  const handleEdit = async (i: MaterialRequest_type) => {
+    try {
+
+      console.log('Category Edit successfully');
+    } catch (error) {
+      console.error('Failed to delete category:', error);
+    }
+  };
+  const naviget = useNavigate()
+  const handleViwe = async (i: MaterialRequest_type) => {
+    naviget("/employee/requests-Detaile", { state: { id: i.id } })
+    // try {
+
+    //   console.log('Category Edit successfully');
+    // } catch (error) {
+    //   console.error('Failed to delete category:', error);
+    // }
   };
 
   return (
@@ -147,36 +191,44 @@ export default function RequestsList() {
                   </TableCell>
                 </TableRow>
               )}
-              {isSuccess &&
-                materialReq?.map((row: any, index: number) => (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {value}
-                        </TableCell>
-                      );
-                    })}
-                    <TableCell align="center">
-                      <IconButton
-                        onClick={(event) => handleMenuClick(event, row)}
-                      >
-                        <MoreVertIcon />
-                      </IconButton>
-                      <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={handleMenuClose}
-                      >
-                        <MenuItem onClick={handleOpenDialog}>
-                          View Details
-                        </MenuItem>
-                        <MenuItem onClick={handleMenuClose}>Edit</MenuItem>
-                      </Menu>
-                    </TableCell>
-                  </TableRow>
-                ))}
+              {isSuccess && rows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => {
+                  const singleMaterialRequest = materialReq[index]; // Get the product corresponding to the row index
+
+                  return (
+                    <TableRow hover role="checkbox" tabIndex={-1} key={row.requestId}>
+                      {columns.map((column) => {
+                        const value = row[column.id as keyof RowData];
+                        return (
+                          <TableCell key={column.id} align={column.align || 'left'}>
+                            {value}
+                          </TableCell>
+                        );
+                      })}
+                      <TableCell align="center">
+                        <IconButton
+                          aria-label="more"
+                          aria-controls="long-menu"
+                          aria-haspopup="true"
+                          onClick={(event) => handleClick(event, singleMaterialRequest)} // Pass the full product object
+                        >
+                          <MoreVertIcon />
+                        </IconButton>
+                        <Menu
+                          anchorEl={anchorEl}
+                          open={Boolean(anchorEl)}
+                          onClose={handleCloseMenu}
+                        >
+                          <MenuItem onClick={() => handleViwe(singleMaterialRequest)}>View detaile</MenuItem>
+                          <MenuItem onClick={() => handleEdit(singleMaterialRequest)}>Edit</MenuItem>
+                          <MenuItem onClick={() => handleDelete(row.requestId)}>Delete</MenuItem>
+                        </Menu>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+
             </TableBody>
           </Table>
         </TableContainer>
