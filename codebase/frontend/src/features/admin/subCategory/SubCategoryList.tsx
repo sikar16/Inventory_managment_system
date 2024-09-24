@@ -56,21 +56,21 @@ export default function SubCategoryList() {
                 <Title tableName={"Sub category"} action={"Add sub-category"} onClick={handleOpenDialog} />
 
                 <div className='flex flex-wrap gap-2 mt-10 mx-10 mb-5'>
-                    <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
+                    <div className='bg-gray-100 px-3 py-3 rounded-md mb-2 flex items-center'>
                         <p className='me-3 text-gray-500'>Category:</p>
-                        <select className='bg-[#F5F5F5] text-gray-700'>
+                        <select className=' text-gray-700 p-2'>
                             {categories?.map((category) => (
-                                <option key={category.id} value={category.id}>
+                                <option key={category.id} value={category.id} className='py-2'>
                                     {category.name}
                                 </option>
                             ))}
                         </select>
                     </div>
-                    <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
+                    <div className='bg-gray-100 px-3 py-3 rounded-md mb-2 flex items-center'>
                         <p className='me-3 text-gray-500'>Sub Category:</p>
-                        <select className='bg-[#F5F5F5] text-gray-700'>
+                        <select className=' text-gray-700 p-2 '>
                             {filteredSubCategories?.map((subCategory) => (
-                                <option key={subCategory.id} value={subCategory.id}>
+                                <option key={subCategory.id} value={subCategory.id} className='py-2'>
                                     {subCategory.name}
                                 </option>
                             ))}

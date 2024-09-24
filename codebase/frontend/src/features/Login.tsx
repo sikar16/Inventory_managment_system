@@ -9,6 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useLoginUserMutation } from '../services/user_service';
 import { useToast } from '../context/ToastContext';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import eye icons
 
 type FormValues = {
   email: string;
@@ -23,9 +24,7 @@ type LoginResponse = {
   message?: string;
 };
 
-
 function Login() {
-
   const { register, control, handleSubmit, formState: { errors } } = useForm<FormValues>();
   const [showPassword, setShowPassword] = useState(false);
   const { themeData, setThemeData } = useThemeData();
@@ -33,10 +32,9 @@ function Login() {
   const [login, { isLoading }] = useLoginUserMutation();
   const navigate = useNavigate();
   const { toastData, setToastData } = useToast();
-  console.log(toastData)
+  console.log(toastData);
 
   useEffect(() => {
-
     if (userData.token != null) {
       switch (userData.role) {
         case 'ADMIN':
@@ -65,10 +63,7 @@ function Login() {
           break;
       }
     }
-
-
-  }, [userData])
-  // console.log(userData)
+  }, [userData]);
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
@@ -78,20 +73,11 @@ function Login() {
       setToastData({
         message: response.message || "",
         success: response.success,
-      }
-      );
+      });
 
       if (response.success) {
-        // Log the role from the response
-        localStorage.setItem(
-          "token",
-          JSON.stringify({ token: response.token })
-        );
-        // localStorage.setItem(
-        //   "token",
-        //   `${response.token}`
-        // );
-        fetchData()
+        localStorage.setItem("token", JSON.stringify({ token: response.token }));
+        fetchData();
 
         // Redirect based on user role
         switch (response.role) {
@@ -120,19 +106,14 @@ function Login() {
             navigate('/'); // Redirect to homepage or default route if role is unknown
             break;
         }
-      } else {
-        // console.error('Login failed. Response does not have a success property:', response);
       }
     } catch (error: any) {
-      // console.error("An error occurred:", error);
       setToastData({
         message: error.message,
         success: error.success,
-      }
-      );
+      });
     }
   };
-
 
   const getThemeIcon = () => {
     if (themeData === "light") {
@@ -156,7 +137,7 @@ function Login() {
 
   return (
     <>
-      <div className='bg-[#002A47] text-white dark:bg-[#1C1E22] dark:text-[#B7E4FF] w-full h-screen '>
+      <div className='bg-[#002A47] text-white dark:bg-[#1C1E22] dark:text-[#B7E4FF] w-full h-screen'>
         <div className='ms-10 pt-2 flex justify-between me-10 items-center'>
           <LogoContainer />
           <IconContainer
@@ -180,7 +161,7 @@ function Login() {
                 type="email"
                 id="email"
                 placeholder='Email'
-                className='w-full px-10 py-2 rounded-md text-black'
+                className='w-full px-10 py-2 rounded-md text-black outline-none'
                 {...register("email", {
                   required: "Email is required",
                   pattern: { value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: "Invalid email format" },
@@ -195,35 +176,27 @@ function Login() {
               <p className="text-red-600 text-[13px] mt-1">{errors.email?.message}</p>
             </div>
             <div className='relative mb-4'>
+
               <input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 placeholder='Password'
-                className='w-full px-10 py-2 rounded-md text-black'
+                className='w-full px-10 py-2 rounded-md text-black outline-none'
                 {...register("password", { required: "Password is required" })}
               />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={25}
-                height={25}
-                viewBox="0 0 24 24"
-                className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500'
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                <path fill="#737373" d="M12 6c-5.33 0-10 4.5-10 10s4.67 10 10 10 10-4.5 10-10-4.67-10-10-10Zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8Zm0-11.8c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1Zm0 2.4c1.5 0 2.7-1.2 2.7-2.7 0-.56-.17-1.07-.46-1.5.43-.47.76-1.07.76-1.8 0-1.24-1-2.2-2.2-2.2-1.2 0-2.2 1-2.2 2.2 0 .73.33 1.33.76 1.8-.29.43-.46.94-.46 1.5 0 1.5 1.2 2.7 2.7 2.7Z"></path>
-              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500'><path fill="#8a8a8a" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2m-6 9c-1.1 0-2-.9-2-2s.9-2 2-2s2 .9 2 2s-.9 2-2 2m3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1z"></path></svg>
+              <div className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer' onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </div>
               <p className="text-red-600 text-[13px] mt-1">{errors.password?.message}</p>
             </div>
-            <button
-              type="submit"
-              className='w-full bg-[#002A47] rounded-md text-white py-2 mt-3 hover:bg-[#0e2432]'
-            >
-              {isLoading ? "Logging In..." : "Login"}
+            <button type="submit" className='bg-[#002A47]  w-full py-2 text-white rounded-md hover:bg-[#112737] dark:bg-[#071218] hover:dark:bg-[#0c1920]   transition duration-300'>
+              {isLoading ? <p>Loading</p> : <p>Login</p>}
             </button>
           </form>
         </div>
-        <DevTool control={control} />
       </div>
+      <DevTool control={control} />
     </>
   );
 }

@@ -18,7 +18,7 @@ export default function CategoryList() {
     const [selectedCategory, setSelectedCategory] = useState<ProductCategoryType>();
 
     const { userData, isAdmin } = useAuth();
-    console.log(userData)
+    // console.log(userData)
 
     const handleOpenDialog = () => setOpenDialog(true);
     const handleCloseDialog = () => setOpenDialog(false);
@@ -26,7 +26,7 @@ export default function CategoryList() {
     // Ensure that the query key is consistent
     const { isError, isLoading, isSuccess, data: categories, error } = useGetAllproductCategoryQuery();
 
-    console.log(categories)
+    // console.log(categories)
 
 
     if (isError) {
@@ -42,19 +42,33 @@ export default function CategoryList() {
     }
 
     if (isSuccess) {
-        const filteredCategories = categories?.filter(category =>
-            category.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        const filteredCategory = categories?.filter((category: ProductCategoryType) => {
+            const matchesSearchTerm = searchTerm === "" || category.name?.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesSelectedCategory = !selectedCategory || selectedCategory?.id === category.id;
+            return matchesSearchTerm && matchesSelectedCategory;
+        });
+
         if (isAdmin)
             return (
                 <div className='mt-10'>
                     <Title tableName="Category" action="Add Category" onClick={handleOpenDialog} />
 
                     <div className='flex flex-wrap gap-2 mt-10 mx-10 mb-5'>
-                        <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
+                        <div className='bg-gray-100 px-3 py-3 rounded-md mb-2 flex items-center'>
                             <p className='me-3 text-gray-500'>Category :</p>
-                            <select className='bg-[#F5F5F5] text-gray-700'>
-                                {filteredCategories?.map((category) => (
+                            <select
+                                className='outline-none rounded-md text-gray-700 p-2'
+                                value={selectedCategory?.id || ''}
+                                onChange={(e) => {
+                                    const selectedId = e.target.value;
+                                    if (categories) {
+                                        const selectedCategory = categories.find((category) => category.id === Number(selectedId));
+                                        setSelectedCategory(selectedCategory || undefined); // Update selectedCategory state
+                                    }
+                                }}
+                            >
+                                <option value="">All Categories</option>
+                                {categories && categories.map((category) => (
                                     <option key={category.id} value={category.id}>
                                         {category.name}
                                     </option>
@@ -69,14 +83,14 @@ export default function CategoryList() {
                         <input
                             type="text"
                             placeholder="Search"
-                            className=" w-[90%] bg-white dark:bg-[#313131] rounded-md py-[5px] px-3 focus:outline-none"
+                            className=" w-[90%] bg-gray-100 dark:bg-[#313131] rounded-md py-[5px] px-3 focus:outline-none"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
 
                     <CategoryTable
-                        productCategorylist={filteredCategories}
+                        productCategorylist={filteredCategory || []}
                         setAnchorEl={setAnchorEl}
                         anchorEl={anchorEl}
                         selectedCategory={selectedCategory || null}
@@ -100,7 +114,7 @@ export default function CategoryList() {
                             <AddCategory handleCloseDialog={handleCloseDialog} />
                         </DialogContent>
                     </Dialog>
-                </div>
+                </div >
             );
     }
 

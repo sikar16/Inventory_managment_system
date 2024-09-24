@@ -47,8 +47,8 @@ interface productSubcategoryprops {
 const SubCategoryTable: React.FC<productSubcategoryprops> = ({
   subcategoryList, setSelectedSubCategory, anchorEl, setAnchorEl, selectedSubCategory
 }) => {
-  const rows: RowData[] = subcategoryList.map((i) =>
-    createData(i.id, `${i.id}`, `${i.category.name}`, `${i.name}`)
+  const rows: RowData[] = subcategoryList.map((i, index) =>
+    createData(index + 1, `${i.id}`, `${i.category.name}`, `${i.name}`)
   );
   console.log(selectedSubCategory?.id)
   const [page, setPage] = React.useState(0);

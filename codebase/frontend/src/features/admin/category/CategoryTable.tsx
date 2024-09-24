@@ -65,7 +65,7 @@ const CategoryTable: React.FC<ProductCategoryProps> = ({
         setPage(0);
     };
     const handleClick = (
-        event: MouseEvent<HTMLButtonElement>,
+        event: React.MouseEvent<HTMLButtonElement>,
         category: ProductCategoryType
     ) => {
         setAnchorEl(event.currentTarget);

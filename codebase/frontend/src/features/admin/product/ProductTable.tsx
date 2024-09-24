@@ -27,6 +27,7 @@ const columns: ColumnType[] = [
   { id: "product", label: "Product", minWidth: 70, align: "left" },
   { id: "category", label: "Category", minWidth: 70, align: "left" },
   { id: "subCategory", label: "Sub Category", minWidth: 70, align: "left" },
+  { id: "createdDate", label: "Created date", minWidth: 70, align: "left" },
 ];
 
 function createData(
@@ -34,9 +35,10 @@ function createData(
   productId: string,
   product: string,
   category: string,
-  subCategory: string
+  subCategory: string,
+  createdDate: string
 ) {
-  return { no, productId, product, category, subCategory };
+  return { no, productId, product, category, subCategory, createdDate };
 }
 
 interface ProductProps {
@@ -46,6 +48,11 @@ interface ProductProps {
   setSelectedProduct: (product: ProductType) => void;
   setOpenDetails: (open: boolean) => void;
   selectedProduct: ProductType | null;
+}
+function formatDateToReadable(dateString: string) {
+  const date = new Date(dateString);
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return date.toLocaleDateString('en-US', options);
 }
 
 const ProductTable: React.FC<ProductProps> = ({
@@ -61,7 +68,8 @@ const ProductTable: React.FC<ProductProps> = ({
       `${i.id}`,
       `${i.name}`,
       `${i.subcategory.category.name}`,
-      `${i.subcategory?.name}`
+      `${i.subcategory?.name}`,
+      formatDateToReadable(i.createdAt)
     )
   );
 
@@ -101,12 +109,19 @@ const ProductTable: React.FC<ProductProps> = ({
   const [deleteProduct] = useDeleteProductMutation();
 
   const handleDelete = async (id: string) => {
+    const isConfirmed = window.confirm("Are you sure you want to delete this product?");
+
+    if (!isConfirmed) {
+      return; // If the user cancels, exit the function without proceeding
+    }
+
     try {
       await deleteProduct(id).unwrap();
       console.log(`Product with ID ${id} deleted successfully`);
     } catch (error) {
       console.error(`Failed to delete product with ID ${id}:`, error);
     }
+
     handleCloseMenu(); // Close the menu after deletion
   };
 

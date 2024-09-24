@@ -55,12 +55,16 @@ export default function TemplateList() {
 
   if (isCategoryLoading || isSubCategoryLoading || isLoading) return <Loader />;
 
-  // Filter templates based on searchTerm, selectedCategory, and selectedSubCategory
-  const filteredTemplates = data?.filter(template =>
-    template.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (selectedCategory != null ? template.categoryId.id === Number(selectedCategory) : true) &&
-    (selectedSubCategory != null ? template.subCategoryId.id === Number(selectedSubCategory) : true)
-  ) ?? [];
+  const filteredTemplates = data?.filter(template => {
+    const matchesSearchTerm = template.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesCategory = selectedCategory != null ? template.categoryId.id === selectedCategory : true;
+
+    const matchesSubCategory = selectedSubCategory != null ? template.subCategoryId.id === selectedSubCategory : true;
+
+    return matchesSearchTerm && matchesCategory && matchesSubCategory;
+  }) ?? [];
+
 
   return (
     <div className="mt-10">
@@ -78,7 +82,8 @@ export default function TemplateList() {
             onChange={(e) => {
               const categoryId = Number(e.target.value);
               setSelectedCategory(isNaN(categoryId) ? null : categoryId);
-            }}          >
+            }}
+          >
             <option value="">All Categories</option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
@@ -87,6 +92,7 @@ export default function TemplateList() {
             ))}
           </select>
         </div>
+
         <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
           <p className='me-3 text-gray-500'>Sub Category :</p>
           <select
@@ -95,7 +101,8 @@ export default function TemplateList() {
             onChange={(e) => {
               const subCategoryId = Number(e.target.value);
               setSelectedSubCategory(isNaN(subCategoryId) ? null : subCategoryId);
-            }}          >
+            }}
+          >
             <option value="">All Subcategories</option>
             {productSubCategories.map((productSubCategory) => (
               <option key={productSubCategory.id} value={productSubCategory.id}>
@@ -104,6 +111,7 @@ export default function TemplateList() {
             ))}
           </select>
         </div>
+
       </div>
 
       <hr className="w-full text-black bg-black" />

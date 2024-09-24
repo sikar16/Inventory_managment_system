@@ -66,7 +66,6 @@ export default function MaterialReq() {
 
   // Determine approval status dynamically
   const approvalStatus = (i: PurchasedRequest_type) => {
-    if (i.isApproviedByDH) return "Approved by DH";
     if (i.isApproviedByGM) return "Approved by GM";
     if (i.isApproviedByFinance) return "Approved by Finance";
     return "Pending";
@@ -148,9 +147,9 @@ export default function MaterialReq() {
       <div className="flex justify-between mb-3 mx-2">
         <p className="text-[#002a47] text-4xl font-medium">Requests</p>
         <Link to="/employee/create-requests">
-          <button className="bg-[#002A47] px-3 py-1 text-white rounded-md">
+          {/* <button className="bg-[#002A47] px-3 py-1 text-white rounded-md">
             Create request
-          </button>
+          </button> */}
         </Link>
       </div>
 

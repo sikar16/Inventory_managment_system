@@ -67,15 +67,23 @@ export default function ProductList() {
     ) {
         return <Loader />;
     }
-    const filteredProducts = products?.filter(
-        (product: ProductType) =>
-            (searchTerm === "" ||
-                product.name?.toLowerCase().includes(searchTerm.toLowerCase())) &&
-            (selectedCategory === undefined ||
-                product.subcategory?.category?.id === selectedCategory?.id) && // Fix the comparison here
-            (selectedSubCategory === undefined ||
-                product.subcategory?.id === selectedSubCategory?.id) // Fix for subcategory comparison
-    );
+    const filteredProducts = products?.filter((product: ProductType) => {
+        const matchesSearchTerm = searchTerm === "" || product.name?.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesCategory =
+            selectedCategory === undefined ||
+            (product.subcategory?.category?.id === selectedCategory.id);
+
+        const matchesSubCategory =
+            selectedSubCategory === undefined ||
+            (product.subcategory?.id === selectedSubCategory.id);
+
+        const matchesTemplate =
+            selectedTemplate === "" || product.templateId === selectedTemplate; // Assuming products have a templateId
+
+        return matchesSearchTerm && matchesCategory && matchesSubCategory && matchesTemplate;
+    });
+
 
 
     // console.log(filteredProducts);
@@ -84,11 +92,11 @@ export default function ProductList() {
         <div className='mt-10'>
             <Title tableName='Product' action={"Add product"} onClick={handleOpenDialog} />
             <div className='flex flex-wrap gap-2 mt-10 mb-5'>
-                <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
+                <div className='bg-gray-100 px-3 py-2 rounded-md mb-2 flex items-center '>
                     <p className='me-3 text-gray-500'>Category :</p>
 
                     <select
-                        className='bg-[#faf9f9] text-gray-700'
+                        className='outline-none rounded-md text-gray-700 p-2'
                         value={selectedCategory?.id || ''}
                         onChange={(e) => {
                             const selectedId = e.target.value;
@@ -98,21 +106,18 @@ export default function ProductList() {
                             }
                         }}
                     >
-                        <option value="">All Categories</option>
+                        <option value="" className='outline-none'>All Categories</option>
                         {productCategories && productCategories.map((productCategory) => (
-                            <option key={productCategory.id} value={productCategory.id}>
+                            <option key={productCategory.id} value={productCategory.id} className='outline-none'>
                                 {productCategory.name}
                             </option>
                         ))}
                     </select>
-
-
-
                 </div>
-                <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
+                <div className='bg-gray-100  px-3 py-3 rounded-md mb-2 flex items-center'>
                     <p className='me-3 text-gray-500'>Sub Category :</p>
                     <select
-                        className='bg-[#faf9f9] text-gray-700'
+                        className='outline-none rounded-md text-gray-700 p-2'
                         value={selectedSubCategory?.id || ''}
                         onChange={(e) => {
                             const selectedId = e.target.value;
@@ -133,10 +138,10 @@ export default function ProductList() {
                     </select>
 
                 </div>
-                <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
+                <div className='bg-gray-100  px-3 py-3 rounded-md mb-2 flex items-center'>
                     <p className='me-3 text-gray-500'>Template :</p>
                     <select
-                        className='bg-[#faf9f9] text-gray-700'
+                        className='outline-none rounded-md text-gray-700 p-2 '
                         value={selectedTemplate}
                         onChange={(e) => setSelectedTemplate(e.target.value)}
                     >
@@ -154,7 +159,7 @@ export default function ProductList() {
                 <input
                     type="text"
                     placeholder="Search"
-                    className="w-full bg-white dark:bg-[#313131] rounded-md py-[5px] px-3 focus:outline-none"
+                    className="w-full bg-gray-100 dark:bg-[#313131] rounded-md py-[5px] px-3 focus:outline-none"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />

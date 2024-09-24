@@ -35,7 +35,7 @@ export const router = createBrowserRouter(
             <Route path='/login' element={<Login />} />
             <Route path='/confirm-password' element={<ConfirmPassword />} />
             <Route path='/forget-password' element={<ForgetPassword />} />
-            <Route path='/profile' element={<Profile />} />
+            <Route path='/profile/:id' element={<Profile />} />
 
             {/* admin section */}
             <Route path='/admin' element={<AdminLayout />}>

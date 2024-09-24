@@ -66,6 +66,7 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        handleCloseDialog();
     };
 
     const handleAddProduct = async () => {

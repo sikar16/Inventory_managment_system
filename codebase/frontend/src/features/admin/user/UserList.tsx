@@ -7,24 +7,28 @@ import AddUser from "./AddUser";
 import Slider from "../../../component/Slider";
 import { DepartmentType } from "../../../_types/department_type";
 import { useGetAlldepartmentQuery } from "../../../services/department_service";
+
 interface AddUserProps {
   departments: DepartmentType[]; // Assuming departments should be an array of DepartmentType
 }
+
 const UserList: React.FC<AddUserProps> = () => {
   const [isAddingUser, setIsAddingUser] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [selectedDepartment, setSelectedDepartment] = React.useState<number | null>(null);
 
+  const { data: usersData, isLoading, isError, error } = useGetAllUsersQuery("user");
+  const { data: departmentsData = [], isLoading: isDepartmentsLoading } = useGetAlldepartmentQuery("department");
 
-
-
-  const { data, isLoading, isError, error } = useGetAllUsersQuery("user");
-  const { data: department = [] } = useGetAlldepartmentQuery("department");
-
+  // Error and loading states for users
   if (isError) return <h1>Error: {error.toString()}</h1>;
   if (isLoading) return <Loading />;
 
-  const usersByDepartment: Record<number, number> = data?.reduce<Record<number, number>>((acc, user) => {
+  // Error and loading states for departments
+  if (isDepartmentsLoading) return <Loading />;
+
+  // Reduce users data to count by department
+  const usersByDepartment: Record<number, number> = usersData?.reduce<Record<number, number>>((acc, user) => {
     const departmentId = user?.department?.id;
     if (departmentId) {
       acc[departmentId] = (acc[departmentId] || 0) + 1;
@@ -32,7 +36,8 @@ const UserList: React.FC<AddUserProps> = () => {
     return acc;
   }, {}) ?? {};
 
-  const filteredUsers = data?.filter((user) => {
+  // Filter users based on search term and selected department
+  const filteredUsers = usersData?.filter((user) => {
     if (!user || !user.profile || !user.department) {
       return false;
     }
@@ -53,9 +58,11 @@ const UserList: React.FC<AddUserProps> = () => {
     return matchesSearch && matchesDepartment;
   });
 
-  const handleDepartmentClick = (departmentId: number | null) => {
+  const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const departmentId = e.target.value ? parseInt(e.target.value) : null; // Convert value to number or null
     setSelectedDepartment(departmentId);
   };
+
   const handleAddUserClick = () => {
     setIsAddingUser(true); // Set to true when adding a user
   };
@@ -75,23 +82,18 @@ const UserList: React.FC<AddUserProps> = () => {
           <Slider usersByDepartment={usersByDepartment} /> {/* Pass usersByDepartment to Slider */}
           <div className="my-4 px-5">
             <div className="text-gray-500">
-              <ul className="flex gap-5">
-                <li
-                  className={`cursor-pointer ${!selectedDepartment ? 'font-bold' : ''}`}
-                  onClick={() => handleDepartmentClick(null)}
-                >
-                  All users
-                </li>
-                {department?.map((department) => (
-                  <li
-                    key={department.id}
-                    className={`cursor-pointer ${selectedDepartment === department.id ? 'font-bold' : ''}`}
-                    onClick={() => handleDepartmentClick(department.id)}
-                  >
+              <select
+                className="border border-gray-300 rounded-md p-2 outline-none bg-gray-100"
+                value={selectedDepartment || ''} // Set the value based on selectedDepartment
+                onChange={handleDepartmentChange} // Call the function on change
+              >
+                <option value="" className="font-bold">All users</option>
+                {departmentsData?.map((department) => (
+                  <option key={department.id} value={department.id}>
                     {department.name}
-                  </li>
+                  </option>
                 ))}
-              </ul>
+              </select>
 
               <hr className="mb-3 mt-1" />
             </div>
@@ -99,7 +101,7 @@ const UserList: React.FC<AddUserProps> = () => {
             <input
               type="text"
               placeholder="Search"
-              className="w-full bg-white dark:bg-[#313131] rounded-md py-[5px] px-3 focus:outline-none"
+              className="w-full bg-gray-100 dark:bg-[#313131] rounded-md py-[5px] px-3 focus:outline-none"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -113,4 +115,4 @@ const UserList: React.FC<AddUserProps> = () => {
   );
 }
 
-export default UserList
+export default UserList;
