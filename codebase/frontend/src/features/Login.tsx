@@ -113,6 +113,9 @@ function Login() {
           case 'STORE_KEEPER':
             navigate("/warehouse");
             break;
+          case 'EMPLOYEE':
+            navigate("/employee");
+            break;
           default:
             navigate('/'); // Redirect to homepage or default route if role is unknown
             break;

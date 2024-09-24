@@ -49,8 +49,28 @@ export const supplierCategoryApi = createApi({
             },
         }),
 
+        deleteSupplierCategory: builder.mutation({
+            query: (id: number) => ({
+                url: `/${id}`,
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    // Authorization: "token",
+                },
+            }),
+            invalidatesTags: ['supplierCategory'],
+            // transformErrorResponse: (response: any) => {
+            //   try {
+            //     const message = response?.data?.message;
+            //     return extractErrorMessage(message);
+            //   } catch (error:any) {
+            //     return 'An unexpected error occurred while processing your request.';
+            //   }
+            // },
+        }),
+
     }),
 });
 
 
-export const { useGetAllsupplierCategoryQuery, useAddNewsupplierCategoryMutation } = supplierCategoryApi
+export const { useGetAllsupplierCategoryQuery, useAddNewsupplierCategoryMutation, useDeleteSupplierCategoryMutation } = supplierCategoryApi

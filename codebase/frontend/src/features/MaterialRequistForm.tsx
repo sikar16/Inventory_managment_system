@@ -8,6 +8,7 @@ import { useGetAllproductQuery } from "../services/product_service";
 import { TemplateAttributeType } from "../_types/template_type";
 import { useGetAllproductCategoryQuery } from "../services/productCategorySerivce";
 import { useNavigate } from "react-router-dom";
+import { useAddNewMaterialReqMutation } from "../services/materialReq_service";
 
 interface FormData {
   categoryId: string;
@@ -17,6 +18,7 @@ interface FormData {
   unit: string;
   desiredDate: string;
   reason: string;
+  departmentHeadId: number;
 }
 
 const MaterialRequestForm: React.FC = () => {
@@ -51,6 +53,7 @@ const MaterialRequestForm: React.FC = () => {
       unit: "",
       desiredDate: "",
       reason: "",
+      departmentHeadId: 5
     },
   });
 
@@ -62,12 +65,28 @@ const MaterialRequestForm: React.FC = () => {
     setRequests((prev) => [...prev, data]);
     reset(); // Reset form after adding a product
   };
+  const [addNewMaterialReq] = useAddNewMaterialReqMutation()
+  const submitRequest = async () => {
+    const validatedRequests = requests.map((request) => ({
+      departmentHeadId: request.departmentHeadId,
+      items: request.products.map((productId, index) => ({
+        productId: Number(productId),
+        quantityRequested: Number(request.quantity),
+        remark: request.reason,
+      })),
+    }));
 
-  const submitRequest = () => {
-    // Handle the submission of all requests
-    console.log("Submitting requests:", requests);
-    // Add submission logic here (e.g., API call)
+    console.log("Submitting validated requests:", validatedRequests);
+
+    try {
+      await addNewMaterialReq({ departmentHeadId: 5, items: validatedRequests[0].items });
+      console.log("Request submitted successfully");
+    } catch (error) {
+      console.error("Error submitting request:", error);
+    }
   };
+
+
 
   // Fetch product attributes when subcategory changes
   useEffect(() => {
@@ -315,6 +334,12 @@ const MaterialRequestForm: React.FC = () => {
               <p className="text-red-500 text-sm">{errors.reason.message}</p>
             )}
           </div>
+        </div>
+        <div>
+          <input
+            type="hidden"
+            {...register("departmentHeadId", { required: "Department Head ID is required" })}
+          />
         </div>
 
         <div className="flex justify-between">

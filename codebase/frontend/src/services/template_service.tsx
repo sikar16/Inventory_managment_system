@@ -49,8 +49,27 @@ export const templateApi = createApi({
                 return extractErrorMessage(response.data.message as string);
             },
         }),
+        deleteTemplate: builder.mutation({
+            query: (id: number) => ({
+                url: `/${id}`,
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    // Authorization: "token",
+                },
+            }),
+            invalidatesTags: ['template'],
+            // transformErrorResponse: (response: any) => {
+            //   try {
+            //     const message = response?.data?.message;
+            //     return extractErrorMessage(message);
+            //   } catch (error:any) {
+            //     return 'An unexpected error occurred while processing your request.';
+            //   }
+            // },
+        }),
     })
 })
 
 
-export const { useGetAlltemplateQuery, useAddNewtemplateMutation } = templateApi
+export const { useGetAlltemplateQuery, useAddNewtemplateMutation, useDeleteTemplateMutation } = templateApi

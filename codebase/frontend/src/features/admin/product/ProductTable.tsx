@@ -66,7 +66,7 @@ const ProductTable: React.FC<ProductProps> = ({
   );
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -85,28 +85,31 @@ const ProductTable: React.FC<ProductProps> = ({
   ) => {
     setAnchorEl(event.currentTarget);
     setSelectedProduct(product);
+
   };
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
 
-  const handleViewDetails = () => {
+  const handleViewDetails = (id: string) => {
     setOpenDetails(true);
     handleCloseMenu();
+    console.log("Selected Product ID:", id);
   };
-
 
   const [deleteProduct] = useDeleteProductMutation();
 
   const handleDelete = async (id: string) => {
     try {
       await deleteProduct(id).unwrap();
-      console.log("Product deleted successfully");
+      console.log(`Product with ID ${id} deleted successfully`);
     } catch (error) {
-      console.error("Failed to delete product:", error);
+      console.error(`Failed to delete product with ID ${id}:`, error);
     }
+    handleCloseMenu(); // Close the menu after deletion
   };
+
 
 
   return (
@@ -164,11 +167,11 @@ const ProductTable: React.FC<ProductProps> = ({
                         open={Boolean(anchorEl)}
                         onClose={handleCloseMenu}
                       >
-                        <MenuItem onClick={handleViewDetails}>
+                        <MenuItem onClick={() => handleViewDetails(product.id)}>
                           View Details
                         </MenuItem>
                         <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
-                        <MenuItem onClick={() => handleDelete(row.productId)}>
+                        <MenuItem onClick={() => handleDelete(product.id)}>
                           Delete
                         </MenuItem>
                       </Menu>
@@ -180,7 +183,7 @@ const ProductTable: React.FC<ProductProps> = ({
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[5, 10, 15]}
+        rowsPerPageOptions={[5, 10, 150]}
         component="div"
         count={rows.length}
         rowsPerPage={rowsPerPage}

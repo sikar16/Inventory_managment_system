@@ -12,6 +12,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { UserType } from "../../../_types/user_type";
+import { useDeleteUserMutation } from "../../../services/user_service";
 
 interface Column {
   id: keyof RowData;
@@ -66,7 +67,8 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedRow, setSelectedRow] = useState<RowData | null>(null);
   const [rows, setRows] = useState<RowData[]>([]);
-  console.log(selectedRow);
+  // console.log(selectedRow);
+  // console.log(setRowsPerPage);
   useEffect(() => {
     const newRows = userList.map((i) =>
       createData(
@@ -91,14 +93,14 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setRowsPerPage(Number(event.target.value)); // Ensure the value is a number
-    setPage(0);
-  };
+  // const handleChangeRowsPerPage = (
+  //   event: React.ChangeEvent<HTMLSelectElement>
+  // ) => {
+  //   setRowsPerPage(Number(event.target.value)); // Ensure the value is a number
+  //   setPage(0);
+  // };
 
-  console.log(handleChangeRowsPerPage);
+  // console.log(handleChangeRowsPerPage);
 
   const handleMenuClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -113,11 +115,11 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
     setSelectedRow(null);
   };
 
+  const [deleteUser] = useDeleteUserMutation("")
+
   const handleDelete = async (id: number) => {
     try {
-      await fetch(`http://localhost:8888/api/user/${id}`, {
-        method: "DELETE",
-      });
+      await deleteUser(id).unwrap();
       console.log(`User with id ${id} deleted`);
 
       setRows((prevRows) => prevRows.filter((row) => row.no !== id));

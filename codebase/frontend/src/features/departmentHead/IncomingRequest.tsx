@@ -12,7 +12,9 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useGetAllMaterialReqQuery } from '../../services/materialReq_service';
+import { MaterialRequest_type } from '../../_types/materialReq_type';
 
 interface Column {
     id: string;
@@ -31,37 +33,52 @@ const columns: Column[] = [
     { id: 'dateOfRequest', label: 'Date of request', minWidth: 70, align: 'left' },
 ];
 
-interface RowType {
-    no: number;
-    orderId: string;
-    requestedEmployee: string;
-    product: string;
-    quantity: string;
-    status: string;
-    dateOfRequest: string;
-}
-
-
-function createData(no: number, orderId: string, requestedEmployee: string, product: string, quantity: string, status: string, dateOfRequest: string): RowType {
+function createData(
+    no: number,
+    orderId: string,
+    requestedEmployee: string,
+    product: string,
+    quantity: string,
+    status: string,
+    dateOfRequest: string) {
     return { no, orderId, requestedEmployee, product, quantity, status, dateOfRequest };
 }
-
-const rows: RowType[] = [
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-    createData(1, "#12345", "Zerubabel ", "Hp laptop", "20", "Active", "8-26-2024"),
-
-];
+type RowData = ReturnType<typeof createData>;
 
 export default function IncomingRequest() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const [selectedProduct, setSelectedProduct] = React.useState<RowType | null>(null);
+    const [selectedProduct, setSelectedProduct] = React.useState<RowData | null>(null);
+    const [matReq, setMatReq] = React.useState<MaterialRequest_type | null>(null);
+
     console.log(selectedProduct)
+
+    const {
+        data: materialReq,
+        isError,
+        isLoading,
+        isSuccess,
+    } = useGetAllMaterialReqQuery();
+    function formatDateToReadable(dateString: string) {
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+    }
+
+    const rows: RowData[] = isSuccess && materialReq
+        ? materialReq.map((i, index) =>
+            createData(
+                index + 1,
+                `${i.id}`,
+                `${i.employee?.profile.firstName} ${i.employee?.profile.lastName} ${i.employee?.profile.middleName}`,
+                `${i.id}`,
+                `${i.id}`,
+                `${i.id}`,
+                formatDateToReadable(i.createdAt)
+            )
+        )
+        : [];
     const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
@@ -71,9 +88,11 @@ export default function IncomingRequest() {
         setPage(0);
     };
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, product: RowType) => {
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>,
+        singleMaterialRequest: MaterialRequest_type
+    ) => {
         setAnchorEl(event.currentTarget);
-        setSelectedProduct(product);
+        setSelectedProduct(singleMaterialRequest);
     };
 
     const handleCloseMenu = () => {
@@ -82,9 +101,27 @@ export default function IncomingRequest() {
 
 
     const [addMaterialReq, setAddMaterialReq] = React.useState(false);
+    const navigate = useNavigate();
+
     console.log(addMaterialReq)
     const handleAddMaterialReq = () => {
         setAddMaterialReq(true); // Set to true when adding a user
+    };
+
+    // const handleView = async () => {
+    //     if (selectedProduct) {
+    //         console.log(`Viewing request with id: ${selectedProduct.orderId}`);
+    //         navigate("/department-head/requiestApproval", { state: { id: selectedProduct.orderId } });
+    //     }
+    // };
+
+    const handleView = async () => {
+        if (selectedProduct) {
+            console.log(`Viewing request with id: ${selectedProduct.orderId}`); // Log the ID
+            navigate("/department-head/requiestApproval", { state: { id: selectedProduct.orderId } });
+        } else {
+            console.error("Selected product is not defined.");
+        }
     };
 
 
@@ -124,38 +161,71 @@ export default function IncomingRequest() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {rows
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((row) => (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.no}>
-                                        {columns.map((column) => {
-                                            const value = row[column.id as keyof RowType];
-                                            return (
-                                                <TableCell key={column.id} align={column.align}>
-                                                    {value}
+                            {isLoading && (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} align="center">
+                                        Loading...
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                            {isError && (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} align="center">
+                                        Error fetching data
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                            {isSuccess &&
+                                rows
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .map((row, index) => {
+                                        const singleMaterialRequest = materialReq[index];
+                                        return (
+                                            <TableRow
+                                                hover
+                                                role="checkbox"
+                                                tabIndex={-1}
+                                                key={row.no}
+                                            >
+                                                {columns.map((column) => {
+                                                    const value = row[column.id as keyof RowData];
+                                                    return (
+                                                        <TableCell
+                                                            key={column.id}
+                                                            align={column.align || "left"}
+                                                        >
+                                                            {value}
+                                                        </TableCell>
+                                                    );
+                                                })}
+                                                <TableCell align="center">
+                                                    <IconButton
+                                                        aria-label="more"
+                                                        aria-controls="long-menu"
+                                                        aria-haspopup="true"
+                                                        onClick={(event) =>
+                                                            handleClick(event, singleMaterialRequest)
+                                                        }
+                                                    >
+                                                        <MoreVertIcon />
+                                                    </IconButton>
+                                                    <Menu
+                                                        anchorEl={anchorEl}
+                                                        open={Boolean(anchorEl)}
+                                                        onClose={handleCloseMenu}
+                                                    >
+                                                        <MenuItem onClick={handleView}>
+                                                            Edit
+                                                        </MenuItem>
+
+                                                        <MenuItem >
+                                                            Delete
+                                                        </MenuItem>
+                                                    </Menu>
                                                 </TableCell>
-                                            );
-                                        })}
-                                        <TableCell>
-                                            <IconButton
-                                                aria-label="more"
-                                                aria-controls="long-menu"
-                                                aria-haspopup="true"
-                                                onClick={(event) => handleClick(event, row)}
-                                            >
-                                                <MoreVertIcon />
-                                            </IconButton>
-                                            <Menu
-                                                anchorEl={anchorEl}
-                                                open={Boolean(anchorEl)}
-                                                onClose={handleCloseMenu}
-                                            >
-                                                <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
-                                                <MenuItem onClick={handleCloseMenu}>Delete</MenuItem>
-                                            </Menu>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                            </TableRow>
+                                        );
+                                    })}
                         </TableBody>
                     </Table>
                 </TableContainer>
@@ -169,6 +239,12 @@ export default function IncomingRequest() {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
+
+
+
+
+
+
             {/* <Dialog
                 open={openDialog}
                 onClose={handleCloseDialog}

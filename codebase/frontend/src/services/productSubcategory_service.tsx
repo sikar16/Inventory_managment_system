@@ -46,19 +46,39 @@ export const productSubcategoryApi = createApi({
                 return extractErrorMessage(response.data.message as string);
             },
         }),
-        deleteProductSubCategory: builder.mutation<void, string>({
-            query: (id) => ({
+        // deleteProductSubCategory: builder.mutation<void, string>({
+        //     query: (id) => ({
+        //         url: `/${id}`,
+        //         method: 'DELETE',
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //         },
+        //     }),
+        //     invalidatesTags: ['productSubCategory'],
+        //     transformErrorResponse: (response: any) => {
+        //         const message = response?.data?.message || "Unknown error"; // Safely access the message
+        //         return extractErrorMessage(message);
+        //     },
+        // }),
+
+        deleteProductSubCategory: builder.mutation({
+            query: (id: number) => ({
                 url: `/${id}`,
-                method: 'DELETE',
+                method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
+                    // Authorization: "token",
                 },
             }),
             invalidatesTags: ['productSubCategory'],
-            transformErrorResponse: (response: any) => {
-                const message = response?.data?.message || "Unknown error"; // Safely access the message
-                return extractErrorMessage(message);
-            },
+            // transformErrorResponse: (response: any) => {
+            //   try {
+            //     const message = response?.data?.message;
+            //     return extractErrorMessage(message);
+            //   } catch (error:any) {
+            //     return 'An unexpected error occurred while processing your request.';
+            //   }
+            // },
         }),
     })
 })

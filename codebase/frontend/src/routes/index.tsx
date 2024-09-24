@@ -25,6 +25,8 @@ import { LogesticsLayout } from '../layout/Logestics/LogesticsLayout'
 import { FinanceLayout } from '../layout/Finance/FinanceLayout'
 import { GeneralManagerLayout } from '../layout/generalManager/GeneralManagerLayout'
 import { WarehouseLayout } from '../layout/Warehouse/WarehouseLayout'
+import RequiestApproval from '../features/departmentHead/RequiestApproval'
+import MaterialReq from '../features/logesticsSuperviser/MaterialReq'
 export const router = createBrowserRouter(
     createRoutesFromElements(
         <>
@@ -64,7 +66,7 @@ export const router = createBrowserRouter(
             <Route path='/department-head' element={<DepartmentHeadLayout />}>
                 <Route path='/department-head/incoming-requests' element={<IncomingRequest />} />
                 <Route path='/department-head/material-request' element={<MaterialRequestForm />} />
-                <Route path='/department-head/requiest-detaile' element={<RequiestDetail />} />
+                <Route path='/department-head/requiestApproval' element={<RequiestApproval />} />
                 <Route path='/department-head/approvals' element={<Approvals />} />
                 <Route path='/department-head/*' element={<NotFound />} />
             </Route>
@@ -72,7 +74,7 @@ export const router = createBrowserRouter(
             {/* {logeistic section} */}
             <Route path='/logestics' element={<LogesticsLayout />}>
                 <Route path='/logestics/dashbord' element={<p>logestics dashbord</p>} />
-                <Route path='/logestics/incoming-requests' element={<IncomingRequest />} />
+                <Route path='/logestics/incoming-requests' element={<MaterialReq />} />
                 <Route path='/logestics/material-request' element={<MaterialRequestForm />} />
                 <Route path='/logestics/requiest-detaile' element={<RequiestDetail />} />
                 <Route path='/logestics/purchase-requests' element={<><h1>purchase request</h1></>} />

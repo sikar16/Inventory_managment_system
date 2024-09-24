@@ -67,9 +67,9 @@ const purchasedReqConntroller={
         }
     },
 
-
-    createpurchasedReq: async (req, res, next) => {
+   createpurchasedReq: async (req, res, next) => {
       try {
+        // Required fields
         const requiredFields = ["totalPrice", "items"];
         for (const field of requiredFields) {
           if (!req.body[field]) {
@@ -81,22 +81,15 @@ const purchasedReqConntroller={
         }
     
         const data = purchasedReqSchema.create.parse(req.body);
-
-        // Check if the material request exists
-        const isMaterialReqExist = await prisma.materialRequest.findFirst({
-          where: {
-            id: data.materialReqId,
-          },
-        });
-        if (!isMaterialReqExist) {
+    
+        const userId = req.user.id;
+        if (!userId) {
           return res.status(400).json({
             success: false,
-            message: "Material request not found",
+            message: "User ID is required",
           });
         }
-
-        // Loop through the items to validate each product       
-
+    
         for (const item of data.items) {
           const isProductExist = await prisma.product.findFirst({
             where: {
@@ -111,24 +104,22 @@ const purchasedReqConntroller={
           }
         }
     
-        // Create the purchase request
         const newPurchaseReq = await prisma.purchasedRequest.create({
           data: {
             totalPrice: data.totalPrice,
-            userId:+req.user.id,
+            userId: +req.user.id, 
             items: {
               create: data.items.map((item) => ({
-                purchasedRequestId:item.purchasedRequestId,
-                productId: +item.productId,
+                productId: +item.productId, 
                 quantityToBePurchased: item.quantityToBePurchased,
                 remark: item.remark,
                 unitPrice: item.unitPrice,
               })),
             },
           },
-          include:{
-            items:true,
-          }
+          include: {
+            items: true, // Include the created items in the response
+          },
         });
     
         return res.status(201).json({
@@ -143,6 +134,7 @@ const purchasedReqConntroller={
         });
       }
     },
+
   updatepurchasedReqItem: async (req, res, next) => {
   try {
     const purceasedRequestItemId = parseInt(req.params.id, 10);

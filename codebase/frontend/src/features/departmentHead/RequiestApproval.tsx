@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useGetSingleMaterialReqQuery } from "../../../services/materialReq_service";
+import { useGetSingleMaterialReqQuery } from "../../services/materialReq_service";
 import { useLocation } from "react-router-dom";
-import Loader from "../../../component/Loading";
+import Loader from "../../component/Loading";
 
 // Sample data
 interface Column {
@@ -40,7 +40,7 @@ function createData(
     return { no, product, subCategory, category, quantity, remark };
 }
 
-const RequestDetail: React.FC = () => {
+const RequiestApproval: React.FC = () => {
     const location = useLocation();
     const { id } = location.state || {}; // Use optional chaining to avoid errors
 
@@ -225,40 +225,45 @@ const RequestDetail: React.FC = () => {
                                             </div>
                                             {/* Detail of product */}
 
-                                            <div className="rounded-lg p-6 space-y-4 w-[85%] mx-auto mt-6">
-                                                <p className="text-xl font-semibold text-gray-800 border-b pb-1">Details</p>
+                                            <div className="bg-white shadow-md rounded-lg p-6 space-y-4 w-[85%] mx-auto mt-6">
+                                                <p className="text-xl font-semibold text-gray-800 border-b pb-2">Details</p>
 
-                                                {materialReq.items.findIndex((i) => i.product.name === row.product) !== -1 &&
-                                                    materialReq.items[materialReq.items.findIndex((i) => i.product.name === row.product)]
-                                                        .product.productAttributes &&
-                                                    materialReq.items[materialReq.items.findIndex((i) => i.product.name === row.product)]
-                                                        .product.productAttributes.length > 0 && (
-                                                        <div className="grid grid-cols-2 gap-10 p-1  rounded-lg">
-                                                            <div className="space-y-2">
-                                                                <p className="text-lg font-semibold text-gray-700">Key</p>
-                                                                <ul className="list-disc list-inside space-y-1">
-                                                                    {materialReq.items[materialReq.items.findIndex((i) => i.product.name === row.product)]
-                                                                        .product.productAttributes.map((item) => (
-                                                                            <p className="capitalize" key={item.templateAttribute.name}>
-                                                                                {item.templateAttribute.name}
-                                                                            </p>
-                                                                        ))}
-                                                                </ul>
-                                                            </div>
-
-                                                            <div className="space-y-2">
-                                                                <p className="text-lg font-semibold text-gray-700">Value</p>
-                                                                <ul className="list-disc list-inside space-y-1">
-                                                                    {materialReq.items[materialReq.items.findIndex((i) => i.product.name === row.product)]
-                                                                        .product.productAttributes.map((item) => (
-                                                                            <p key={item.value}>{item.value}</p>
-                                                                        ))}
-                                                                </ul>
-                                                            </div>
+                                                {materialReq.items.findIndex((i) => i.id === row.no) !== -1 && (
+                                                    <div className="grid grid-cols-2 gap-10 p-4  rounded-lg">
+                                                        {/* Key Section */}
+                                                        <div className="space-y-2">
+                                                            <p className="text-lg font-semibold text-gray-700">Key</p>
+                                                            <ul className="list-disc list-inside space-y-1">
+                                                                {materialReq.items[
+                                                                    materialReq.items.findIndex((i) => i.id === row.no)
+                                                                ].product.productAttributes &&
+                                                                    materialReq.items[
+                                                                        materialReq.items.findIndex((i) => i.id === row.no)
+                                                                    ].product.productAttributes.map((item) => (
+                                                                        <li className="capitalize" key={item.templateAttribute.name}>
+                                                                            {item.templateAttribute.name}
+                                                                        </li>
+                                                                    ))}
+                                                            </ul>
                                                         </div>
-                                                    )}
-                                            </div>
 
+                                                        {/* Value Section */}
+                                                        <div className="space-y-2">
+                                                            <p className="text-lg font-semibold text-gray-700">Value</p>
+                                                            <ul className="list-disc list-inside space-y-1">
+                                                                {materialReq.items[
+                                                                    materialReq.items.findIndex((i) => i.id === row.no)
+                                                                ].product.productAttributes &&
+                                                                    materialReq.items[
+                                                                        materialReq.items.findIndex((i) => i.id === row.no)
+                                                                    ].product.productAttributes.map((item) => (
+                                                                        <li key={item.value}>{item.value}</li>
+                                                                    ))}
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
 
                                         </td>
                                     </tr>
@@ -272,4 +277,4 @@ const RequestDetail: React.FC = () => {
     }
 };
 
-export default RequestDetail;
+export default RequiestApproval;
