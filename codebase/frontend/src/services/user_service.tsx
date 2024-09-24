@@ -5,7 +5,6 @@ import extractErrorMessage from "../util/extractErrorMessage";
 import { getToken } from "../util/getToken";
 const baseUrl = import.meta.env.VITE_API_URL;
 
-
 interface FormDataType {
   firstName: string;
   middleName: string;
@@ -37,14 +36,14 @@ export const userApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${baseUrl}user`,
     prepareHeaders: async (headers) => {
-      const token = await getToken()
+      const token = await getToken();
       if (token) {
         headers.set("Authorization", `${token}`);
       }
       return headers;
     },
   }),
-  tagTypes: ['user'],
+  tagTypes: ["user"],
   endpoints: (builder) => ({
     getAllUsers: builder.query({
       query: () => ({
@@ -57,7 +56,7 @@ export const userApi = createApi({
       }),
       transformResponse: (response: any) =>
         response.success ? (response.data as UserType[]) : ([] as UserType[]),
-      providesTags: ['user'],
+      providesTags: ["user"],
     }),
 
     getSingleUser: builder.query({
@@ -74,10 +73,10 @@ export const userApi = createApi({
     addNewuser: builder.mutation({
       query: (body: FormDataType) => ({
         url: `/register`,
-        method: 'POST',
+        method: "POST",
         body,
       }),
-      invalidatesTags: ['user'],
+      invalidatesTags: ["user"],
       transformResponse: (response: any) => {
         console.log(response);
         return response.success ? response.message : "something happened";
@@ -87,7 +86,23 @@ export const userApi = createApi({
         return extractErrorMessage(message);
       },
     }),
+    assignRole: builder.mutation({
+      query: ({ body, param }: { body: { role: string }; param: number }) => ({
+        url: `/assignRole/${param}`,
+        method: "PUT",
+        body,
+      }),
 
+      invalidatesTags: ["user"],
+      transformResponse: (response: any) => {
+        console.log(response);
+        return response.success ? response.message : "something happened";
+      },
+      transformErrorResponse: (response: any) => {
+        const message = response?.data?.message;
+        return extractErrorMessage(message);
+      },
+    }),
     updateUser: builder.mutation({
       query: (userData: UserType) => ({
         url: `/${userData.id}`,
@@ -109,7 +124,7 @@ export const userApi = createApi({
           // Authorization: "token",
         },
       }),
-      invalidatesTags: ['user'],
+      invalidatesTags: ["user"],
       // transformErrorResponse: (response: any) => {
       //   try {
       //     const message = response?.data?.message;
@@ -130,7 +145,7 @@ export const userApi = createApi({
         body: loginData,
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer token" // Uncomment and adjust if using authorization tokens
+          Authorization: "Bearer token", // Uncomment and adjust if using authorization tokens
         },
       }),
       transformResponse: (response: LoginResponse) => {
@@ -139,9 +154,7 @@ export const userApi = createApi({
       transformErrorResponse: (response: any) => {
         return response.data;
       },
-    })
-
-
+    }),
   }),
 });
 
@@ -152,4 +165,5 @@ export const {
   useUpdateUserMutation,
   useDeleteUserMutation,
   useLoginUserMutation,
+  useAssignRoleMutation,
 } = userApi;

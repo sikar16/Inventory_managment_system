@@ -13,7 +13,10 @@ import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Link, useNavigate } from "react-router-dom";
 import { MaterialRequest_type } from "../../_types/materialReq_type";
-import { useGetAllpurchasedReqQuery, useDeletepurchasedReqMutation } from "../../services/purchasedReq_service";
+import {
+  useGetAllpurchasedReqQuery,
+  useDeletepurchasedReqMutation,
+} from "../../services/purchasedReq_service";
 import { PurchasedRequest_type } from "../../_types/purchasedReq_type";
 
 interface Column {
@@ -61,7 +64,7 @@ export default function MaterialReq() {
   function formatDateToReadable(dateString: string) {
     const date = new Date(dateString);
     const options = { year: "numeric", month: "long", day: "numeric" };
-    return date.toLocaleDateString("en-US", options);
+    // return date.toLocaleDateString("en-US", options);
   }
 
   // Determine approval status dynamically
@@ -74,14 +77,14 @@ export default function MaterialReq() {
   // Create rows for the table
   const rows: RowData[] = isSuccess
     ? purchasedReq.map((i, index) =>
-      createData(
-        index + 1,
-        `${i.id}`,
-        `${i.user.id}`,
-        approvalStatus(i),
-        formatDateToReadable(i.createdAt)
+        createData(
+          index + 1,
+          `${i.id}`,
+          `${i.user.id}`,
+          approvalStatus(i),
+          `${formatDateToReadable(i.createdAt.toString())}`
+        )
       )
-    )
     : [];
 
   // Handle page change for pagination
@@ -90,7 +93,9 @@ export default function MaterialReq() {
   };
 
   // Handle rows per page change
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
@@ -154,10 +159,18 @@ export default function MaterialReq() {
       </div>
 
       <div className="flex gap-8 text-gray-400 mt-8 mb-1">
-        <button className="hover:underline hover:text-black">All requests</button>
-        <button className="hover:underline hover:text-black">Accepted requests</button>
-        <button className="hover:underline hover:text-black">Pending requests</button>
-        <button className="hover:underline hover:text-black">Rejected requests</button>
+        <button className="hover:underline hover:text-black">
+          All requests
+        </button>
+        <button className="hover:underline hover:text-black">
+          Accepted requests
+        </button>
+        <button className="hover:underline hover:text-black">
+          Pending requests
+        </button>
+        <button className="hover:underline hover:text-black">
+          Rejected requests
+        </button>
       </div>
 
       <hr className="w-full text-black bg-black" />
@@ -207,11 +220,19 @@ export default function MaterialReq() {
                   .map((row, index) => {
                     const singleMaterialRequest = purchasedReq[index];
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.requestId}>
+                      <TableRow
+                        hover
+                        role="checkbox"
+                        tabIndex={-1}
+                        key={row.requestId}
+                      >
                         {columns.map((column) => {
                           const value = row[column.id as keyof RowData];
                           return (
-                            <TableCell key={column.id} align={column.align || "left"}>
+                            <TableCell
+                              key={column.id}
+                              align={column.align || "left"}
+                            >
                               {value}
                             </TableCell>
                           );
@@ -232,7 +253,9 @@ export default function MaterialReq() {
                             open={Boolean(anchorEl)}
                             onClose={handleCloseMenu}
                           >
-                            <MenuItem onClick={handleView}>View detail</MenuItem>
+                            <MenuItem onClick={handleView}>
+                              View detail
+                            </MenuItem>
                             <MenuItem
                               onClick={() => handleEdit(singleMaterialRequest)}
                             >
