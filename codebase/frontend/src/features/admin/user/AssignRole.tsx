@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useAssignRoleMutation } from "../../../services/user_service";
-import Loader from "../../../component/Loading";
 import { useToast } from "../../../context/ToastContext";
 
 interface RowData {
@@ -10,13 +9,13 @@ interface RowData {
   email: string;
   phone: string;
   role:
-  | "DEPARTMENT_HEAD"
-  | "EMPLOYEE"
-  | "ADMIN"
-  | "LOGESTIC_SUPERVISER"
-  | "FINANCE"
-  | "GENERAL_MANAGER"
-  | "STORE_KEEPER";
+    | "DEPARTMENT_HEAD"
+    | "EMPLOYEE"
+    | "ADMIN"
+    | "LOGESTIC_SUPERVISER"
+    | "FINANCE"
+    | "GENERAL_MANAGER"
+    | "STORE_KEEPER";
   gender: string;
   address: string;
   actions: boolean;
@@ -71,10 +70,7 @@ const AssignRole: React.FC<AssignRoleProps> = ({
   return (
     <div>
       <div className="w-full md:w-[45%] ">
-        <label
-          htmlFor="role"
-          className="block text-sm font-medium "
-        >
+        <label htmlFor="role" className="block text-sm font-medium ">
           Role
         </label>
         <select
@@ -94,9 +90,7 @@ const AssignRole: React.FC<AssignRoleProps> = ({
       </div>
       <div className="flex justify-center mt-2">
         {isLoading ? (
-          <div>
-            Assigning
-          </div>
+          <div>Assigning</div>
         ) : (
           <button
             type="button"

@@ -2,7 +2,10 @@ import express from "express";
 import userController from "./userController.js";
 import { isAdmin } from "../../middleware/auth.js";
 const userRouter = express.Router();
+
+userRouter.get("/get-me", userController.getMy);
 userRouter.get("/:id", userController.getSingleUser);
+
 userRouter.get("/", [isAdmin], userController.getAllUsers);
 userRouter.post("/register", [isAdmin], userController.createUser);
 

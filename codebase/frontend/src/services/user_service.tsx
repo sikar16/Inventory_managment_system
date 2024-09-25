@@ -1,6 +1,6 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { UserType } from "../_types/user_type";
+import { MeUserType, UserType } from "../_types/user_type";
 import extractErrorMessage from "../util/extractErrorMessage";
 import { getToken } from "../util/getToken";
 const baseUrl = import.meta.env.VITE_API_URL;
@@ -56,6 +56,19 @@ export const userApi = createApi({
       }),
       transformResponse: (response: any) =>
         response.success ? (response.data as UserType[]) : ([] as UserType[]),
+      providesTags: ["user"],
+    }),
+    getMy: builder.query({
+      query: () => ({
+        url: `/get-me`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization: "token",
+        },
+      }),
+      transformResponse: (response: any) =>
+        response.success ? (response.data as MeUserType) : null,
       providesTags: ["user"],
     }),
 
@@ -166,4 +179,5 @@ export const {
   useDeleteUserMutation,
   useLoginUserMutation,
   useAssignRoleMutation,
+  useGetMyQuery,
 } = userApi;

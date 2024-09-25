@@ -28,7 +28,12 @@ interface Column {
 const columns: Column[] = [
   { id: "no", label: "No", minWidth: 50 },
   { id: "requestId", label: "Request Id", minWidth: 200 },
-  { id: "departmentHeadId", label: "Department Head Id", minWidth: 200, align: "left" },
+  {
+    id: "departmentHeadId",
+    label: "Department Head Id",
+    minWidth: 200,
+    align: "left",
+  },
   { id: "createdAt", label: "Created at", minWidth: 200, align: "left" },
   { id: "isApprovedBy", label: "Approved By", minWidth: 50, align: "center" },
 ];
@@ -52,7 +57,6 @@ export default function RequestsList() {
   const [matReq, setMatReq] = React.useState<MaterialRequest_type | null>(null);
 
   // Fetching data using the hook
-
   const {
     data: materialReq,
     isError,
@@ -62,20 +66,20 @@ export default function RequestsList() {
 
   function formatDateToReadable(dateString: string) {
     const date = new Date(dateString);
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return date.toLocaleDateString("en-US", options);
   }
 
   const rows: RowData[] = isSuccess
     ? materialReq.map((i, index) =>
-      createData(
-        index + 1,
-        `${i.id}`,
-        `${i.departmentHead?.profile.firstName} ${i.departmentHead?.profile.lastName} ${i.departmentHead?.profile.middleName}`,
-        `${i.isApproviedByDH}`,
-        formatDateToReadable(i.createdAt)
+        createData(
+          index + 1,
+          `${i.id}`,
+          `${i.departmentHead?.profile.firstName} ${i.departmentHead?.profile.lastName} ${i.departmentHead?.profile.middleName}`,
+          `${i.isApproviedByDH}`,
+          formatDateToReadable(i.createdAt)
+        )
       )
-    )
     : [];
 
   const handleChangePage = (_event: unknown, newPage: number) => {
@@ -88,8 +92,6 @@ export default function RequestsList() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
-
 
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -107,20 +109,20 @@ export default function RequestsList() {
 
   const handleDelete = async (id: string) => {
     try {
-      console.log("Deleting category with ID:", id);
+      console.log("Deleting request with ID:", id);
       await deleteMaterialReq(id).unwrap(); // Trigger the delete mutation
-      console.log("Category deleted successfully");
+      console.log("Request deleted successfully");
     } catch (error) {
-      console.error("Failed to delete category:", error);
+      console.error("Failed to delete request:", error);
     }
   };
 
   const handleEdit = async (i: MaterialRequest_type) => {
     console.log(i);
     try {
-      console.log("Category Edit successfully");
+      console.log("Request edited successfully");
     } catch (error) {
-      console.error("Failed to edit category:", error);
+      console.error("Failed to edit request:", error);
     }
   };
 
@@ -240,7 +242,7 @@ export default function RequestsList() {
                             onClose={handleCloseMenu}
                           >
                             <MenuItem onClick={handleView}>
-                              View detail
+                              View detail {matReq?.id}
                             </MenuItem>
                             <MenuItem
                               onClick={() => handleEdit(singleMaterialRequest)}
@@ -270,14 +272,6 @@ export default function RequestsList() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-
-      {/* <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>View Request Details</DialogTitle>
-        <DialogContent>Details go here...</DialogContent>
-        <DialogActions>
-          <button onClick={handleCloseDialog}>Close</button>
-        </DialogActions>
-      </Dialog> */}
     </div>
   );
 }

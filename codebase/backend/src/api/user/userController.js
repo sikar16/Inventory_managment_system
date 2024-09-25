@@ -47,6 +47,43 @@ const userController = {
       });
     }
   },
+  getMy: async (req, res, next) => {
+    console.log("somting");
+    try {
+      const userId = req.user.id;
+      const user = await prisma.users.findUnique({
+        where: {
+          id: userId,
+        },
+        include: {
+          profile: {
+            include: {
+              address: true,
+            },
+          },
+          department: true,
+        },
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: user,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: "error while fetching single user",
+      });
+    }
+  },
 
   getAllUsers: async (req, res, next) => {
     try {
@@ -158,7 +195,7 @@ const userController = {
           message: "Password is required",
         });
       }
-  
+
       const hashedPassword = bcrypt.hashSync(data.password, 10);
       // Create the user
       const newUser = await prisma.users.create({
@@ -352,13 +389,13 @@ const userController = {
         success: true,
         message: "user logged in successfully",
         token,
-        role:user.role
+        role: user.role,
       });
     } catch (error) {
       console.error("error occurred:", error);
       return res.status(500).json({
         success: false,
-        message:`Error - ${error}`,
+        message: `Error - ${error}`,
       });
     }
   },
