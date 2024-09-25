@@ -26,7 +26,11 @@ import { FinanceLayout } from '../layout/Finance/FinanceLayout'
 import { GeneralManagerLayout } from '../layout/generalManager/GeneralManagerLayout'
 import { WarehouseLayout } from '../layout/Warehouse/WarehouseLayout'
 import RequiestApproval from '../features/departmentHead/RequiestApproval'
-import MaterialReq from '../features/logesticsSuperviser/MaterialReq'
+import MaterialReq from '../features/logesticsSuperviser/PurchasedReqest'
+import PurchasedReq from '../features/logesticsSuperviser/MaterialReq'
+import PurchasedReqest from '../features/logesticsSuperviser/PurchasedReqest'
+import MaterialRequiest from '../features/logesticsSuperviser/MaterialRequiest'
+import PurchasedRequiestDetail from '../features/logesticsSuperviser/PurchasedRequiestDetail'
 export const router = createBrowserRouter(
     createRoutesFromElements(
         <>
@@ -74,10 +78,11 @@ export const router = createBrowserRouter(
             {/* {logeistic section} */}
             <Route path='/logestics' element={<LogesticsLayout />}>
                 <Route path='/logestics/dashbord' element={<p>logestics dashbord</p>} />
-                <Route path='/logestics/incoming-requests' element={<MaterialReq />} />
+                <Route path='/logestics/incoming-requests' element={<MaterialRequiest />} />
                 <Route path='/logestics/material-request' element={<MaterialRequestForm />} />
-                <Route path='/logestics/requiest-detaile' element={<RequiestDetail />} />
-                <Route path='/logestics/purchase-requests' element={<><h1>purchase request</h1></>} />
+                <Route path='/logestics/materialRequiest-detaile' element={<RequiestDetail />} />
+                <Route path='/logestics/purchase-requests' element={<><h1><PurchasedReqest /></h1></>} />
+                <Route path='/logestics/purchasedRequiest-detaile' element={<><h1><PurchasedRequiestDetail /></h1></>} />
                 <Route path='/logestics/purchase-order' element={<><h1>purchase order</h1></>} />
                 <Route path='/logestics/supplier-response' element={<><h1>supplier response</h1></>} />
                 <Route path='/logestics/stock' element={<><h1>stock</h1></>} />

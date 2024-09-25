@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from "react";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
-import IconButton from "@mui/material/IconButton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  IconButton,
+  Paper,
+  Menu,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TablePagination,
+  Typography,
+} from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import { UserType } from "../../../_types/user_type";
 import { useDeleteUserMutation } from "../../../services/user_service";
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import AssignRole from "./AssignRole";
 
 interface Column {
@@ -25,11 +35,10 @@ const columns: Column[] = [
   { id: "department", label: "Department", minWidth: 180, align: "left" },
   { id: "email", label: "Email", minWidth: 80, align: "left" },
   { id: "phone", label: "Phone", minWidth: 80, align: "left" },
-  { id: "role", label: "Role", minWidth: 80, align: "left" },
-
+  { id: "role", label: "Role", minWidth: 50, align: "left" },
   { id: "gender", label: "Gender", minWidth: 50, align: "left" },
   { id: "address", label: "Address", minWidth: 180, align: "left" },
-  { id: "actions", label: "Actions", minWidth: 30, align: "left" },
+  { id: "actions", label: "Actions", minWidth: 30, align: "center" },
 ];
 
 function createData(
@@ -74,13 +83,13 @@ interface RowData {
   email: string;
   phone: string;
   role:
-    | "DEPARTMENT_HEAD"
-    | "EMPLOYEE"
-    | "ADMIN"
-    | "LOGESTIC_SUPERVISER"
-    | "FINANCE"
-    | "GENERAL_MANAGER"
-    | "STORE_KEEPER";
+  | "DEPARTMENT_HEAD"
+  | "EMPLOYEE"
+  | "ADMIN"
+  | "LOGESTIC_SUPERVISER"
+  | "FINANCE"
+  | "GENERAL_MANAGER"
+  | "STORE_KEEPER";
   gender: string;
   address: string;
   actions: boolean;
@@ -91,20 +100,14 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedRow, setSelectedRow] = useState<RowData | null>(null);
-
   const [rows, setRows] = useState<RowData[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
-
-  const handleOpenDialog = () => setOpenDialog(true);
-  const handleCloseDialog = () => setOpenDialog(false);
 
   useEffect(() => {
     const newRows = userList.map((i) =>
       createData(
         i.id,
-        `${i.profile.firstName} ${i.profile.middleName || ""} ${
-          i.profile.lastName
-        }`,
+        `${i.profile.firstName} ${i.profile.middleName || ""} ${i.profile.lastName}`,
         `${i.department.name}`,
         `${i.email}`,
         `${i.profile.phone}`,
@@ -117,18 +120,24 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
     setRows(newRows);
   }, [userList]);
 
+  const handleOpenDialog = () => setOpenDialog(true);
+  const handleCloseDialog = () => setOpenDialog(false);
+  const handleMenuClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    row: RowData
+  ) => {
+    setMenuAnchorEl(event.currentTarget);
+    setSelectedRow(row);
+  };
   const handleCloseMenu = () => {
     setMenuAnchorEl(null);
     setSelectedRow(null);
   };
 
   const [deleteUser] = useDeleteUserMutation();
-
   const handleDelete = async (id: number) => {
     try {
       await deleteUser(id).unwrap();
-      console.log(`User with id ${id} deleted`);
-
       setRows((prevRows) => prevRows.filter((row) => row.no !== id));
       setMenuAnchorEl(null);
     } catch (error) {
@@ -136,63 +145,89 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
     }
   };
 
-  const handleMenuClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    row: RowData
-  ) => {
-    setMenuAnchorEl(event.currentTarget); // Open the menu at the clicked button
-    setSelectedRow(row); // Set the selected row before opening the menu
+  const handleAssignRole = () => {
+    handleOpenDialog();
   };
 
-  const handleAssignRole = () => {
-    handleOpenDialog(); // Open the dialog for assigning roles
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
   };
 
   return (
     <>
-      <TableBody>
-        {rows
-          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-          .map((row, index) => (
-            <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-              {columns.map((column) => {
-                const value = row[column.id];
-                return (
+      <Paper sx={{ width: "100%", overflow: "hidden" }}>
+        <TableContainer>
+          <Table stickyHeader>
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
                   <TableCell key={column.id} align={column.align}>
-                    {column.id === "actions" ? (
-                      <>
-                        <IconButton
-                          aria-label="more"
-                          aria-controls="long-menu"
-                          aria-haspopup="true"
-                          onClick={(event) => handleMenuClick(event, row)} // Pass row to handleMenuClick
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
-                        <Menu
-                          anchorEl={menuAnchorEl}
-                          open={Boolean(menuAnchorEl)}
-                          onClose={handleCloseMenu}
-                        >
-                          <MenuItem onClick={handleAssignRole}>
-                            AssignRole
-                          </MenuItem>
-                          <MenuItem onClick={() => handleDelete(row.no)}>
-                            Delete
-                          </MenuItem>
-                          {/* Additional actions */}
-                        </Menu>
-                      </>
-                    ) : (
-                      value
-                    )}
+                    {column.label}
                   </TableCell>
-                );
-              })}
-            </TableRow>
-          ))}
-      </TableBody>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => (
+                  <TableRow hover key={index}>
+                    {columns.map((column) => {
+                      const value = row[column.id];
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          {column.id === "actions" ? (
+                            <>
+                              <IconButton
+                                onClick={(event) => handleMenuClick(event, row)}
+                              >
+                                <MoreVertIcon />
+                              </IconButton>
+                              <Menu
+                                anchorEl={menuAnchorEl}
+                                open={Boolean(menuAnchorEl)}
+                                onClose={handleCloseMenu}
+                              >
+                                <MenuItem onClick={handleAssignRole}>
+                                  Assign Role
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() => handleDelete(row.no)}
+                                >
+                                  Delete
+                                </MenuItem>
+                              </Menu>
+                            </>
+                          ) : (
+                            value
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
 
+      {/* Assign Role Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Assign Role</DialogTitle>
         <DialogContent>

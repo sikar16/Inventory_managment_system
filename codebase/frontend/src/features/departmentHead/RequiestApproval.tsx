@@ -40,11 +40,9 @@ function createData(
     return { no, product, subCategory, category, quantity, remark };
 }
 
-const RequiestApproval: React.FC = () => {
+const RequestDetail: React.FC = () => {
     const location = useLocation();
     const { id } = location.state || {}; // Use optional chaining to avoid errors
-
-    // console.log(`id : ${id}`);
 
     const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
@@ -73,15 +71,14 @@ const RequiestApproval: React.FC = () => {
         )
         : [];
 
-    console.log(1);
-
     if (isError) {
-        return <p> `${error.toString()}` </p>;
+        return <p>{error.toString()}</p>; // Fixed error rendering
     }
 
     if (isLoading) {
         return <Loader />;
     }
+
     if (isSuccess) {
         return (
             <div>
@@ -96,15 +93,17 @@ const RequiestApproval: React.FC = () => {
                         {materialReq.employee.profile.middleName}
                     </p>
                     <p>
-                        <strong>Role:</strong>
-                        {materialReq.employee.role}</p>
+                        <strong>Role:</strong> {materialReq.employee.role}
+                    </p>
                     <p>
-                        <strong> Department:</strong>
-                        {materialReq.employee.department.name}</p>
-                    <p> <strong>Email:</strong>
-                        {materialReq.employee.email}</p>
-                    <p><strong>Phone:</strong>
-                        {materialReq.employee.profile.phone}</p>
+                        <strong> Department:</strong> {materialReq.employee.department.name}
+                    </p>
+                    <p>
+                        <strong>Email:</strong> {materialReq.employee.email}
+                    </p>
+                    <p>
+                        <strong>Phone:</strong> {materialReq.employee.profile.phone}
+                    </p>
                 </div>
 
                 <h2 className="text-[#002a47] py-2.5 px-2 rounded-e-full mb-5 text-2xl">
@@ -114,13 +113,13 @@ const RequiestApproval: React.FC = () => {
                     <thead>
                         <tr className="bg-gray-200">
                             {columns.map((column) => (
-                                <td
-                                    key={column.id}
+                                <th
+                                    key={column.id} // Changed td to th for header
                                     className="p-2 font-medium"
                                     style={{ minWidth: column.minWidth }}
                                 >
                                     {column.label}
-                                </td>
+                                </th>
                             ))}
                             <th className="p-2"></th>
                         </tr>
@@ -139,33 +138,14 @@ const RequiestApproval: React.FC = () => {
                                         </td>
                                     ))}
                                     <td className="p-2">
-                                        <button
-                                            className=""
-                                            onClick={() => handleToggleDetails(row.no)}
-                                        >
+                                        <button onClick={() => handleToggleDetails(row.no)}>
                                             {expandedRow === row.no ? (
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width={24}
-                                                    height={24}
-                                                    viewBox="0 0 256 256"
-                                                >
-                                                    <path
-                                                        fill="#002A47"
-                                                        d="M210.83 162.83a4 4 0 0 1-5.66 0L128 85.66l-77.17 77.17a4 4 0 0 1-5.66-5.66l80-80a4 4 0 0 1 5.66 0l80 80a4 4 0 0 1 0 5.66"
-                                                    ></path>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 256 256">
+                                                    <path fill="#002A47" d="M210.83 162.83a4 4 0 0 1-5.66 0L128 85.66l-77.17 77.17a4 4 0 0 1-5.66-5.66l80-80a4 4 0 0 1 5.66 0l80 80a4 4 0 0 1 0 5.66" />
                                                 </svg>
                                             ) : (
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width={24}
-                                                    height={24}
-                                                    viewBox="0 0 256 256"
-                                                >
-                                                    <path
-                                                        fill="#002A47"
-                                                        d="m210.83 98.83l-80 80a4 4 0 0 1-5.66 0l-80-80a4 4 0 0 1 5.66-5.66L128 170.34l77.17-77.17a4 4 0 1 1 5.66 5.66"
-                                                    ></path>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 256 256">
+                                                    <path fill="#002A47" d="m210.83 98.83l-80 80a4 4 0 0 1-5.66 0l-80-80a4 4 0 0 1 5.66-5.66L128 170.34l77.17-77.17a4 4 0 1 1 5.66 5.66" />
                                                 </svg>
                                             )}
                                         </button>
@@ -173,98 +153,59 @@ const RequiestApproval: React.FC = () => {
                                 </tr>
                                 {expandedRow === row.no && (
                                     <tr>
-                                        <td
-                                            colSpan={columns.length + 1}
-                                            className="p-4 bg-gray-50 border-t border-gray-200 shadow-lg "
-                                        >
+                                        <td colSpan={columns.length + 1} className="p-4 bg-gray-50 border-t border-gray-200 shadow-lg ">
                                             <div className=" space-y-4  w-[85%] justify-center m-auto p-5">
                                                 <div className="flex justify-between">
                                                     <div className="flex gap-4">
-                                                        <p className=" text-gray-700">
-                                                            <strong>Category:</strong>
-                                                        </p>
+                                                        <p className=" text-gray-700"><strong>Category:</strong></p>
                                                         <p className="text-gray-600">{row.category}</p>
                                                     </div>
                                                     <div className="flex gap-4">
-                                                        <p className=" text-gray-700">
-                                                            <strong>Sub-Category:</strong>
-                                                        </p>
+                                                        <p className=" text-gray-700"><strong>Sub-Category:</strong></p>
                                                         <p className="text-gray-600">{row.subCategory}</p>
                                                     </div>
                                                     <div className="flex justify-between">
-                                                        <p className=" text-gray-700">
-                                                            <strong>Product Name:</strong>
-                                                        </p>
+                                                        <p className=" text-gray-700"><strong>Product Name:</strong></p>
                                                         <p className="text-gray-600">{row.product}</p>
                                                     </div>
                                                 </div>
 
                                                 <div className="flex justify-between">
                                                     <div className="flex justify-between gap-4">
-                                                        <p className=" text-gray-700">
-                                                            <strong>Quantity:</strong>
-                                                        </p>
+                                                        <p className=" text-gray-700"><strong>Quantity:</strong></p>
                                                         <p className="text-gray-600">{row.quantity}</p>
                                                     </div>
                                                     <div className="flex gap-4">
-                                                        <p className=" text-gray-700">
-                                                            <strong>Date of Request:</strong>
-                                                        </p>
-                                                        <p className="text-gray-600">
-                                                            {materialReq.createdAt}
-                                                        </p>
+                                                        <p className=" text-gray-700"><strong>Date of Request:</strong></p>
+                                                        <p className="text-gray-600">{materialReq.createdAt}</p>
                                                     </div>
                                                 </div>
 
-                                                <div className="flex  gap-4">
-                                                    <p className=" text-gray-700">
-                                                        <strong>Remark:</strong>
-                                                    </p>
+                                                <div className="flex gap-4">
+                                                    <p className=" text-gray-700"><strong>Remark:</strong></p>
                                                     <p className="text-gray-600">{row.remark}</p>
                                                 </div>
                                             </div>
                                             {/* Detail of product */}
-
-                                            <div className="bg-white shadow-md rounded-lg p-6 space-y-4 w-[85%] mx-auto mt-6">
-                                                <p className="text-xl font-semibold text-gray-800 border-b pb-2">Details</p>
-
-                                                {materialReq.items.findIndex((i) => i.id === row.no) !== -1 && (
-                                                    <div className="grid grid-cols-2 gap-10 p-4  rounded-lg">
-                                                        {/* Key Section */}
+                                            <div className="rounded-lg p-6 space-y-4 w-[85%] mx-auto mt-6">
+                                                <p className="text-xl font-semibold text-gray-800 border-b pb-1">Details</p>
+                                                {materialReq.items.find(item => item.product.name === row.product)?.product.productAttributes?.length > 0 && (
+                                                    <div className="grid grid-cols-2 gap-10 p-1  rounded-lg">
                                                         <div className="space-y-2">
                                                             <p className="text-lg font-semibold text-gray-700">Key</p>
-                                                            <ul className="list-disc list-inside space-y-1">
-                                                                {materialReq.items[
-                                                                    materialReq.items.findIndex((i) => i.id === row.no)
-                                                                ].product.productAttributes &&
-                                                                    materialReq.items[
-                                                                        materialReq.items.findIndex((i) => i.id === row.no)
-                                                                    ].product.productAttributes.map((item) => (
-                                                                        <li className="capitalize" key={item.templateAttribute.name}>
-                                                                            {item.templateAttribute.name}
-                                                                        </li>
-                                                                    ))}
-                                                            </ul>
+                                                            {materialReq.items.find(item => item.product.name === row.product)?.product.productAttributes?.map((attribute) => (
+                                                                <p key={attribute.id} className="text-gray-500">{attribute.name}</p>
+                                                            ))}
                                                         </div>
-
-                                                        {/* Value Section */}
                                                         <div className="space-y-2">
                                                             <p className="text-lg font-semibold text-gray-700">Value</p>
-                                                            <ul className="list-disc list-inside space-y-1">
-                                                                {materialReq.items[
-                                                                    materialReq.items.findIndex((i) => i.id === row.no)
-                                                                ].product.productAttributes &&
-                                                                    materialReq.items[
-                                                                        materialReq.items.findIndex((i) => i.id === row.no)
-                                                                    ].product.productAttributes.map((item) => (
-                                                                        <li key={item.value}>{item.value}</li>
-                                                                    ))}
-                                                            </ul>
+                                                            {materialReq.items.find(item => item.product.name === row.product)?.product.productAttributes?.map((attribute) => (
+                                                                <p key={attribute.id} className="text-gray-500">{attribute.value}</p>
+                                                            ))}
                                                         </div>
                                                     </div>
                                                 )}
                                             </div>
-
                                         </td>
                                     </tr>
                                 )}
@@ -275,6 +216,8 @@ const RequiestApproval: React.FC = () => {
             </div>
         );
     }
+
+    return null; // Fallback case
 };
 
-export default RequiestApproval;
+export default RequestDetail;

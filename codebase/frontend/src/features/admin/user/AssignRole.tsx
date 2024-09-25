@@ -10,13 +10,13 @@ interface RowData {
   email: string;
   phone: string;
   role:
-    | "DEPARTMENT_HEAD"
-    | "EMPLOYEE"
-    | "ADMIN"
-    | "LOGESTIC_SUPERVISER"
-    | "FINANCE"
-    | "GENERAL_MANAGER"
-    | "STORE_KEEPER";
+  | "DEPARTMENT_HEAD"
+  | "EMPLOYEE"
+  | "ADMIN"
+  | "LOGESTIC_SUPERVISER"
+  | "FINANCE"
+  | "GENERAL_MANAGER"
+  | "STORE_KEEPER";
   gender: string;
   address: string;
   actions: boolean;
@@ -70,10 +70,10 @@ const AssignRole: React.FC<AssignRoleProps> = ({
 
   return (
     <div>
-      <div className="w-full md:w-[45%] my-5">
+      <div className="w-full md:w-[45%] ">
         <label
           htmlFor="role"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium "
         >
           Role
         </label>
@@ -81,7 +81,7 @@ const AssignRole: React.FC<AssignRoleProps> = ({
           id="role"
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="focus:outline-none bg-slate-100 w-full py-2 rounded-md"
+          className="focus:outline-none bg-slate-100  py-2 rounded-md"
         >
           <option value="EMPLOYEE">EMPLOYEE</option>
           <option value="FINANCE">FINANCE</option>
@@ -91,18 +91,17 @@ const AssignRole: React.FC<AssignRoleProps> = ({
           <option value="GENERAL_MANAGER">GENERAL MANAGER</option>
           <option value="STORE_KEEPER">STORE KEEPER</option>
         </select>
-        <p className="text-red-600 text-[13px] mt-1"></p>
       </div>
-      <div className="flex justify-center mt-16">
+      <div className="flex justify-center mt-2">
         {isLoading ? (
           <div>
-            <Loader />
+            Assigning
           </div>
         ) : (
           <button
             type="button"
             onClick={handleSubmit}
-            className="bg-[#002A47] text-white px-6 py-2 rounded-md w-[40%]"
+            className="bg-[#002A47] text-white px-6 py-2 rounded-md "
             disabled={isLoading} // Disable button during loading state
           >
             Submit

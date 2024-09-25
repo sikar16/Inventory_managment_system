@@ -49,8 +49,13 @@ const purchasedReqConntroller={
             const purchaseReq=await prisma.purchasedRequest.findMany({
               include:{
                 _count:true,
-                user:true,
-                items:true
+                user:{
+                  include:{
+                    department:true
+                  }
+                },
+                items:true,
+
               } 
             });
             return res.status(200).json({

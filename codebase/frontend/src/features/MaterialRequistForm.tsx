@@ -291,15 +291,28 @@ const MaterialRequestForm: React.FC = () => {
             <label className="block text-gray-700 font-medium mb-2">
               Unit:
             </label>
-            <input
-              type="text"
+            <select
               {...register("unit", { required: "Unit is required" })}
               className="border border-gray-300 p-3 rounded-lg w-full focus:outline-none"
-            />
+            >
+              <option value="">Select a unit</option>
+              <option value="units">Units</option>
+              <option value="units">Pieces</option>
+              <option value="kg">Kilograms (kg)</option>
+              <option value="g">Grams (g)</option>
+              <option value="mg">Milligrams (mg)</option>
+              <option value="liters">Liters (L)</option>
+              <option value="ml">Milliliters (ml)</option>
+              <option value="cm">Centimeters (cm)</option>
+              <option value="m">Meters (m)</option>
+              <option value="mm">Millimeters (mm)</option>
+
+            </select>
             {errors.unit && (
               <p className="text-red-500 text-sm">{errors.unit.message}</p>
             )}
           </div>
+
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

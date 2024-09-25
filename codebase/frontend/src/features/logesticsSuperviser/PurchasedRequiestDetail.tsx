@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useGetSingleMaterialReqQuery } from "../../../services/materialReq_service";
+import { useGetSingleMaterialReqQuery } from "../../services/materialReq_service";
 import { useLocation } from "react-router-dom";
-import Loader from "../../../component/Loading";
-import { useAuth } from "../../../context/AuthContext";
+import Loader from "../../component/Loading";
+import { useAuth } from "../../context/AuthContext";
 
 // Sample data
 interface Column {
@@ -17,7 +17,8 @@ const columns: Column[] = [
     { id: "product", label: "Product", minWidth: 70, align: "left" },
     { id: "subCategory", label: "Sub-Category", minWidth: 70 },
     { id: "category", label: "Category", minWidth: 70 },
-    { id: "quantity", label: "Quantity", minWidth: 70, align: "left" },
+    { id: "quantityToBePurchased", label: "Quantity to be purchased", minWidth: 70, align: "left" },
+    { id: "unitPrice", label: "Unit price", minWidth: 70, align: "left" },
     { id: "remark", label: "Remark", minWidth: 70, align: "left" },
 ];
 
@@ -26,7 +27,8 @@ interface Data {
     product: string;
     subCategory: string;
     category: string;
-    quantity: number; // Assuming 'quantity' is a number
+    quantityToBePurchased: number | null;
+    unitPrice: number;
     remark: string;
 }
 
@@ -35,13 +37,14 @@ function createData(
     product: string,
     subCategory: string,
     category: string,
-    quantity: number,
+    quantityToBePurchased: number | null,
+    unitPrice: number,
     remark: string
 ): Data {
-    return { no, product, subCategory, category, quantity, remark };
+    return { no, product, subCategory, category, quantityToBePurchased, unitPrice, remark };
 }
 
-const RequestDetail: React.FC = () => {
+const PurchasedRequiestDetail: React.FC = () => {
     const location = useLocation();
     const { id } = location.state || {}; // Use optional chaining to avoid errors
     const { isEmployee, isLS, isDH } = useAuth()
@@ -68,7 +71,8 @@ const RequestDetail: React.FC = () => {
                 item.product.name,
                 item.product.subcategory.name,
                 item.product.subcategory.category.name,
-                parseInt(item.quantityRequested),
+                item.quantityToBePurchased,
+                item.id,
                 item.remark
             )
         )
@@ -220,7 +224,7 @@ const RequestDetail: React.FC = () => {
                                                         <p className=" text-gray-700">
                                                             <strong>Quantity:</strong>
                                                         </p>
-                                                        <p className="text-gray-600">{row.quantity}</p>
+                                                        <p className="text-gray-600">{row.quantityToBePurchased}</p>
                                                     </div>
                                                     <div className="flex gap-4">
                                                         <p className=" text-gray-700">
@@ -288,4 +292,4 @@ const RequestDetail: React.FC = () => {
     }
 };
 
-export default RequestDetail;
+export default PurchasedRequiestDetail;
