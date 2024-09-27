@@ -14,7 +14,6 @@ import {
   DialogTitle,
   DialogContent,
   TablePagination,
-  Typography,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { UserType } from "../../../_types/user_type";
@@ -83,13 +82,13 @@ interface RowData {
   email: string;
   phone: string;
   role:
-  | "DEPARTMENT_HEAD"
-  | "EMPLOYEE"
-  | "ADMIN"
-  | "LOGESTIC_SUPERVISER"
-  | "FINANCE"
-  | "GENERAL_MANAGER"
-  | "STORE_KEEPER";
+    | "DEPARTMENT_HEAD"
+    | "EMPLOYEE"
+    | "ADMIN"
+    | "LOGESTIC_SUPERVISER"
+    | "FINANCE"
+    | "GENERAL_MANAGER"
+    | "STORE_KEEPER";
   gender: string;
   address: string;
   actions: boolean;
@@ -107,7 +106,9 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
     const newRows = userList.map((i) =>
       createData(
         i.id,
-        `${i.profile.firstName} ${i.profile.middleName || ""} ${i.profile.lastName}`,
+        `${i.profile.firstName} ${i.profile.middleName || ""} ${
+          i.profile.lastName
+        }`,
         `${i.department.name}`,
         `${i.email}`,
         `${i.profile.phone}`,
@@ -149,7 +150,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
     handleOpenDialog();
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
@@ -198,9 +199,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
                                 <MenuItem onClick={handleAssignRole}>
                                   Assign Role
                                 </MenuItem>
-                                <MenuItem
-                                  onClick={() => handleDelete(row.no)}
-                                >
+                                <MenuItem onClick={() => handleDelete(row.no)}>
                                   Delete
                                 </MenuItem>
                               </Menu>

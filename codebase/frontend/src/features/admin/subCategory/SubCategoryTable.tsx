@@ -10,7 +10,7 @@ import TableRow from "@mui/material/TableRow";
 import { ProductSubCategoryType } from "../../../_types/productSubcategory_type";
 import { useDeleteProductSubCategoryMutation } from "../../../services/productSubcategory_service";
 import { IconButton, Menu, MenuItem } from "@mui/material";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 const columns: {
   id: string;
@@ -18,11 +18,11 @@ const columns: {
   minWidth: number;
   align?: "center" | "left" | "right" | "inherit" | "justify";
 }[] = [
-    { id: "no", label: "No", minWidth: 50 },
-    { id: "subcategoryId", label: "SubCategory Id", minWidth: 70 },
-    { id: "category", label: "Category", minWidth: 70, align: "left" },
-    { id: "subCategory", label: "SubCategory", minWidth: 70, align: "left" },
-  ];
+  { id: "no", label: "No", minWidth: 50 },
+  { id: "subcategoryId", label: "SubCategory Id", minWidth: 70 },
+  { id: "category", label: "Category", minWidth: 70, align: "left" },
+  { id: "subCategory", label: "SubCategory", minWidth: 70, align: "left" },
+];
 
 function createData(
   no: number,
@@ -35,7 +35,6 @@ function createData(
 
 type RowData = ReturnType<typeof createData>;
 
-
 interface productSubcategoryprops {
   subcategoryList: ProductSubCategoryType[];
   anchorEl: null | HTMLElement;
@@ -45,12 +44,16 @@ interface productSubcategoryprops {
 }
 
 const SubCategoryTable: React.FC<productSubcategoryprops> = ({
-  subcategoryList, setSelectedSubCategory, anchorEl, setAnchorEl, selectedSubCategory
+  subcategoryList,
+  setSelectedSubCategory,
+  anchorEl,
+  setAnchorEl,
+  selectedSubCategory,
 }) => {
   const rows: RowData[] = subcategoryList.map((i, index) =>
     createData(index + 1, `${i.id}`, `${i.category.name}`, `${i.name}`)
   );
-  console.log(selectedSubCategory?.id)
+  console.log(selectedSubCategory?.id);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -73,8 +76,8 @@ const SubCategoryTable: React.FC<productSubcategoryprops> = ({
   };
   const [deleteProductSubCategory] = useDeleteProductSubCategoryMutation();
 
-  const handleDelete = async (id: string) => {
-    console.log("Deleting category with ID:", id);  // Log to check if the correct id is passed
+  const handleDelete = async (id: number) => {
+    console.log("Deleting category with ID:", id); // Log to check if the correct id is passed
     try {
       await deleteProductSubCategory(id).unwrap(); // Ensure the correct ID is being used
       console.log("Category deleted successfully");
@@ -103,7 +106,8 @@ const SubCategoryTable: React.FC<productSubcategoryprops> = ({
                       {column.label}
                     </TableCell>
                   ))}
-                  <TableCell align="center">Actions</TableCell> {/* Add Actions column */}
+                  <TableCell align="center">Actions</TableCell>{" "}
+                  {/* Add Actions column */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -113,11 +117,19 @@ const SubCategoryTable: React.FC<productSubcategoryprops> = ({
                     const category = subcategoryList[index]; // Ensure the correct product is accessed for each row
 
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.category}>
+                      <TableRow
+                        hover
+                        role="checkbox"
+                        tabIndex={-1}
+                        key={row.category}
+                      >
                         {columns.map((column) => {
                           const value = row[column.id as keyof RowData];
                           return (
-                            <TableCell key={column.id} align={column.align || 'left'}>
+                            <TableCell
+                              key={column.id}
+                              align={column.align || "left"}
+                            >
                               {value}
                             </TableCell>
                           );
@@ -137,7 +149,13 @@ const SubCategoryTable: React.FC<productSubcategoryprops> = ({
                             onClose={handleCloseMenu}
                           >
                             <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
-                            <MenuItem onClick={() => handleDelete(row.subcategoryId)}> {/* Pass the correct id */}
+                            <MenuItem
+                              onClick={() =>
+                                handleDelete(parseInt(row.subcategoryId))
+                              }
+                            >
+                              {" "}
+                              {/* Pass the correct id */}
                               Delete
                             </MenuItem>
                           </Menu>
@@ -146,7 +164,6 @@ const SubCategoryTable: React.FC<productSubcategoryprops> = ({
                     );
                   })}
               </TableBody>
-
             </Table>
           </TableContainer>
           <TablePagination

@@ -1,18 +1,18 @@
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useState } from "react";
 import { ProductType } from "../../../_types/product_type";
 import { useDeleteProductMutation } from "../../../services/product_service";
-import { IconButton } from '@mui/material';
+import { IconButton } from "@mui/material";
 
 type ColumnType = {
   id: string;
@@ -51,8 +51,8 @@ interface ProductProps {
 }
 function formatDateToReadable(dateString: string) {
   const date = new Date(dateString);
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  return date.toLocaleDateString('en-US', options);
+  // const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return date.toLocaleDateString("en-US");
 }
 
 const ProductTable: React.FC<ProductProps> = ({
@@ -69,7 +69,7 @@ const ProductTable: React.FC<ProductProps> = ({
       `${i.name}`,
       `${i.subcategory.category.name}`,
       `${i.subcategory?.name}`,
-      formatDateToReadable(i.createdAt)
+      formatDateToReadable(i.createdAt.toString())
     )
   );
 
@@ -93,7 +93,6 @@ const ProductTable: React.FC<ProductProps> = ({
   ) => {
     setAnchorEl(event.currentTarget);
     setSelectedProduct(product);
-
   };
 
   const handleCloseMenu = () => {
@@ -109,14 +108,16 @@ const ProductTable: React.FC<ProductProps> = ({
   const [deleteProduct] = useDeleteProductMutation();
 
   const handleDelete = async (id: string) => {
-    const isConfirmed = window.confirm("Are you sure you want to delete this product?");
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
 
     if (!isConfirmed) {
       return; // If the user cancels, exit the function without proceeding
     }
 
     try {
-      await deleteProduct(id).unwrap();
+      await deleteProduct(parseInt(id)).unwrap();
       console.log(`Product with ID ${id} deleted successfully`);
     } catch (error) {
       console.error(`Failed to delete product with ID ${id}:`, error);
@@ -124,8 +125,6 @@ const ProductTable: React.FC<ProductProps> = ({
 
     handleCloseMenu(); // Close the menu after deletion
   };
-
-
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
@@ -182,11 +181,17 @@ const ProductTable: React.FC<ProductProps> = ({
                         open={Boolean(anchorEl)}
                         onClose={handleCloseMenu}
                       >
-                        <MenuItem onClick={() => handleViewDetails(product.id)}>
+                        <MenuItem
+                          onClick={() =>
+                            handleViewDetails(product.id.toString())
+                          }
+                        >
                           View Details
                         </MenuItem>
                         <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
-                        <MenuItem onClick={() => handleDelete(product.id)}>
+                        <MenuItem
+                          onClick={() => handleDelete(product.id.toString())}
+                        >
                           Delete
                         </MenuItem>
                       </Menu>

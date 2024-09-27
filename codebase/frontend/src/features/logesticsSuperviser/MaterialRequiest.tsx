@@ -28,7 +28,12 @@ interface Column {
 const columns: Column[] = [
   { id: "no", label: "No", minWidth: 50 },
   { id: "requestId", label: "Request Id", minWidth: 200 },
-  { id: "departmentHeadId", label: "Department Head Id", minWidth: 200, align: "left" },
+  {
+    id: "departmentHeadId",
+    label: "Department Head Id",
+    minWidth: 200,
+    align: "left",
+  },
   { id: "createdAt", label: "Created at", minWidth: 200, align: "left" },
   { id: "isApprovedBy", label: "Approved By", minWidth: 50, align: "center" },
 ];
@@ -62,20 +67,20 @@ export default function MaterialRequiest() {
 
   function formatDateToReadable(dateString: string) {
     const date = new Date(dateString);
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
+    // const options = { year: "numeric", month: "long", day: "numeric" };
+    return date.toLocaleDateString("en-US");
   }
 
   const rows: RowData[] = isSuccess
     ? materialReq.map((i, index) =>
-      createData(
-        index + 1,
-        `${i.id}`,
-        `${i.departmentHead?.profile.firstName} ${i.departmentHead?.profile.lastName} ${i.departmentHead?.profile.middleName}`,
-        `${i.isApproviedByDH}`,
-        formatDateToReadable(i.createdAt)
+        createData(
+          index + 1,
+          `${i.id}`,
+          `${i.departmentHead?.profile.firstName} ${i.departmentHead?.profile.lastName} ${i.departmentHead?.profile.middleName}`,
+          `${i.isApproviedByDH}`,
+          formatDateToReadable(i.createdAt)
+        )
       )
-    )
     : [];
 
   const handleChangePage = (_event: unknown, newPage: number) => {
@@ -88,8 +93,6 @@ export default function MaterialRequiest() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
-
 
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -129,7 +132,9 @@ export default function MaterialRequiest() {
   const handleView = async () => {
     if (matReq) {
       console.log(`Viewing request with id: ${matReq.id}`);
-      navigate("/logestics/materialRequiest-detaile", { state: { id: matReq.id } });
+      navigate("/logestics/materialRequiest-detaile", {
+        state: { id: matReq.id },
+      });
     }
   };
 

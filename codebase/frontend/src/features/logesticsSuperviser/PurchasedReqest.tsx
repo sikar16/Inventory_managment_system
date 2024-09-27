@@ -12,7 +12,6 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Link, useNavigate } from "react-router-dom";
-import { MaterialRequest_type } from "../../_types/materialReq_type";
 import {
   useGetAllpurchasedReqQuery,
   useDeletepurchasedReqMutation,
@@ -43,7 +42,14 @@ function createData(
   isApprovedBy: string,
   createdAt: string
 ) {
-  return { no, purchasedReqId, department, totalPrice, isApprovedBy, createdAt };
+  return {
+    no,
+    purchasedReqId,
+    department,
+    totalPrice,
+    isApprovedBy,
+    createdAt,
+  };
 }
 
 type RowData = ReturnType<typeof createData>;
@@ -52,7 +58,9 @@ export default function PurchasedReqest() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [matReq, setMatReq] = React.useState<MaterialRequest_type | null>(null);
+  const [matReq, setMatReq] = React.useState<PurchasedRequest_type | null>(
+    null
+  );
 
   // Fetching data using the hook
   const {
@@ -65,8 +73,8 @@ export default function PurchasedReqest() {
   // Format the date to a readable format
   function formatDateToReadable(dateString: string) {
     const date = new Date(dateString);
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    return date.toLocaleDateString("en-US", options);
+    // const options = { year: "numeric", month: "long", day: "numeric" };
+    return date.toLocaleDateString("en-US");
   }
 
   // Determine approval status dynamically
@@ -79,15 +87,15 @@ export default function PurchasedReqest() {
   // Create rows for the table
   const rows: RowData[] = isSuccess
     ? purchasedReq.map((i, index) =>
-      createData(
-        index + 1,
-        `${i.id}`,
-        `${i.user.department.name}`,
-        `${i.totalPrice}`,
-        approvalStatus(i),
-        `${formatDateToReadable(i.createdAt.toString())}`
+        createData(
+          index + 1,
+          `${i.id}`,
+          `${i.user.department.name}`,
+          `${i.totalPrice}`,
+          approvalStatus(i),
+          `${formatDateToReadable(i.createdAt.toString())}`
+        )
       )
-    )
     : [];
 
   // Handle page change for pagination
@@ -106,7 +114,7 @@ export default function PurchasedReqest() {
   // Handle menu open for the actions (view/edit/delete)
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement>,
-    singleMaterialRequest: MaterialRequest_type
+    singleMaterialRequest: PurchasedRequest_type
   ) => {
     setAnchorEl(event.currentTarget);
     setMatReq(singleMaterialRequest); // Store the selected request
@@ -120,10 +128,10 @@ export default function PurchasedReqest() {
   const [deletePurchasedReq] = useDeletepurchasedReqMutation();
 
   // Handle delete request
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     try {
       console.log("Deleting category with ID:", id);
-      await deletePurchasedReq(id).unwrap(); // Trigger the delete mutation
+      await deletePurchasedReq(id.toString()).unwrap(); // Trigger the delete mutation
       console.log("Category deleted successfully");
     } catch (error) {
       console.error("Failed to delete category:", error);
@@ -146,7 +154,9 @@ export default function PurchasedReqest() {
   const handleView = async () => {
     if (matReq) {
       console.log(`Viewing request with id: ${matReq.id}`);
-      navigate("/logestics/purchasedRequiest-detaile", { state: { id: matReq.id } });
+      navigate("/logestics/purchasedRequiest-detaile", {
+        state: { id: matReq.id },
+      });
     }
   };
 
@@ -227,7 +237,7 @@ export default function PurchasedReqest() {
                         hover
                         role="checkbox"
                         tabIndex={-1}
-                        key={row.requestId}
+                        key={row.no}
                       >
                         {columns.map((column) => {
                           const value = row[column.id as keyof RowData];
@@ -264,9 +274,7 @@ export default function PurchasedReqest() {
                             >
                               Edit
                             </MenuItem>
-                            <MenuItem
-                              onClick={() => handleDelete(row.requestId)}
-                            >
+                            <MenuItem onClick={() => handleDelete(row.no)}>
                               Delete
                             </MenuItem>
                           </Menu>

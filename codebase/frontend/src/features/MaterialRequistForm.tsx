@@ -53,7 +53,7 @@ const MaterialRequestForm: React.FC = () => {
       unit: "",
       desiredDate: "",
       reason: "",
-      departmentHeadId: 5
+      departmentHeadId: 5,
     },
   });
 
@@ -65,11 +65,11 @@ const MaterialRequestForm: React.FC = () => {
     setRequests((prev) => [...prev, data]);
     reset(); // Reset form after adding a product
   };
-  const [addNewMaterialReq] = useAddNewMaterialReqMutation()
+  const [addNewMaterialReq] = useAddNewMaterialReqMutation();
   const submitRequest = async () => {
     const validatedRequests = requests.map((request) => ({
       departmentHeadId: request.departmentHeadId,
-      items: request.products.map((productId, index) => ({
+      items: request.products.map((productId) => ({
         productId: Number(productId),
         quantityRequested: Number(request.quantity),
         remark: request.reason,
@@ -79,14 +79,15 @@ const MaterialRequestForm: React.FC = () => {
     console.log("Submitting validated requests:", validatedRequests);
 
     try {
-      await addNewMaterialReq({ departmentHeadId: 5, items: validatedRequests[0].items });
+      await addNewMaterialReq({
+        departmentHeadId: 5,
+        items: validatedRequests[0].items,
+      });
       console.log("Request submitted successfully");
     } catch (error) {
       console.error("Error submitting request:", error);
     }
   };
-
-
 
   // Fetch product attributes when subcategory changes
   useEffect(() => {
@@ -306,13 +307,11 @@ const MaterialRequestForm: React.FC = () => {
               <option value="cm">Centimeters (cm)</option>
               <option value="m">Meters (m)</option>
               <option value="mm">Millimeters (mm)</option>
-
             </select>
             {errors.unit && (
               <p className="text-red-500 text-sm">{errors.unit.message}</p>
             )}
           </div>
-
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -351,7 +350,9 @@ const MaterialRequestForm: React.FC = () => {
         <div>
           <input
             type="hidden"
-            {...register("departmentHeadId", { required: "Department Head ID is required" })}
+            {...register("departmentHeadId", {
+              required: "Department Head ID is required",
+            })}
           />
         </div>
 
