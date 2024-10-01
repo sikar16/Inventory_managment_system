@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useGetSingleMaterialReqQuery } from "../../services/materialReq_service";
 import { useLocation } from "react-router-dom";
 import Loader from "../../component/Loading";
 import { useAuth } from "../../context/AuthContext";
+import { useGetAllpurchasedReqQuery } from "../../services/purchasedReq_service";
 
 // Sample data
 interface Column {
@@ -57,22 +57,24 @@ const PurchasedRequiestDetail: React.FC = () => {
     };
 
     const {
-        data: materialReq,
+        data: purchasedReq,
         isError,
         error,
         isLoading,
         isSuccess,
-    } = useGetSingleMaterialReqQuery(id);
+    } = useGetAllpurchasedReqQuery(id);
 
     const rows = isSuccess
-        ? materialReq.items.map((item, index) =>
+        ? purchasedReq.map((item, index) =>
+            // ? purchasedReq.items.map((item, index) =>
             createData(
                 index + 1,
+                item.items.map((i) => i.productId),
                 item.product.name,
                 item.product.subcategory.name,
                 item.product.subcategory.category.name,
                 item.quantityToBePurchased,
-                item.id,
+
                 item.remark
             )
         )
@@ -97,20 +99,20 @@ const PurchasedRequiestDetail: React.FC = () => {
                     <div className="p-3 text-sm">
                         <p>
                             <strong>Name: </strong>
-                            {materialReq.employee.profile.firstName}{" "}
-                            {materialReq.employee.profile.lastName}{" "}
-                            {materialReq.employee.profile.middleName}
+                            {purchasedReq.employee.profile.firstName}{" "}
+                            {purchasedReq.employee.profile.lastName}{" "}
+                            {purchasedReq.employee.profile.middleName}
                         </p>
                         <p>
                             <strong>Role:</strong>
-                            {materialReq.employee.role}</p>
+                            {purchasedReq.employee.role}</p>
                         <p>
                             <strong> Department:</strong>
-                            {materialReq.employee.department.name}</p>
+                            {purchasedReq.employee.department.name}</p>
                         <p> <strong>Email:</strong>
-                            {materialReq.employee.email}</p>
+                            {purchasedReq.employee.email}</p>
                         <p><strong>Phone:</strong>
-                            {materialReq.employee.profile.phone}</p>
+                            {purchasedReq.employee.profile.phone}</p>
 
                     </div>
                 }
@@ -118,14 +120,14 @@ const PurchasedRequiestDetail: React.FC = () => {
                     <>
                         <p>
                             <strong>Role:</strong>
-                            {materialReq.employee.role}</p>
+                            {purchasedReq.employee.role}</p>
                         <p>
                             <strong> Department:</strong>
-                            {materialReq.employee.department.name}</p>
+                            {purchasedReq.employee.department.name}</p>
                         <p> <strong>Email:</strong>
-                            {materialReq.employee.email}</p>
+                            {purchasedReq.employee.email}</p>
                         <p><strong>Phone:</strong>
-                            {materialReq.employee.profile.phone}</p>
+                            {purchasedReq.employee.profile.phone}</p>
                     </>}
                 <h2 className="text-[#002a47]  px-2 rounded-e-full mb-5 text-2xl">
                     Material Request Overview
@@ -231,7 +233,7 @@ const PurchasedRequiestDetail: React.FC = () => {
                                                             <strong>Date of Request:</strong>
                                                         </p>
                                                         <p className="text-gray-600">
-                                                            {materialReq.createdAt}
+                                                            {purchasedReq.createdAt}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -248,16 +250,16 @@ const PurchasedRequiestDetail: React.FC = () => {
                                             <div className="rounded-lg p-6 space-y-4 w-[85%] mx-auto mt-6">
                                                 <p className="text-xl font-semibold text-gray-800 border-b pb-1">Details</p>
 
-                                                {materialReq.items.findIndex((i) => i.product.name === row.product) !== -1 &&
-                                                    materialReq.items[materialReq.items.findIndex((i) => i.product.name === row.product)]
+                                                {purchasedReq.items.findIndex((i) => i.product.name === row.product) !== -1 &&
+                                                    purchasedReq.items[purchasedReq.items.findIndex((i) => i.product.name === row.product)]
                                                         .product.productAttributes &&
-                                                    materialReq.items[materialReq.items.findIndex((i) => i.product.name === row.product)]
+                                                    purchasedReq.items[purchasedReq.items.findIndex((i) => i.product.name === row.product)]
                                                         .product.productAttributes.length > 0 && (
                                                         <div className="grid grid-cols-2 gap-10 p-1  rounded-lg">
                                                             <div className="space-y-2">
                                                                 <p className="text-lg font-semibold text-gray-700">Key</p>
                                                                 <ul className="list-disc list-inside space-y-1">
-                                                                    {materialReq.items[materialReq.items.findIndex((i) => i.product.name === row.product)]
+                                                                    {purchasedReq.items[purchasedReq.items.findIndex((i) => i.product.name === row.product)]
                                                                         .product.productAttributes.map((item) => (
                                                                             <p className="capitalize" key={item.templateAttribute.name}>
                                                                                 {item.templateAttribute.name}
@@ -269,7 +271,7 @@ const PurchasedRequiestDetail: React.FC = () => {
                                                             <div className="space-y-2">
                                                                 <p className="text-lg font-semibold text-gray-700">Value</p>
                                                                 <ul className="list-disc list-inside space-y-1">
-                                                                    {materialReq.items[materialReq.items.findIndex((i) => i.product.name === row.product)]
+                                                                    {purchasedReq.items[purchasedReq.items.findIndex((i) => i.product.name === row.product)]
                                                                         .product.productAttributes.map((item) => (
                                                                             <p key={item.value}>{item.value}</p>
                                                                         ))}

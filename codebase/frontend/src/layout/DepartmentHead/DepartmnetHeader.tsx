@@ -8,6 +8,7 @@ import { AppBar } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Bottem from "../Bottem";
+import { useAuth } from "../../context/AuthContext";
 // interface ChildComponentProps {
 //     setOpen: (value: boolean) => void;
 // }
@@ -16,7 +17,9 @@ const DepartmentHeader = () => {
   const { themeData, setThemeData } = useThemeData();
   const [currentView, setCurrentView] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const id = 0;
+  const { userData } = useAuth();
+
+  // const id = 0;
 
   const handleToggleView = (view: string) => {
     setCurrentView(currentView === view ? "" : view);
@@ -24,7 +27,7 @@ const DepartmentHeader = () => {
   // const handleDrawerOpen = () => {
   //     setOpen(true);
   // };
-  const navigator = useNavigate();
+  const navigate = useNavigate();
 
   const getThemeIcon = () => {
     if (themeData === "light") {
@@ -97,7 +100,9 @@ const DepartmentHeader = () => {
                 </svg>
                 <p
                   className=" text-white text-center ms-1"
-                  onClick={() => navigator(`/profile/${id}`)}
+                  onClick={() =>
+                    navigate("/profile/", { state: { id: userData.id } })
+                  }
                 >
                   Profile
                 </p>

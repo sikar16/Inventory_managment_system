@@ -33,6 +33,7 @@ import RequiestApproval from "../features/departmentHead/RequiestApproval";
 import PurchasedReqest from "../features/logesticsSuperviser/PurchasedReqest";
 import MaterialRequiest from "../features/logesticsSuperviser/MaterialRequiest";
 import PurchasedRequiestDetail from "../features/logesticsSuperviser/PurchasedRequiestDetail";
+import PurchasedOrder from "../features/logesticsSuperviser/PurchasedOrder";
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -144,7 +145,7 @@ export const router = createBrowserRouter(
           path="/logestics/purchase-order"
           element={
             <>
-              <h1>purchase order</h1>
+              <PurchasedOrder />
             </>
           }
         />

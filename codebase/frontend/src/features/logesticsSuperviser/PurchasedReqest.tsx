@@ -27,7 +27,7 @@ interface Column {
 
 const columns: Column[] = [
   { id: "no", label: "No", minWidth: 50 },
-  { id: "purchasedReqId", label: "purchasedrequestid", minWidth: 200 },
+  { id: "purchasedReqId", label: "PR Id", minWidth: 80 },
   { id: "department", label: "Department", minWidth: 200, align: "left" },
   { id: "totalPrice", label: "Total price", minWidth: 200, align: "left" },
   { id: "createdAt", label: "Created at", minWidth: 200, align: "left" },
@@ -87,15 +87,15 @@ export default function PurchasedReqest() {
   // Create rows for the table
   const rows: RowData[] = isSuccess
     ? purchasedReq.map((i, index) =>
-        createData(
-          index + 1,
-          `${i.id}`,
-          `${i.user.department.name}`,
-          `${i.totalPrice}`,
-          approvalStatus(i),
-          `${formatDateToReadable(i.createdAt.toString())}`
-        )
+      createData(
+        index + 1,
+        `${i.id}`,
+        `${i.user.department.name}`,
+        `${i.totalPrice}`,
+        approvalStatus(i),
+        `${formatDateToReadable(i.createdAt.toString())}`
       )
+    )
     : [];
 
   // Handle page change for pagination
@@ -161,9 +161,9 @@ export default function PurchasedReqest() {
   };
 
   return (
-    <div className="mx-10 pt-6">
+    <div className="pt-6">
       <div className="flex justify-between mb-3 mx-2">
-        <p className="text-[#002a47] text-4xl font-medium">Requests</p>
+        <p className="text-[#002a47] text-4xl font-medium">Purchased Requests</p>
         <Link to="/employee/create-requests">
           {/* <button className="bg-[#002A47] px-3 py-1 text-white rounded-md">
             Create request

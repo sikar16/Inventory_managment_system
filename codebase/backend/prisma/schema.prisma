@@ -119,6 +119,8 @@ model Product {
   storeInventory         StoreInventory[]
   materialRequestItem    MaterialRequestItem[]
   purceasedRequestedItem PurceasedRequestedItem[]
+  // purchasedRequestedItems PurceasedRequestedItem[] @relation("ProductRequestedItems")
+
   purchasedOrderItem     PurchasedOrderItem[]
 
   OfferItem OfferItem[]
@@ -295,6 +297,7 @@ model PurceasedRequestedItem {
   purchasedRequest      PurchasedRequest    @relation(fields: [purchasedRequestId], references: [id])
   // relation
   products              Product[]
+  // product               Product             @relation(fields: [productId], references: [id], name: "ProductRequestedItems")
 }
 
 model PurchasedOrder {

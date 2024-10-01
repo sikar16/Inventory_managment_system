@@ -54,7 +54,23 @@ const purchasedReqConntroller={
                     department:true
                   }
                 },
-                items:true,
+                items:{
+                  include:{
+                    purchasedRequest:{
+                      include:{
+                        items:{
+                          include:{
+                            products:{
+                               include:{
+                                purceasedRequestedItem:true
+                               }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
 
               } 
             });
