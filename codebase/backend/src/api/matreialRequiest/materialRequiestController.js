@@ -5,7 +5,7 @@ const materialRequiestController = {
   getSinglematerialRequiest: async (req, res, next) => {
     try {
       const materialReqId = parseInt(req.params.id, 10);
-      console.log(req.params.id)
+      // console.log(req.params.id);
       if (isNaN(materialReqId)) {
         return res.status(400).json({
           success: false,
@@ -22,18 +22,18 @@ const materialRequiestController = {
             include: {
               _count: true,
               product: {
-                include:{
-                  subcategory:{
-                    include:{
-                      category:true
-                    }
+                include: {
+                  subcategory: {
+                    include: {
+                      category: true,
+                    },
                   },
-                  productAttributes:{
-                    include:{
-                      templateAttribute:true
-                    }
-                  }
-                }
+                  productAttributes: {
+                    include: {
+                      templateAttribute: true,
+                    },
+                  },
+                },
               },
             },
           },
@@ -79,13 +79,11 @@ const materialRequiestController = {
     }
   },
 
-
   getAllMaterialRequests: async (req, res, next) => {
     try {
-      console.log(req.user);
+      // console.log(req.user);
       const materialRequest = await prisma.materialRequest.findMany({
         include: {
-         
           employee: {
             include: {
               profile: true,
@@ -107,7 +105,6 @@ const materialRequiestController = {
           _count: true,
         },
       });
-
 
       return res.status(200).json({
         success: true,
@@ -359,7 +356,7 @@ const materialRequiestController = {
   deletematerialRequiest: async (req, res, next) => {
     try {
       const materialReqId = parseInt(req.params.id, 10);
-      console.log(materialReqId);
+      // console.log(materialReqId);
       if (isNaN(materialReqId)) {
         return res.status(400).json({
           success: false,
@@ -370,7 +367,7 @@ const materialRequiestController = {
       const isMaterialReqExist = await prisma.materialRequest.findFirst({
         where: { id: +materialReqId },
       });
-      console.log(isMaterialReqExist);
+      // console.log(isMaterialReqExist);
       if (!isMaterialReqExist) {
         return res.status(404).json({
           success: false,

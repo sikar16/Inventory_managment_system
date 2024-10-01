@@ -28,7 +28,7 @@ const productSubCategoryController = {
         data: productSubCategory,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(500).json({
         success: false,
         message: "error while fetching product SubCategory",
@@ -48,7 +48,7 @@ const productSubCategoryController = {
         data: productSubCategory,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(500).json({
         success: false,
         message: "error while fetching product SubCategory",
@@ -110,7 +110,7 @@ const productSubCategoryController = {
         data: newproductSubCategory,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(500).json({
         success: false,
         message: `error - ${error}`,
@@ -169,7 +169,7 @@ const productSubCategoryController = {
         data: updatecategory,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(500).json({
         success: false,
         message: "error while updating product SubCategory",
@@ -208,7 +208,7 @@ const productSubCategoryController = {
         data: deleteproductSubCategory,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(500).json({
         success: false,
         message: `Error-${error}`,

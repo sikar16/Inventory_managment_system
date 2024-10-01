@@ -17,7 +17,7 @@ const supplierController = {
         data: suppliers,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(500).json({
         success: false,
         message: `error : ${error}`,
@@ -55,7 +55,7 @@ const supplierController = {
         data: supplier,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(500).json({
         success: false,
         message: `error ${error}`,
@@ -162,7 +162,7 @@ const supplierController = {
         data: newSupplier,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(500).json({
         success: false,
         message: `error: ${error}`,
