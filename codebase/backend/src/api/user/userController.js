@@ -48,7 +48,6 @@ const userController = {
     }
   },
   getMy: async (req, res, next) => {
-    console.log("somting");
     try {
       const userId = req.user.id;
       const user = await prisma.users.findUnique({
@@ -107,7 +106,6 @@ const userController = {
         data: users,
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({
         success: false,
         message: `${error}`,
@@ -184,9 +182,6 @@ const userController = {
         });
         addressId = newAddress.id;
       }
-      console.log(addressId);
-
-      console.log(isAddressExist);
 
       // Hash the password
       if (!data.password) {

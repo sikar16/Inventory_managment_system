@@ -32,7 +32,6 @@ const templateController = {
         data: templete,
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({
         success: false,
         message: "Error while fetching templete",
@@ -58,7 +57,6 @@ const templateController = {
         date: templete,
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({
         success: false,
         message: "Error while fetching templete",
@@ -268,7 +266,6 @@ const templateController = {
         data: deletetemplete,
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({
         success: false,
         message: "Error while deleting template",

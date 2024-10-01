@@ -28,7 +28,7 @@ const productCategoryController = {
         data: productCategory,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(500).json({
         success: false,
         message: `error ${error}`,
@@ -44,7 +44,7 @@ const productCategoryController = {
         data: productCategory,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(500).json({
         success: false,
         message: `error - ${error}`,
@@ -88,7 +88,7 @@ const productCategoryController = {
         data: newProductCategory,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(403).json({
         success: false,
         message: `error - ${error}`,
@@ -131,7 +131,7 @@ const productCategoryController = {
         data: updateproductCategory,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(500).json({
         success: false,
         message: `error - ${error}`,
@@ -170,7 +170,7 @@ const productCategoryController = {
         data: deleteproductCategory,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(500).json({
         success: false,
         message: `error- ${error}`,

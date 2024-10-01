@@ -30,7 +30,6 @@ const supplierCategoryController = {
         data: supplierCategory,
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({
         success: false,
         message: "Error while fetching supplier category",
@@ -47,7 +46,6 @@ const supplierCategoryController = {
         data: supplierCategorys,
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({
         success: false,
         message: "Error while fetching supplier categories",
@@ -139,7 +137,6 @@ const supplierCategoryController = {
         data: updatecategory,
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({
         success: false,
         message: "Error while updating supplier category",
@@ -182,7 +179,6 @@ const supplierCategoryController = {
         data: deletecategory,
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({
         success: false,
         message: "Error while deleting supplier category",
