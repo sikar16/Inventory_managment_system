@@ -382,7 +382,6 @@ const materialRequiestController = {
       await prisma.PurceasedRequestedItem.deleteMany({
         where: { purchasedRequestId: +materialReqId },
       });
-      return;
       const deletedMaterialReq = await prisma.materialRequest.delete({
         where: { id: +materialReqId },
       });
@@ -406,11 +405,12 @@ const materialRequiestController = {
       if (isNaN(materialReqId)) {
         return res.status(400).json({
           success: false,
-          message: "invalid material requiest id ",
+          message: "Invalid material request ID",
         });
       }
-      const requiredField = ["logisticSuperViserId", "isApproviedByDH"];
-      for (const field of requiredField) {
+  
+      const requiredFields = ["logisticSuperViserId", "isApproviedByDH"];
+      for (const field of requiredFields) {
         if (!req.body[field]) {
           return res.status(403).json({
             success: false,
@@ -418,38 +418,45 @@ const materialRequiestController = {
           });
         }
       }
-      // zod validation
+  
+      // Zod validation
       const data = materialRequiestSchem.approveMeterialReqItem.parse(req.body);
+  
       const isMaterialReqExist = await prisma.materialRequest.findFirst({
         where: {
-          id: +materialReqId,
-          departmentHeadId: +req.user.id,
+          id: materialReqId,
+          departmentHeadId: req.user.id, // Assuming req.user.id is the department head's ID
         },
       });
-
-      if (isMaterialReqExist) {
+      
+      console.log(materialReqId)
+  
+      if (!isMaterialReqExist) {
         return res.status(404).json({
           success: false,
-          message: "This materail request is not found",
+          message: "Material request not found",
         });
       }
-      // check if the logestic supervisor
-      const isLogesticSuperviserExist = await prisma.users.findFirst({
+  
+      // Check if the logistic supervisor exists
+      const isLogisticSupervisorExist = await prisma.users.findFirst({
         where: {
-          id: +data.logisticSuperViserId,
-          role: "LOGESTIC_SUPERVISER",
+          id: data.logisticSuperViserId,
+          role: "LOGISTIC_SUPERVISER", // Ensure consistent role naming
         },
       });
-      if (!isLogesticSuperviserExist) {
+  
+      if (!isLogisticSupervisorExist) {
         return res.status(400).json({
           success: false,
-          message: "LOGESTIC_SUPERVISER not found",
+          message: "Logistic supervisor not found",
         });
       }
-      // update
-      const updatematerialRequiest = await prisma.materialRequest.update({
+  
+      // Update the material request
+      const updatedMaterialRequest = await prisma.materialRequest.update({
         where: {
-          id: +materialReqId,
+          id: materialReqId,
         },
         data: {
           logisticSuperViserId: data.logisticSuperViserId,
@@ -467,11 +474,11 @@ const materialRequiestController = {
           },
         },
       });
-
+  
       return res.status(201).json({
         success: true,
         message: "Material request approved successfully",
-        data: updatematerialRequiest,
+        data: updatedMaterialRequest,
       });
     } catch (error) {
       return res.status(500).json({
@@ -480,6 +487,7 @@ const materialRequiestController = {
       });
     }
   },
+  
 };
 
 export default materialRequiestController;

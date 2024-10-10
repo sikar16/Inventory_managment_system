@@ -15,13 +15,26 @@ const purchasedOrderController={
                 where:{
                     id:purchaseOrderId 
                 },
-               include:{
-                _count:true,
-                items:true,
-                SupplayerOffer:true,
-                user:true,
-                winner:true
-               }
+                include:{
+                  _count:true,
+                  items:{
+                    include:{
+                      products:true,
+                      purchasedOrder:{
+                        include:{
+                          user:{
+                            include:{
+                              department:true
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  // SupplayerOffer:true,
+                  user:true,
+                  // winner:true
+                 }
             })
 
             if (!purchaseOrder) {
@@ -49,10 +62,23 @@ const purchasedOrderController={
             const purchaseOrder=await prisma.purchasedOrder.findMany({
               include:{
                 _count:true,
-                items:true,
-                SupplayerOffer:true,
+                items:{
+                  include:{
+                    products:true,
+                    purchasedOrder:{
+                      include:{
+                        user:{
+                          include:{
+                            department:true
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                // SupplayerOffer:true,
                 user:true,
-                winner:true
+                // winner:true
                }
             })
 
@@ -69,111 +95,195 @@ const purchasedOrderController={
            }) 
         }
     },
-    createPurchasedOrder: async (req, res, next) => {
-      try {
-        const requiredFields = ["items"];
-        for(const field of requiredFields){
-          if(!req.body[field]){
-            return res.status(400).json({
-              success: false,
-              message: `${field} is required`,
-            });
-          }
-        }
-    
-        const data = purchaseOrderSchema.create.parse(req.body);
-    
-        // Loop through each item to check if the product exists
-        for (let index = 0; index < data.items.length; index++) {
-          const element = data.items[index];
-    
-          // Check if the product exists
-          const isProductExist = await prisma.product.findFirst({
-            where: { id: element.productId }
-          });
-          if (!isProductExist) {
-            return res.status(404).json({
-              success: false,
-              message: `Product not found`,
-            });
-          }
-    
-          // Check if the MaterialRequest exists
-          const isMaterialRequestExist = await prisma.materialRequest.findFirst({
-            where: { id: element.purchasedRequestId }
-          });
-          if (!isMaterialRequestExist) {
-            return res.status(404).json({
-              success: false,
-              message: `MaterialRequest with id ${element.purchasedRequestId} not found`,
-            });
-          }
-        }
-    
-        // If all items are valid, proceed to create the purchase order
-        const newPurchaseOrder = await prisma.purchasedOrder.create({
-          data: {
-            userId: req.user.id, // Make sure to include userId
-            items: {
-              create: data.items.map(item => ({
-                productId: item.productId,
-                quantityToBePurchased: item.quantityToBePurchased,
-                remark: item.remark,
-                // Correctly connect purchasedRequestId
-                purchasedRequest: {
-                  connect: {
-                    id: item.purchasedRequestId
-                  }
-                }
-              }))
-            }
-          },
-          include: {
-            _count: true,
-            items: true,
-          }
-        });
-    
-        return res.status(201).json({
-          success: true,
-          message: "Purchase order created successfully",
-          data: newPurchaseOrder,
-        });
-      } catch (error) {
-        return res.status(500).json({
+
+    // Correct createPurchasedOrder method
+// Correct createPurchasedOrder method
+createPurchasedOrder: async (req, res, next) => {
+  try {
+    const requiredFields = ["items"];
+    for (const field of requiredFields) {
+      if (!req.body[field]) {
+        return res.status(400).json({
           success: false,
-          message: `Error: ${error.message}`,
+          message: `${field} is required`,
         });
       }
-    },
-    
-    
-    // updatePurchasedOrder:async (req,res,next)=>{
-    //     try {
-    //         const purchaseOrderId = parseInt(req.params.id, 10);
-    //         if (isNaN(purchaseOrderId)) {
-    //           return res.status(400).json({
-    //             success: false,
-    //             message: "Invalid purchase order ID",
-    //           });
-    //         }
-    //         const updatedOrder = await prisma.purchasedOrder.update({
-    //           where: { id: purchaseOrderId },
-    //           data: req.body,
-    //         });
-      
-    //         return res.status(200).json({
-    //           success: true,
-    //           message: "Purchase order updated successfully",
-    //           data: updatedOrder,
-    //         });
-    //       } catch (error) {
-    //         return res.status(500).json({
+    }
+
+    const data = purchaseOrderSchema.create.parse(req.body);
+
+    // Check each item's validity
+    for (let index = 0; index < data.items.length; index++) {
+      const element = data.items[index];
+
+      // Ensure the product exists
+      const isProductExist = await prisma.product.findFirst({
+        where: { id: element.productId },
+      });
+      if (!isProductExist) {
+        return res.status(404).json({
+          success: false,
+          message: `Product not found`,
+        });
+      }
+
+      // Ensure the MaterialRequest exists
+      const isMaterialRequestExist = await prisma.materialRequest.findFirst({
+        where: { id: element.purchasedRequestId },
+      });
+      if (!isMaterialRequestExist) {
+        return res.status(404).json({
+          success: false,
+          message: `MaterialRequest with id ${element.purchasedRequestId} not found`,
+        });
+      }
+    }
+
+    // Step 1: Create the purchase order first
+    const newPurchaseOrder = await prisma.purchasedOrder.create({
+      data: {
+        userId: req.user.id, // Ensure userId is present
+      },
+    });
+
+    // Step 2: Loop through and create each item using create()
+    const createdItems = [];
+    for (let item of data.items) {
+      const createdItem = await prisma.purchasedOrderItem.create({
+        data: {
+          productId: item.productId,
+          quantityToBePurchased: item.quantityToBePurchased,
+          remark: item.remark,
+          purchasOrderId: newPurchaseOrder.id, // Link to the purchase order ID
+        },
+      });
+      createdItems.push(createdItem);
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: "Purchase order and items created successfully",
+      data: {
+        purchaseOrder: newPurchaseOrder,
+        items: createdItems,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Error: ${error.message}`,
+    });
+  }
+},
+
+
+
+
+    // createPurchasedOrder: async (req, res, next) => {
+    //   try {
+    //     const requiredFields = ["items"];
+    //     for(const field of requiredFields){
+    //       if(!req.body[field]){
+    //         return res.status(400).json({
     //           success: false,
-    //           message: `Error: ${error.message}`,
+    //           message: `${field} is required`,
     //         });
     //       }
+    //     }
+    
+    //     const data = purchaseOrderSchema.create.parse(req.body);
+    
+    //     // Loop through each item to check if the product exists
+    //     for (let index = 0; index < data.items.length; index++) {
+    //       const element = data.items[index];
+    
+    //       // Check if the product exists
+    //       const isProductExist = await prisma.product.findFirst({
+    //         where: { id: element.productId }
+    //       });
+    //       if (!isProductExist) {
+    //         return res.status(404).json({
+    //           success: false,
+    //           message: `Product not found`,
+    //         });
+    //       }
+    
+    //       // Check if the MaterialRequest exists
+    //       const isMaterialRequestExist = await prisma.materialRequest.findFirst({
+    //         where: { id: element.purchasedRequestId }
+    //       });
+    //       if (!isMaterialRequestExist) {
+    //         return res.status(404).json({
+    //           success: false,
+    //           message: `MaterialRequest with id ${element.purchasedRequestId} not found`,
+    //         });
+    //       }
+    //     }
+    
+    //     // If all items are valid, proceed to create the purchase order
+    //     const newPurchaseOrder = await prisma.purchasedOrder.create({
+    //       data: {
+    //         userId: req.user.id, // Make sure to include userId
+    //         items: {
+    //           create: data.items.map(item => ({
+    //             productId: item.productId,
+    //             quantityToBePurchased: item.quantityToBePurchased,
+    //             remark: item.remark,
+    //             // Correctly connect purchasedRequestId
+    //             purchasedRequest: {
+    //               connect: {
+    //                 id: item.purchasedRequestId
+    //               }
+    //             }
+    //           }))
+    //         }
+    //       },
+    //       include: {
+    //         _count: true,
+    //         items: true,
+    //       }
+    //     });
+    
+    //     return res.status(201).json({
+    //       success: true,
+    //       message: "Purchase order created successfully",
+    //       data: newPurchaseOrder,
+    //     });
+    //   } catch (error) {
+    //     return res.status(500).json({
+    //       success: false,
+    //       message: `Error: ${error.message}`,
+    //     });
+    //   }
     // },
+    
+    
+    updatePurchasedOrder:async (req,res,next)=>{
+        try {
+            const purchaseOrderId = parseInt(req.params.id, 10);
+            if (isNaN(purchaseOrderId)) {
+              return res.status(400).json({
+                success: false,
+                message: "Invalid purchase order ID",
+              });
+            }
+            const updatedOrder = await prisma.purchasedOrder.update({
+              where: { id: purchaseOrderId },
+              data: req.body,
+            });
+      
+            return res.status(200).json({
+              success: true,
+              message: "Purchase order updated successfully",
+              data: updatedOrder,
+            });
+          } catch (error) {
+            return res.status(500).json({
+              success: false,
+              message: `Error: ${error.message}`,
+            });
+          }
+    },
     updatePurchasedOrderItems: async (req, res, next) => {
       try {
         const purchaseOrderItemId = parseInt(req.params.id, 10);

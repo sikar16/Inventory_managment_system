@@ -112,7 +112,45 @@ const userController = {
       });
     }
   },
+  getAllUserByRole:async (req, res, next) => {
+    try {
+      const userRole = req.params.role;
 
+      if (!userRole) {
+        return res.status(400).json({
+          success: false,
+          message: "role not found",
+        });
+      }
+      const skip = parseInt(req.query.skip) || 0;
+      const take = parseInt(req.query.take) || 10;
+      const users = await prisma.users.findMany({
+        take,
+        skip,
+        where:{
+          role:userRole
+        },
+        include: {
+          profile: {
+            include: {
+              address: true,
+            },
+          },
+          department: true,
+        },
+      });
+      return res.status(200).json({
+        success: true,
+        message: "fetching all users",
+        data: users,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: `${error}`,
+      });
+    }
+  },
   createUser: async (req, res, next) => {
     try {
       const data = userSchema.register.parse(req.body);

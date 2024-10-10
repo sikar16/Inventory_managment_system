@@ -1,14 +1,14 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getToken } from "../util/getToken";
 import extractErrorMessage from "../util/extractErrorMessage";
-import { PurchasedRequest_type } from "../_types/purchasedReq_type";
+import { SupplierOffer } from "../_types/supplierOffer_type";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
-export const purchasedReqApi = createApi({
-  reducerPath: "purchasedReqApi",
+export const supplierOfferApi = createApi({
+  reducerPath: "supplierOfferApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${baseUrl}purchasedReq`,
+    baseUrl: `${baseUrl}supplierOffer`,
     prepareHeaders: async (headers) => {
       const token = await getToken();
       if (token) {
@@ -17,9 +17,9 @@ export const purchasedReqApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["purchasedReq"],
+  tagTypes: ["supplierOfferApi"],
   endpoints: (builder) => ({
-    getAllpurchasedReq: builder.query<PurchasedRequest_type[], void>({
+    getAllsupplierOfferApi: builder.query<SupplierOffer[], void>({
       query: () => ({
         url: `/`,
         method: "GET",
@@ -29,16 +29,16 @@ export const purchasedReqApi = createApi({
       }),
       transformResponse: (response: any) => {
         return response.success
-          ? (response.data as PurchasedRequest_type[])
+          ? (response.data as SupplierOffer[])
           : [];
       },
-      providesTags: ["purchasedReq"],
+      providesTags: ["supplierOfferApi"],
       transformErrorResponse: (response: any) => {
         const message = response?.data?.message || "Unknown error";
         return extractErrorMessage(message);
       },
     }),
-    getSinglepurchasedReq: builder.query<PurchasedRequest_type, void>({
+    getSinglesupplierOfferApi: builder.query<SupplierOffer, void>({
       query: (id) => ({
         url: `/${id}`,
         method: "GET",
@@ -47,17 +47,17 @@ export const purchasedReqApi = createApi({
         },
       }),
       transformResponse: (response: any) => {
-        return response.data as PurchasedRequest_type;
+        return response.data as SupplierOffer;
       },
 
-      providesTags: ["purchasedReq"],
+      providesTags: ["supplierOfferApi"],
       transformErrorResponse: (response: any) => {
         const message = response?.data?.message || "Unknown error";
         return extractErrorMessage(message);
       },
     }),
 
-    addNewpurchasedReq: builder.mutation<void, PurchasedRequest_type>({
+    addNewsupplierOfferApi: builder.mutation<void, SupplierOffer>({
       query: (data) => ({
         url: `/`,
         method: "POST",
@@ -66,7 +66,7 @@ export const purchasedReqApi = createApi({
         },
         body: data,
       }),
-      invalidatesTags: ["purchasedReq"],
+      invalidatesTags: ["supplierOfferApi"],
       transformErrorResponse: (response: any) => {
         console.log(response);
         const message = response?.data?.message || "Unknown error"; // Safely access the message
@@ -74,7 +74,7 @@ export const purchasedReqApi = createApi({
       },
     }),
 
-    deletepurchasedReq: builder.mutation<void, string>({
+    deletesupplierOfferApi: builder.mutation<void, string>({
       query: (id) => ({
         url: `/${id}`, // Ensure this matches your backend route
         method: "DELETE",
@@ -83,7 +83,7 @@ export const purchasedReqApi = createApi({
           // Assuming token is required, it should already be attached in `prepareHeaders`
         },
       }),
-      invalidatesTags: ["purchasedReq"], // This should trigger a refresh after deletion
+      invalidatesTags: ["supplierOfferApi"], // This should trigger a refresh after deletion
       transformErrorResponse: (response: any) => {
         console.log("Delete error response: ", response);
         try {
@@ -99,7 +99,16 @@ export const purchasedReqApi = createApi({
 
 
 
+
   }),
 });
 
-export const { useAddNewpurchasedReqMutation, useGetSinglepurchasedReqQuery, useGetAllpurchasedReqQuery, useDeletepurchasedReqMutation } = purchasedReqApi;
+// export const {
+//   useGetAllsupplierOfferApiQuery,
+//   useAddNewsupplierOfferApiMutation,
+//   useDeletesupplierOfferApiMutation,
+//   useGetSinglesupplierOfferApiQuery,
+// } = supplierOfferApi;
+
+
+export const { useGetAllsupplierOfferApiQuery, useGetSinglesupplierOfferApiQuery, useAddNewsupplierOfferApiMutation, useDeletesupplierOfferApiMutation } = supplierOfferApi

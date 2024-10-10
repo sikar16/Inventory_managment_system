@@ -48,7 +48,11 @@ const supplierOfferController = {
         include: {
           _count:true,
           offerItem:true,
-          purchasedOrder:true,
+          purchasedOrder:{
+            include:{
+              items:true
+            }
+          },
           supplayer:true
         }
       });

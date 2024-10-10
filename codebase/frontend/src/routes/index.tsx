@@ -32,12 +32,16 @@ import { WarehouseLayout } from "../layout/Warehouse/WarehouseLayout";
 import RequiestApproval from "../features/departmentHead/RequiestApproval";
 import PurchasedReqest from "../features/logesticsSuperviser/PurchasedReqest";
 import MaterialRequiest from "../features/logesticsSuperviser/MaterialRequiest";
-import PurchasedRequiestDetail from "../features/logesticsSuperviser/PurchasedRequiestDetail";
+// import PurchasedRequiestDetail from "../features/logesticsSuperviser/PurchasedRequiestDetail";
 import PurchasedOrder from "../features/logesticsSuperviser/PurchasedOrder";
+import PurchasedRequiestDetail from "../features/logesticsSuperviser/PurchasedRequiestDetail";
+import SupplierOffer from "../features/logesticsSuperviser/SupplierOffer";
+import SupplierResponce from "../features/logesticsSuperviser/SupplierResponce";
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       {/* root section */}
+      <Route path="/supplierResponce" element={<SupplierResponce />} />
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/confirm-password" element={<ConfirmPassword />} />

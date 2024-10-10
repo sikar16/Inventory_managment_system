@@ -121,7 +121,7 @@ model Product {
   purceasedRequestedItem PurceasedRequestedItem[]
   // purchasedRequestedItems PurceasedRequestedItem[] @relation("ProductRequestedItems")
 
-  purchasedOrderItem     PurchasedOrderItem[]
+  purchasedOrderItem     PurchasedOrderItem[]           
 
   OfferItem OfferItem[]
 }
@@ -256,6 +256,8 @@ model MaterialRequest {
   logisticSupervisor     Users?                   @relation(fields: [logisticSuperViserId], references: [id], name: "logisticSupervisedMaterialRequests")
   // relation
   items                  MaterialRequestItem[]
+
+  PurchasedOrderItem PurchasedOrderItem[]
 }
  
 model MaterialRequestItem {
@@ -306,24 +308,27 @@ model PurchasedOrder {
   createdAt DateTime             @default(now())
   // relation 
   user      Users                @relation(fields: [userId], references: [id])
+  // uId    String
   items     PurchasedOrderItem[]
   // references
   SupplayerOffer SupplayerOffer[]
   grn GRN[]
   winner    Winner[]
 }
- 
+
+
 model PurchasedOrderItem {
   id                    Int             @id @default(autoincrement())
   purchasOrderId        Int
   productId             Int
   quantityToBePurchased Decimal
   remark                String
-  //reference
-  purchasedRequest      PurchasedOrder @relation(fields: [purchasOrderId], references: [id])
-  // relation
-  products              Product[]
+  purchasedOrder        PurchasedOrder @relation(fields: [purchasOrderId], references: [id]) // Relation to PurchasedOrder
+  products              Product @relation(fields: [productId], references: [id]) // Relation to Product
+
+  MaterialRequest MaterialRequest[]
 }
+
 
 model SupplayerOffer {
   id               Int            @id @default(autoincrement())

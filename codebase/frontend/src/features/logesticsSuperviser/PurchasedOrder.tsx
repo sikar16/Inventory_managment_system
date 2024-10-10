@@ -7,14 +7,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Link, useNavigate } from "react-router-dom";
-import { useDeletepurchasedOrderMutation, useGetAllpurchasedOrderQuery } from "../../services/purchasedOrder_service";
-import { PurchasedOrderType } from "../../_types/purchasedOrder_type";
+import { useGetAllpurchasedOrderQuery } from "../../services/purchasedOrder_service";
+import { useToast } from "../../context/ToastContext";
 
+// Column definitions for the table
 interface Column {
   id: string;
   label: string;
@@ -24,29 +20,13 @@ interface Column {
 
 const columns: Column[] = [
   { id: "no", label: "No", minWidth: 50 },
-  { id: "purchasedReqId", label: "PO Id", minWidth: 80 },
-  { id: "department", label: "Department", minWidth: 200, align: "left" },
-  { id: "totalPrice", label: "Total price", minWidth: 200, align: "left" },
-  { id: "createdAt", label: "Created at", minWidth: 200, align: "left" },
-  { id: "isApprovedBy", label: "Approved  ", minWidth: 50, align: "center" },
+  { id: "purchasedReqId", label: "PO Id", minWidth: 50 },
+  { id: "createdAt", label: "Created at", minWidth: 80, align: "left" },
 ];
 
-function createData(
-  no: number,
-  purchasedReqId: string,
-  department: string,
-  totalPrice: string,
-  isApprovedBy: string,
-  createdAt: string
-) {
-  return {
-    no,
-    purchasedReqId,
-    department,
-    totalPrice,
-    isApprovedBy,
-    createdAt,
-  };
+// Function to create row data
+function createData(no: number, purchasedReqId: string, createdAt: string) {
+  return { no, purchasedReqId, createdAt };
 }
 
 type RowData = ReturnType<typeof createData>;
@@ -54,54 +34,39 @@ type RowData = ReturnType<typeof createData>;
 export default function PurchasedOrder() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [matReq, setMatReq] = React.useState<PurchasedOrderType | null>(
-    null
-  );
+  const [openDropdown, setOpenDropdown] = React.useState<number | null>(null);
+  const [selectedSuppliers, setSelectedSuppliers] = React.useState<string[]>([]); // Step 1: State for selected suppliers
+  const { setToastData } = useToast();
 
-  // Fetching data using the hook
-  const {
-    data: purchasedReq,
-    isError,
-    isLoading,
-    isSuccess,
-  } = useGetAllpurchasedOrderQuery();
 
-  // Format the date to a readable format
+  // Fetching purchased order data
+  const { data: purchasedOrder, isError, isLoading, isSuccess } =
+    useGetAllpurchasedOrderQuery();
+
+  // Fetching supplier list data
+
+  // Formatting date to readable format
   function formatDateToReadable(dateString: string) {
     const date = new Date(dateString);
-    // const options = { year: "numeric", month: "long", day: "numeric" };
     return date.toLocaleDateString("en-US");
   }
 
-  // Determine approval status dynamically
-  const approvalStatus = (i: PurchasedOrderType) => {
-    // if (i.isApproviedByGM) return "Approved by GM";
-    // if (i.isApproviedByFinance) return "Approved by Finance";
-    console.log(i.id)
-    return "Pending";
-  };
-
-  // Create rows for the table
+  // Creating rows for the table
   const rows: RowData[] = isSuccess
-    ? purchasedReq.map((i, index) =>
+    ? purchasedOrder.map((i, index) =>
       createData(
         index + 1,
         `${i.id}`,
-        `${i.user.department.name}`,
-        `${i.id}`,
-        approvalStatus(i),
         `${formatDateToReadable(i.createdAt.toString())}`
       )
     )
     : [];
 
-  // Handle page change for pagination
+  // Pagination handlers
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  // Handle rows per page change
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -109,79 +74,53 @@ export default function PurchasedOrder() {
     setPage(0);
   };
 
-  // Handle menu open for the actions (view/edit/delete)
-  const handleClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    singleMaterialRequest: PurchasedOrderType
-  ) => {
-    setAnchorEl(event.currentTarget);
-    setMatReq(singleMaterialRequest); // Store the selected request
+  const toggleDropdown = (index: number) => {
+    setOpenDropdown(openDropdown === index ? null : index);
   };
 
-  // Handle menu close
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
+  // const handleCheckboxChange = (supplierName: string) => {
+  //   setSelectedSuppliers((prevSelected) => {
+  //     if (prevSelected.includes(supplierName)) {
+  //       return prevSelected.filter((name) => name !== supplierName);
+  //     } else {
+  //       return [...prevSelected, supplierName];
+  //     }
+  //   });
+  // };
+  const handleselectedpo = () => {
+    console.log(rows.values)
+  }
 
-  const [deletePurchasedReq] = useDeletepurchasedOrderMutation();
+  // const handlesumbit = () => {
+  //   if (selectedSuppliers.length === 0) {
+  //     setToastData({
+  //       message: `Please select at least one supplier.`,
+  //       success: false,
+  //     });
 
-  // Handle delete request
-  const handleDelete = async (id: number) => {
-    try {
-      console.log("Deleting category with ID:", id);
-      await deletePurchasedReq(id.toString()).unwrap(); // Trigger the delete mutation
-      console.log("Category deleted successfully");
-    } catch (error) {
-      console.error("Failed to delete category:", error);
-    }
-  };
+  //     return;
+  //   }
 
-  // Handle edit request
-  const handleEdit = async (i: PurchasedOrderType) => {
-    console.log(i);
-    try {
-      console.log("Category edited successfully");
-    } catch (error) {
-      console.error("Failed to edit category:", error);
-    }
-  };
+  //   console.log(selectedSuppliers);
+  //   console.log(purchasedOrder)
+  //   setToastData({
+  //     message: `Successfully sent purchased order`,
+  //     success: true,
+  //   });
+  // };
 
-  const navigate = useNavigate();
-
-  // Handle view request details
-  const handleView = async () => {
-    if (matReq) {
-      console.log(`Viewing request with id: ${matReq.id}`);
-      navigate("/logestics/purchasedRequiest-detaile", {
-        state: { id: matReq.id },
-      });
-    }
-  };
 
   return (
     <div className="pt-6">
       <div className="flex justify-between mb-3 mx-2">
-        <p className="text-[#002a47] text-4xl font-medium">Purchased Requests</p>
-        <Link to="/employee/create-requests">
-          {/* <button className="bg-[#002A47] px-3 py-1 text-white rounded-md">
-            Create request
-          </button> */}
-        </Link>
+        <p className="text-[#002a47] text-4xl font-medium">Purchased Order</p>
       </div>
 
       <div className="flex gap-8 text-gray-400 mt-8 mb-1">
-        <button className="hover:underline hover:text-black">
-          All requests
-        </button>
-        <button className="hover:underline hover:text-black">
-          Accepted requests
-        </button>
-        <button className="hover:underline hover:text-black">
-          Pending requests
-        </button>
-        <button className="hover:underline hover:text-black">
-          Rejected requests
-        </button>
+        <button className="hover:underline hover:text-black">All requests</button>
+        <button className="hover:underline hover:text-black">Accepted requests</button>
+        <button className="hover:underline hover:text-black">Pending requests</button>
+        <button className="hover:underline hover:text-black">Rejected requests</button>
       </div>
 
       <hr className="w-full text-black bg-black" />
@@ -208,6 +147,12 @@ export default function PurchasedOrder() {
                     {column.label}
                   </TableCell>
                 ))}
+                <TableCell>
+                  <button className="text-black">Action</button>
+                </TableCell>
+                <TableCell>
+                  <button className="text-black"></button>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -229,55 +174,126 @@ export default function PurchasedOrder() {
                 rows
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
-                    const singleMaterialRequest = purchasedReq[index];
                     return (
-                      <TableRow
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                        key={row.no}
-                      >
-                        {columns.map((column) => {
-                          const value = row[column.id as keyof RowData];
-                          return (
-                            <TableCell
-                              key={column.id}
-                              align={column.align || "left"}
+                      <React.Fragment key={row.no}>
+                        <TableRow hover role="checkbox" tabIndex={-1} key={row.no}>
+                          {columns.map((column) => {
+                            const value = row[column.id as keyof RowData];
+                            return (
+                              <TableCell
+                                key={column.id}
+                                align={column.align || "left"}
+                              >
+                                {value}
+                              </TableCell>
+                            );
+                          })}
+                          <TableCell >
+                            <button className="border border-yellow-500 bg-yellow-500 text-white rounded-md px-3 py-1">Pending</button>
+                          </TableCell>
+                          <TableCell align="right">
+                            <button
+                              onClick={() => toggleDropdown(index)}
+                              className="flex items-center"
                             >
-                              {value}
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width={20}
+                                height={20}
+                                viewBox="0 0 24 24"
+                                className={`ml-2 transition-transform ${openDropdown === index
+                                  ? "rotate-180"
+                                  : "rotate-0"
+                                  }`}
+                              >
+                                <path
+                                  fill="#002a47"
+                                  d="M12 15.707l-4.95-4.95a1 1 0 0 1 1.414-1.414L12 12.879l3.536-3.536a1 1 0 0 1 1.414 1.414L12 15.707z"
+                                />
+                              </svg>
+                            </button>
+
+                            <button onClick={handleselectedpo}>selectedPO id {row.purchasedReqId}</button>
+                          </TableCell>
+                        </TableRow>
+                        {openDropdown === index && (
+                          // <TableRow>
+                          //   <TableCell
+                          //     colSpan={columns.length + 2}
+                          //     className="transition-all w-full"
+                          //   >
+                          //     <div className="bg-gray-100 p-4 rounded-lg w-full">
+                          //       {suppliersList?.length ? (
+                          //         suppliersList.map((supplier) => (
+                          //           <div key={supplier.id} className="flex items-center mb-2">
+                          //             <input
+                          //               type="checkbox"
+                          //               className="text-sm text-gray-700 mr-2"
+                          //               onChange={() => handleCheckboxChange(supplier.fullName)} // Step 3: Update checkbox change
+                          //             />
+                          //             <p className="text-sm text-gray-700">
+                          //               <div className="flex gap-2">
+                          //                 <strong id={supplier.id}>{supplier.fullName}</strong>
+                          //                 <p>({supplier.category.name})</p>
+                          //               </div>
+                          //             </p>
+                          //           </div>
+                          //         ))
+                          //       ) : (
+                          //         <p>No suppliers available</p>
+                          //       )}
+                          //       <button
+                          //         onClick={handlesumbit}
+                          //         className="mt-2 bg-[#002a47] text-white py-1 px-6 rounded"
+                          //       >
+                          //         Send
+                          //       </button>
+                          //     </div>
+                          //   </TableCell>
+                          // </TableRow>
+
+                          <TableRow>
+                            <TableCell>
+                              {purchasedOrder.map((po, index) => (
+                                <React.Fragment key={index}>
+                                  {po.items.map((item, itemIndex) => (
+                                    <p></p>
+                                  ))}
+                                </React.Fragment>
+                              ))}
+
+
+
+
+                              {/* {purchasedOrder.map((order, orderIndex) => (
+                                <React.Fragment key={orderIndex}>
+                                  {order.items.map((item, itemIndex) => (
+                                    <React.Fragment key={itemIndex}>
+                                      {item.products.map((product, productIndex) => (
+                                        <React.Fragment key={productIndex}>
+                                          <tr>
+                                            <td>{product.category.name}</td>
+                                          </tr>
+                                          <tr>
+                                            <td>{product.name}</td>
+                                          </tr>
+                                          {product.productAttributes.map((attribute, attributeIndex) => (
+                                            <tr key={attributeIndex}>
+                                              <td>{attribute.templateAttribute.name}: {attribute.value}</td>
+                                            </tr>
+                                          ))}
+                                        </React.Fragment>
+                                      ))}
+                                    </React.Fragment>
+                                  ))}
+                                </React.Fragment>
+                              ))} */}
                             </TableCell>
-                          );
-                        })}
-                        <TableCell align="center">
-                          <IconButton
-                            aria-label="more"
-                            aria-controls="long-menu"
-                            aria-haspopup="true"
-                            onClick={(event) =>
-                              handleClick(event, singleMaterialRequest)
-                            }
-                          >
-                            <MoreVertIcon />
-                          </IconButton>
-                          <Menu
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={handleCloseMenu}
-                          >
-                            <MenuItem onClick={handleView}>
-                              View detail
-                            </MenuItem>
-                            <MenuItem
-                              onClick={() => handleEdit(singleMaterialRequest)}
-                            >
-                              Edit
-                            </MenuItem>
-                            <MenuItem onClick={() => handleDelete(row.no)}>
-                              Delete
-                            </MenuItem>
-                          </Menu>
-                        </TableCell>
-                      </TableRow>
+                          </TableRow>
+
+
+                        )}
+                      </React.Fragment>
                     );
                   })}
             </TableBody>
@@ -286,7 +302,7 @@ export default function PurchasedOrder() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={purchasedReq?.length || 0} // Reflecting the correct count for pagination
+          count={rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

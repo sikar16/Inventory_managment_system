@@ -4,6 +4,8 @@ import { isAdmin } from "../../middleware/auth.js";
 const userRouter = express.Router();
 
 userRouter.get("/get-me", userController.getMy);
+userRouter.get("/role/:role", [isAdmin], userController.getAllUserByRole);
+
 userRouter.get("/:id", userController.getSingleUser);
 
 userRouter.get("/", [isAdmin], userController.getAllUsers);

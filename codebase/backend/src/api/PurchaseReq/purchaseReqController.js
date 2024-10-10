@@ -18,8 +18,20 @@ const purchasedReqConntroller = {
         include: {
           _count: true,
           user: true,
-          items: true,
-        },
+          items:{
+            include:{
+              product:{
+                include:{
+                  subcategory:{
+                    include:{
+                      category:true
+                    }
+                  }
+                }
+              }
+              
+            }
+          }        },
       });
 
       if (!purchasedReq) {
@@ -52,7 +64,22 @@ const purchasedReqConntroller = {
               department: true,
             },
           },
-          items: true,
+          items:{
+            include:{
+              product:{
+                include:{
+                  subcategory:{
+                    include:{
+                      category:true
+                    }
+                  }
+                }
+              }
+              
+            }
+          }
+
+          
         },
       });
       return res.status(200).json({

@@ -96,6 +96,25 @@ export const materialReqApi = createApi({
         }
       },
     }),
+
+    approveReq: builder.mutation({
+      query: ({ body, param }: { body: { isApproviedByDH: boolean }; param: number }) => ({
+        url: `/approve/${param}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["MaterialReq"],
+      transformResponse: (response: any) => {
+        console.log(response);
+        return response.success ? response.message : "something happened";
+      },
+      transformErrorResponse: (response: any) => {
+        const message = response?.data?.message;
+        return extractErrorMessage(message);
+      },
+    }),
+
+
   }),
 });
 
@@ -104,4 +123,5 @@ export const {
   useAddNewMaterialReqMutation,
   useDeleteMaterialReqMutation,
   useGetSingleMaterialReqQuery,
+  useApproveReqMutation
 } = materialReqApi;
