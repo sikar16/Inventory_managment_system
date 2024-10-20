@@ -17,46 +17,46 @@ const materialRequiestController = {
         where: {
           id: materialReqId,
         },
-        include: {
-          items: {
-            include: {
-              _count: true,
-              product: {
-                include: {
-                  subcategory: {
-                    include: {
-                      category: true,
-                    },
-                  },
-                  productAttributes: {
-                    include: {
-                      templateAttribute: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
+        include:{
           employee: {
-            include: {
-              profile: true,
-              department: true,
-            },
+            include:{
+              profile:true,
+              department:true,
+            }
           },
-          logisticSupervisor: {
-            include: {
-              profile: true,
-              department: true,
-            },
+          logisticSupervisor:{
+            include:{
+              department:true,
+              profile:true
+            }
           },
-          departmentHead: {
-            include: {
-              profile: true,
-              department: true,
-            },
+          departmentHead:{
+            include:{
+              department:true,
+              profile:true
+            }
           },
-          _count: true,
-        },
+          items:{
+            include:{
+              product:{
+                include:{
+                  productAttributes:{
+                    include:{
+                      templateAttribute:true
+                    }
+                  },
+                  subcategory:{
+                    include:{
+                      category:true
+                    }
+                  }
+                }
+              }
+            }
+          },
+
+        }
+        
       });
 
       if (!materialReq) {
@@ -83,27 +83,34 @@ const materialRequiestController = {
     try {
       // console.log(req.user);
       const materialRequest = await prisma.materialRequest.findMany({
-        include: {
+        include:{
           employee: {
-            include: {
-              profile: true,
-              department: true,
-            },
+            include:{
+              profile:true,
+              department:true,
+            }
           },
-          logisticSupervisor: {
-            include: {
-              profile: true,
-              department: true,
-            },
+          logisticSupervisor:{
+            include:{
+              department:true,
+              profile:true
+            }
           },
-          departmentHead: {
-            include: {
-              profile: true,
-              department: true,
-            },
+          departmentHead:{
+            include:{
+              department:true,
+              profile:true
+            }
           },
-          _count: true,
-        },
+          items:{
+            include:{
+              product:true,
+              productAttributes:true
+            }
+          },
+
+        }
+      
       });
 
       return res.status(200).json({
