@@ -39,7 +39,6 @@ const columns: Column[] = [
   { id: "address", label: "Address", minWidth: 180, align: "left" },
   { id: "actions", label: "Actions", minWidth: 30, align: "center" },
 ];
-
 function createData(
   no: number,
   fullName: string,
@@ -70,11 +69,9 @@ function createData(
     actions,
   };
 }
-
 interface UsersTableProps {
   userList: UserType[];
 }
-
 interface RowData {
   no: number;
   fullName: string;
@@ -82,13 +79,13 @@ interface RowData {
   email: string;
   phone: string;
   role:
-    | "DEPARTMENT_HEAD"
-    | "EMPLOYEE"
-    | "ADMIN"
-    | "LOGESTIC_SUPERVISER"
-    | "FINANCE"
-    | "GENERAL_MANAGER"
-    | "STORE_KEEPER";
+  | "DEPARTMENT_HEAD"
+  | "EMPLOYEE"
+  | "ADMIN"
+  | "LOGESTIC_SUPERVISER"
+  | "FINANCE"
+  | "GENERAL_MANAGER"
+  | "STORE_KEEPER";
   gender: string;
   address: string;
   actions: boolean;
@@ -106,8 +103,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ userList }) => {
     const newRows = userList.map((i) =>
       createData(
         i.id,
-        `${i.profile.firstName} ${i.profile.middleName || ""} ${
-          i.profile.lastName
+        `${i.profile.firstName} ${i.profile.middleName || ""} ${i.profile.lastName
         }`,
         `${i.department.name}`,
         `${i.email}`,

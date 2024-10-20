@@ -32,10 +32,10 @@ const AddUser = () => {
     try {
       const formattedData = {
         ...data,
-        password: data.password,  // Ensure password is included
+        password: data.password,
         departmentId: Number(data.departmentId),
       };
-      await adduser(formattedData); // Pass the formatted data
+      await adduser(formattedData);
       console.log("User added:", formattedData);
     } catch (error) {
       console.error("Error adding user:", error);
