@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useGetSinglepurchasedReqQuery } from "../../services/purchasedReq_service";
 import Loader from "../../component/Loading";
 import { useAuth } from "../../context/AuthContext";
-import ApprovePurchasedReqF from "./ApprovePurchasedReqF";
+import ApprovePurchasedReqF from "./ApprovePurchasedReqM";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 
 // Define columns for the table
@@ -33,10 +33,10 @@ interface Data {
   remark: string;
 }
 
-const PurchasedRequestDetail: React.FC = () => {
+const PurchasedRequestDetailM: React.FC = () => {
   const location = useLocation();
   const { id } = location.state || {};
-  const { isFinance } = useAuth();
+  const { isGM } = useAuth();
 
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [openDialog, setOpenDialog] = useState(false); // Dialog state for approval
@@ -194,15 +194,15 @@ const PurchasedRequestDetail: React.FC = () => {
         </tbody>
       </table>
 
-      {isFinance && (
+      {isGM && (
         <div className="p-6">
           <button
             className={`px-5 py-2 text-white rounded-lg ${
-              purchasedReq?.isApproviedByFinance ? "bg-red-500" : "bg-green-400"
+              purchasedReq?.isApproviedByGM ? "bg-red-500" : "bg-green-400"
             }`}
             onClick={handleApprove}
           >
-            {purchasedReq?.isApproviedByFinance ? " reject" : "Approve"}
+            {purchasedReq?.isApproviedByGM ? " reject" : "Approve"}
           </button>
         </div>
       )}
@@ -225,4 +225,4 @@ const PurchasedRequestDetail: React.FC = () => {
   );
 };
 
-export default PurchasedRequestDetail;
+export default PurchasedRequestDetailM;

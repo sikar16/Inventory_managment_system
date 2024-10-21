@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getToken } from "../util/getToken";
 import extractErrorMessage from "../util/extractErrorMessage";
 import { SupplierOffer } from "../_types/supplierOffer_type";
-
+import { SupplayerOfferType } from "../features/logesticsSuperviser/SupplierResponce";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 export const supplierOfferApi = createApi({
@@ -28,9 +28,7 @@ export const supplierOfferApi = createApi({
         },
       }),
       transformResponse: (response: any) => {
-        return response.success
-          ? (response.data as SupplierOffer[])
-          : [];
+        return response.success ? (response.data as SupplierOffer[]) : [];
       },
       providesTags: ["supplierOfferApi"],
       transformErrorResponse: (response: any) => {
@@ -48,6 +46,27 @@ export const supplierOfferApi = createApi({
       }),
       transformResponse: (response: any) => {
         return response.data as SupplierOffer;
+      },
+
+      providesTags: ["supplierOfferApi"],
+      transformErrorResponse: (response: any) => {
+        const message = response?.data?.message || "Unknown error";
+        return extractErrorMessage(message);
+      },
+    }),
+    getSingleSupplierOfferByIdApi: builder.query<
+      SupplayerOfferType,
+      { params: number }
+    >({
+      query: ({ params }) => ({
+        url: `/purchased/order/offer/${params}`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      transformResponse: (response: any) => {
+        return response.data as SupplayerOfferType;
       },
 
       providesTags: ["supplierOfferApi"],
@@ -96,10 +115,6 @@ export const supplierOfferApi = createApi({
         }
       },
     }),
-
-
-
-
   }),
 });
 
@@ -110,5 +125,10 @@ export const supplierOfferApi = createApi({
 //   useGetSinglesupplierOfferApiQuery,
 // } = supplierOfferApi;
 
-
-export const { useGetAllsupplierOfferApiQuery, useGetSinglesupplierOfferApiQuery, useAddNewsupplierOfferApiMutation, useDeletesupplierOfferApiMutation } = supplierOfferApi
+export const {
+  useGetAllsupplierOfferApiQuery,
+  useGetSinglesupplierOfferApiQuery,
+  useAddNewsupplierOfferApiMutation,
+  useDeletesupplierOfferApiMutation,
+  useGetSingleSupplierOfferByIdApiQuery,
+} = supplierOfferApi;

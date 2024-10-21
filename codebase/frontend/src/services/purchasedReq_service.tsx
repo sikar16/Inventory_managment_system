@@ -38,6 +38,25 @@ export const purchasedReqApi = createApi({
         return extractErrorMessage(message);
       },
     }),
+    getAllPurchasedReqByManager: builder.query<PurchasedRequest_type[], void>({
+      query: () => ({
+        url: `/manager`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      transformResponse: (response: any) => {
+        return response.success
+          ? (response.data as PurchasedRequest_type[])
+          : [];
+      },
+      providesTags: ["purchasedReq"],
+      transformErrorResponse: (response: any) => {
+        const message = response?.data?.message || "Unknown error";
+        return extractErrorMessage(message);
+      },
+    }),
     getSinglepurchasedReq: builder.query<PurchasedRequest_type, void>({
       query: (id) => ({
         url: `/${id}`,
@@ -98,7 +117,13 @@ export const purchasedReqApi = createApi({
     }),
 
     approvePurchasedReq: builder.mutation({
-      query: ({ body, param }: { body: { isApproviedByFinance: boolean; }; param: number; }) => ({
+      query: ({
+        body,
+        param,
+      }: {
+        body: { isApproviedByFinance: boolean };
+        param: number;
+      }) => ({
         url: `/approve/finance/${param}`,
         method: "PUT",
         body,
@@ -113,14 +138,37 @@ export const purchasedReqApi = createApi({
         return extractErrorMessage(message);
       },
     }),
-
+    approvePurchasedReqGM: builder.mutation({
+      query: ({
+        body,
+        param,
+      }: {
+        body: { isApproviedByGM: boolean };
+        param: number;
+      }) => ({
+        url: `/approve/gm/${param}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["purchasedReq"],
+      transformResponse: (response: any) => {
+        console.log(response);
+        return response.success ? response.message : "something happened";
+      },
+      transformErrorResponse: (response: any) => {
+        const message = response?.data?.message;
+        return extractErrorMessage(message);
+      },
+    }),
   }),
 });
 
 export const {
   useAddNewpurchasedReqMutation,
   useGetSinglepurchasedReqQuery,
+  useGetAllPurchasedReqByManagerQuery,
   useGetAllpurchasedReqQuery,
   useDeletepurchasedReqMutation,
-  useApprovePurchasedReqMutation
+  useApprovePurchasedReqMutation,
+  useApprovePurchasedReqGMMutation,
 } = purchasedReqApi;

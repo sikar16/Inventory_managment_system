@@ -1,24 +1,24 @@
 import { useEffect, useState } from "react";
 import { useToast } from "../../context/ToastContext";
 import { PurchasedRequest_type } from "../../_types/purchasedReq_type";
-import { useApprovePurchasedReqMutation } from "../../services/purchasedReq_service";
+import { useApprovePurchasedReqGMMutation } from "../../services/purchasedReq_service";
 
 interface ApproveReqProps {
   purchasedReq: PurchasedRequest_type | undefined;
   handleCloseDialog: () => void;
 }
 
-const ApprovePurchasedReqF: React.FC<ApproveReqProps> = ({
+const ApprovePurchasedReqM: React.FC<ApproveReqProps> = ({
   purchasedReq,
   handleCloseDialog,
 }) => {
   const { setToastData } = useToast();
   const [isApproved, setIsApproved] = useState<boolean | undefined>(
-    purchasedReq?.isApproviedByFinance
+    purchasedReq?.isApproviedByGM
   );
 
   const [approveRequest, { isError, isSuccess, isLoading, error }] =
-    useApprovePurchasedReqMutation();
+    useApprovePurchasedReqGMMutation();
 
   const handleApprove = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault(); // Prevent default button action
@@ -26,7 +26,7 @@ const ApprovePurchasedReqF: React.FC<ApproveReqProps> = ({
       try {
         await approveRequest({
           body: {
-            isApproviedByFinance: !isApproved,
+            isApproviedByGM: !isApproved,
           },
           param: purchasedReq.id,
         });
@@ -91,4 +91,4 @@ const ApprovePurchasedReqF: React.FC<ApproveReqProps> = ({
   );
 };
 
-export default ApprovePurchasedReqF;
+export default ApprovePurchasedReqM;

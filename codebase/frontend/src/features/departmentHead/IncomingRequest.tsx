@@ -12,7 +12,10 @@ import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Link, useNavigate } from "react-router-dom";
-import { useDeleteMaterialReqMutation, useGetAllMaterialReqQuery } from "../../services/materialReq_service";
+import {
+  useDeleteMaterialReqMutation,
+  useGetAllMaterialReqByDepartmentHeadQuery,
+} from "../../services/materialReq_service";
 import { MaterialRequest_type } from "../../_types/materialReq_type";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import ApproveReq from "./ApproveReq";
@@ -53,9 +56,9 @@ export default function IncomingRequest() {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [matReq, setMatReq] = React.useState<MaterialRequest_type | null>(null);
-  const [selectedRow, setSelectedRow] = React.useState<MaterialRequest_type | null>(null);
+  const [selectedRow, setSelectedRow] =
+    React.useState<MaterialRequest_type | null>(null);
   const [openDialog, setOpenDialog] = React.useState(false);
-
 
   // Fetching data using the hook
   const {
@@ -63,7 +66,7 @@ export default function IncomingRequest() {
     isError,
     isLoading,
     isSuccess,
-  } = useGetAllMaterialReqQuery();
+  } = useGetAllMaterialReqByDepartmentHeadQuery();
 
   function formatDateToReadable(dateString: string) {
     const date = new Date(dateString);
@@ -73,14 +76,14 @@ export default function IncomingRequest() {
 
   const rows: RowData[] = isSuccess
     ? materialReq.map((i, index) =>
-      createData(
-        index + 1,
-        `${i.id}`,
-        `${i.departmentHead?.profile.firstName} ${i.departmentHead?.profile.lastName} ${i.departmentHead?.profile.middleName}`,
-        `${i.isApproviedByDH}`,
-        formatDateToReadable(i.createdAt)
+        createData(
+          index + 1,
+          `${i.id}`,
+          `${i.departmentHead?.profile.firstName} ${i.departmentHead?.profile.lastName} ${i.departmentHead?.profile.middleName}`,
+          `${i.isApproviedByDH}`,
+          formatDateToReadable(i.createdAt)
+        )
       )
-    )
     : [];
 
   const handleChangePage = (_event: unknown, newPage: number) => {
@@ -134,21 +137,20 @@ export default function IncomingRequest() {
   const handleView = async () => {
     if (matReq) {
       console.log(`Viewing request with id: ${matReq.id}`);
-      navigate("/department-head/requiestApproval", { state: { id: matReq.id } });
-      console.log(matReq.id)
+      navigate("/department-head/requiestApproval", {
+        state: { id: matReq.id },
+      });
+      console.log(matReq.id);
     }
   };
   const handleApprove = async () => {
     if (matReq) {
-      setSelectedRow(matReq);  // Set the selected row first
+      setSelectedRow(matReq); // Set the selected row first
       handleOpenDialog();
-      console.log(matReq.id)
+      console.log(matReq.id);
     }
     // Then open the dialog
   };
-
-
-
 
   return (
     <div className="mx-10 pt-6">
@@ -252,7 +254,9 @@ export default function IncomingRequest() {
                             <MoreVertIcon />
                           </IconButton>
                           <Menu
-                            anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleCloseMenu}
                           >
                             <MenuItem onClick={handleView}>
                               View detail
@@ -294,12 +298,12 @@ export default function IncomingRequest() {
         <DialogContent>
           {selectedRow && (
             <ApproveReq
-              handleCloseDialog={handleCloseDialog} selectedRow={selectedRow} />
+              handleCloseDialog={handleCloseDialog}
+              selectedRow={selectedRow}
+            />
           )}
         </DialogContent>
       </Dialog>
     </div>
-
-
   );
 }

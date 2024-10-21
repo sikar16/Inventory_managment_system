@@ -57,6 +57,48 @@ export const materialReqApi = createApi({
         return extractErrorMessage(message);
       },
     }),
+    getAllMaterialReqByDepartmentHead: builder.query<
+      MaterialRequest_type[],
+      void
+    >({
+      query: () => ({
+        url: `/departmenthead`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      transformResponse: (response: any) => {
+        return response.success
+          ? (response.data as MaterialRequest_type[])
+          : [];
+      },
+      providesTags: ["MaterialReq"],
+      transformErrorResponse: (response: any) => {
+        const message = response?.data?.message || "Unknown error";
+        return extractErrorMessage(message);
+      },
+    }),
+    getAllMaterialReqByLs: builder.query<MaterialRequest_type[], void>({
+      query: () => ({
+        url: `/ls`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      transformResponse: (response: any) => {
+        return response.success
+          ? (response.data as MaterialRequest_type[])
+          : [];
+      },
+      providesTags: ["MaterialReq"],
+      transformErrorResponse: (response: any) => {
+        const message = response?.data?.message || "Unknown error";
+        return extractErrorMessage(message);
+      },
+    }),
+
     getSingleMaterialReq: builder.query<MaterialRequest_type, void>({
       query: (id) => ({
         url: `/${id}`,
@@ -149,6 +191,8 @@ export const materialReqApi = createApi({
 export const {
   useGetAllMaterialReqQuery,
   useGetAllMyMaterialReqQuery,
+  useGetAllMaterialReqByDepartmentHeadQuery,
+  useGetAllMaterialReqByLsQuery,
   useAddNewMaterialReqMutation,
   useDeleteMaterialReqMutation,
   useGetSingleMaterialReqQuery,

@@ -36,15 +36,17 @@ import MaterialRequiest from "../features/logesticsSuperviser/MaterialRequiest";
 import PurchasedOrder from "../features/logesticsSuperviser/PurchasedOrder";
 import PurchasedRequiestDetail from "../features/logesticsSuperviser/PurchasedRequiestDetail";
 import SupplierOffer from "../features/logesticsSuperviser/SupplierOffer";
-import SupplierResponce from "../features/logesticsSuperviser/SupplierResponce";
+import SupplierResponse from "../features/logesticsSuperviser/SupplierResponce";
 import PurchasedReqestF from "../features/finance/PurchasedReqestF";
 import PurchasedOrderF from "../features/finance/PurchasedOrderF";
 import PurchasedRequestDetail from "../features/finance/PurchasedRequiestDetail";
+import PurchasedRequestM from "../features/manager/PurchasedReqestM";
+import PurchasedRequestDetailM from "../features/manager/PurchasedRequiestDetailM";
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       {/* root section */}
-      <Route path="/supplierResponce" element={<SupplierResponce />} />
+      <Route path="/supplierResponce" element={<SupplierResponse />} />
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/confirm-password" element={<ConfirmPassword />} />
@@ -215,12 +217,13 @@ export const router = createBrowserRouter(
         <Route path="/manager/requiest-detaile" element={<RequiestDetail />} />
         <Route
           path="/manager/purchase-requests"
-          element={
-            <>
-              <h1>purchase request</h1>
-            </>
-          }
+          element={<PurchasedRequestM />}
         />
+        <Route
+          path="/manager/purchase-requests-detetail"
+          element={<PurchasedRequestDetailM />}
+        />
+
         <Route
           path="/manager/purchase-order"
           element={
@@ -243,6 +246,7 @@ export const router = createBrowserRouter(
         />
         <Route path="/warehouse/*" element={<NotFound />} />
       </Route>
+      <Route path="/supplayer/response/:id" element={<SupplierResponse />} />
 
       <Route path="*" element={<NotFound />} />
     </>
