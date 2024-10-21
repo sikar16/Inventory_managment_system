@@ -65,26 +65,18 @@ const purchasedOrderController = {
           _count: true,
           items: {
             include: {
-              _count: true,
-              items: {
+              products: {
+                include: { productAttributes: true, subcategory: true },
+              },
+              purchasedOrder: {
                 include: {
-                  products: {
-                    include: { productAttributes: true, subcategory: true },
-                  },
-                  purchasedOrder: {
+                  user: {
                     include: {
-                      user: {
-                        include: {
-                          department: true,
-                        },
-                      },
+                      department: true,
                     },
                   },
                 },
               },
-              // SupplayerOffer:true,
-              user: true,
-              // winner:true
             },
           },
           // SupplayerOffer:true,

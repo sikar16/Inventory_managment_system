@@ -17,46 +17,44 @@ const materialRequiestController = {
         where: {
           id: materialReqId,
         },
-        include:{
+        include: {
           employee: {
-            include:{
-              profile:true,
-              department:true,
-            }
+            include: {
+              profile: true,
+              department: true,
+            },
           },
-          logisticSupervisor:{
-            include:{
-              department:true,
-              profile:true
-            }
+          logisticSupervisor: {
+            include: {
+              department: true,
+              profile: true,
+            },
           },
-          departmentHead:{
-            include:{
-              department:true,
-              profile:true
-            }
+          departmentHead: {
+            include: {
+              department: true,
+              profile: true,
+            },
           },
-          items:{
-            include:{
-              product:{
-                include:{
-                  productAttributes:{
-                    include:{
-                      templateAttribute:true
-                    }
+          items: {
+            include: {
+              product: {
+                include: {
+                  productAttributes: {
+                    include: {
+                      templateAttribute: true,
+                    },
                   },
-                  subcategory:{
-                    include:{
-                      category:true
-                    }
-                  }
-                }
-              }
-            }
+                  subcategory: {
+                    include: {
+                      category: true,
+                    },
+                  },
+                },
+              },
+            },
           },
-
-        }
-        
+        },
       });
 
       if (!materialReq) {
@@ -83,34 +81,44 @@ const materialRequiestController = {
     try {
       // console.log(req.user);
       const materialRequest = await prisma.materialRequest.findMany({
-        include:{
+        include: {
           employee: {
-            include:{
-              profile:true,
-              department:true,
-            }
+            include: {
+              profile: true,
+              department: true,
+            },
           },
-          logisticSupervisor:{
-            include:{
-              department:true,
-              profile:true
-            }
+          logisticSupervisor: {
+            include: {
+              department: true,
+              profile: true,
+            },
           },
-          departmentHead:{
-            include:{
-              department:true,
-              profile:true
-            }
+          departmentHead: {
+            include: {
+              department: true,
+              profile: true,
+            },
           },
-          items:{
-            include:{
-              product:true,
-              productAttributes:true
-            }
+          items: {
+            include: {
+              product: {
+                include: {
+                  productAttributes: {
+                    include: {
+                      templateAttribute: true,
+                    },
+                  },
+                  subcategory: {
+                    include: {
+                      category: true,
+                    },
+                  },
+                },
+              },
+            },
           },
-
-        }
-      
+        },
       });
 
       return res.status(200).json({
@@ -415,8 +423,7 @@ const materialRequiestController = {
           message: "Invalid material request ID",
         });
       }
-     
-  
+
       // Zod validation
       const data = materialRequiestSchem.approveMeterialReqItem.parse(req.body);
       const isMaterialReqExist = await prisma.materialRequest.findFirst({
@@ -425,37 +432,36 @@ const materialRequiestController = {
           departmentHeadId: req.user.id, // Assuming req.user.id is the department head's ID
         },
       });
-      
-  
+
       if (!isMaterialReqExist) {
         return res.status(404).json({
           success: false,
           message: "Material request not found",
         });
       }
-  if(data.isApproviedByDH){
-    if(!req.body.logisticSuperViserId){
-      return res.status(403).json({
-        success: false,
-        message: `logisticSuperViser is required`,
-      });
-    }
-      // Check if the logistic supervisor exists
-      const isLogisticSupervisorExist = await prisma.users.findFirst({
-        where: {
-          id: + req.body.logisticSuperViserId,
-          role:"LOGESTIC_SUPERVISER"
-           // Ensure consistent role naming
-        },
-      });
-      if (!isLogisticSupervisorExist) {
-        return res.status(400).json({
-          success: false,
-          message: "Logistic supervisor not found",
+      if (data.isApproviedByDH) {
+        if (!req.body.logisticSuperViserId) {
+          return res.status(403).json({
+            success: false,
+            message: `logisticSuperViser is required`,
+          });
+        }
+        // Check if the logistic supervisor exists
+        const isLogisticSupervisorExist = await prisma.users.findFirst({
+          where: {
+            id: +req.body.logisticSuperViserId,
+            role: "LOGESTIC_SUPERVISER",
+            // Ensure consistent role naming
+          },
         });
+        if (!isLogisticSupervisorExist) {
+          return res.status(400).json({
+            success: false,
+            message: "Logistic supervisor not found",
+          });
+        }
       }
-    }
-  
+
       // Update the material request
       const updatedMaterialRequest = await prisma.materialRequest.update({
         where: {
@@ -477,7 +483,7 @@ const materialRequiestController = {
           },
         },
       });
-  
+
       return res.status(201).json({
         success: true,
         message: "Material request approved successfully",
@@ -490,7 +496,6 @@ const materialRequiestController = {
       });
     }
   },
-  
 };
 
 export default materialRequiestController;

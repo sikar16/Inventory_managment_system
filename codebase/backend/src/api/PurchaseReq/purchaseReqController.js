@@ -15,24 +15,38 @@ const purchasedReqConntroller = {
         where: {
           id: +purchasedReqId,
         },
-        // include: {
-        //   _count: true,
-        //   user: true,
-        //   items:{
-        //     include:{
-        //       product:{
-        //         include:{
-        //           subcategory:{
-        //             include:{
-        //               category:true
-        //             }
-        //           }
-        //         }
-        //       }
-
-        //     }
-        //   }
-        // },
+        include: {
+          items: {
+            include: {
+              purchasedRequest: {
+                include: {
+                  items: {
+                    include: {
+                      purchasedRequest: {
+                        include: {
+                          items: {
+                            include: {
+                              products: {
+                                include: {
+                                  productAttributes: true,
+                                  subcategory: {
+                                    include: {
+                                      category: true,
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       });
 
       if (!purchasedReq) {
@@ -95,29 +109,6 @@ const purchasedReqConntroller = {
             },
           },
         },
-        // include: {
-        //   _count: true,
-        //   user: {
-        //     include: {
-        //       department: true,
-        //     },
-        //   },
-        //   items:{
-        //     include:{
-        //       product:{
-        //         include:{
-        //           subcategory:{
-        //             include:{
-        //               category:true
-        //             }
-        //           }
-        //         }
-        //       }
-
-        //     }
-        //   }
-
-        // },
       });
       return res.status(200).json({
         success: true,
