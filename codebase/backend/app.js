@@ -18,7 +18,13 @@ app.use(express.static(path.join(__dirname, "../dist")));
 import appRouter from "./src/route/index.js";
 import userController from "./src/api/user/userController.js";
 import { isAuth } from "./src/middleware/auth.js";
+import purchasedOrderController from "./src/api/purchaseOrder/purchaseOrderController.js";
 app.post("/api/user/login", userController.login);
+app.get(
+  "/api/supplierOffer/purchased/order/offer/:id",
+  purchasedOrderController.getSinglePurchasedOrder
+);
+
 app.use("/api", [isAuth], appRouter);
 
 // test route

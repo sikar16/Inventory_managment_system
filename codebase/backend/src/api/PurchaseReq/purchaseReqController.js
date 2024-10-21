@@ -122,6 +122,62 @@ const purchasedReqConntroller = {
       });
     }
   },
+  getAllpurchasedReqByManager: async (req, res, next) => {
+    try {
+      const purchaseReq = await prisma.purchasedRequest.findMany({
+        where: {
+          isApproviedByFinance: true,
+        },
+        include: {
+          user: {
+            include: {
+              department: true,
+            },
+          },
+          items: {
+            include: {
+              purchasedRequest: {
+                include: {
+                  items: {
+                    include: {
+                      purchasedRequest: {
+                        include: {
+                          items: {
+                            include: {
+                              products: {
+                                include: {
+                                  productAttributes: true,
+                                  subcategory: {
+                                    include: {
+                                      category: true,
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+      return res.status(200).json({
+        success: true,
+        message: "Fetched all purchase requests",
+        data: purchaseReq,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: `Error -${error.message}`,
+      });
+    }
+  },
 
   createpurchasedReq: async (req, res, next) => {
     try {
@@ -526,7 +582,9 @@ const purchasedReqConntroller = {
         });
       }
       // zod validation
-      const data = purchasedReqSchema.approvePurchasedReqFinace.parse(req.body);
+      const data = purchasedReqSchema.approvePurchasedReqFinance.parse(
+        req.body
+      );
       const isPurchasedReqExist = await prisma.purchasedRequest.findFirst({
         where: {
           id: +purchasedReqId,
@@ -542,30 +600,19 @@ const purchasedReqConntroller = {
       }
 
       // update
-      const updatepurchasefRequiest = await prisma.purchasedRequest.update({
+      const updatePurchasedRequest = await prisma.purchasedRequest.update({
         where: {
           id: +purchasedReqId,
         },
         data: {
           isApproviedByFinance: data.isApproviedByFinance,
         },
-        include: {
-          items: {
-            include: {
-              product: {
-                include: {
-                  productAttributes: true,
-                },
-              },
-            },
-          },
-        },
       });
 
       return res.status(201).json({
         success: true,
         message: "purchased request approved successfully",
-        data: updatepurchasefRequiest,
+        data: updatePurchasedRequest,
       });
     } catch (error) {
       return res.status(500).json({
@@ -585,7 +632,7 @@ const purchasedReqConntroller = {
       }
 
       // zod validation
-      const data = purchasedReqSchema.approvePurchasedReqGm.parse(req.body);
+      const data = purchasedReqSchema.approvePurchasedReqGM.parse(req.body);
       const isPurchasedReqExist = await prisma.purchasedRequest.findFirst({
         where: {
           id: +purchasedReqId,
@@ -600,30 +647,19 @@ const purchasedReqConntroller = {
       }
 
       // update
-      const updatepurchasefRequiest = await prisma.purchasedRequest.update({
+      const updatePurchasedRequest = await prisma.purchasedRequest.update({
         where: {
           id: +purchasedReqId,
         },
         data: {
           isApproviedByGM: data.isApproviedByGM,
         },
-        include: {
-          items: {
-            include: {
-              product: {
-                include: {
-                  productAttributes: true,
-                },
-              },
-            },
-          },
-        },
       });
 
       return res.status(201).json({
         success: true,
         message: "purchased request approved successfully",
-        data: updatepurchasefRequiest,
+        data: updatePurchasedRequest,
       });
     } catch (error) {
       return res.status(500).json({

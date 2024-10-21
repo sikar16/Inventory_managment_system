@@ -133,6 +133,120 @@ const materialRequiestController = {
       });
     }
   },
+  getAllMaterialRequestsByDepartmentHead: async (req, res, next) => {
+    try {
+      // console.log(req.user);
+      const materialRequest = await prisma.materialRequest.findMany({
+        where: { departmentHeadId: +req.user.id },
+        include: {
+          employee: {
+            include: {
+              profile: true,
+              department: true,
+            },
+          },
+          logisticSupervisor: {
+            include: {
+              department: true,
+              profile: true,
+            },
+          },
+          departmentHead: {
+            include: {
+              department: true,
+              profile: true,
+            },
+          },
+          items: {
+            include: {
+              product: {
+                include: {
+                  productAttributes: {
+                    include: {
+                      templateAttribute: true,
+                    },
+                  },
+                  subcategory: {
+                    include: {
+                      category: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Fetched all material requests",
+        data: materialRequest,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: `Error - ${error.message}`,
+      });
+    }
+  },
+  getAllMaterialRequestsByLs: async (req, res, next) => {
+    try {
+      // console.log(req.user);
+      const materialRequest = await prisma.materialRequest.findMany({
+        where: { logisticSuperViserId: +req.user.id },
+        include: {
+          employee: {
+            include: {
+              profile: true,
+              department: true,
+            },
+          },
+          logisticSupervisor: {
+            include: {
+              department: true,
+              profile: true,
+            },
+          },
+          departmentHead: {
+            include: {
+              department: true,
+              profile: true,
+            },
+          },
+          items: {
+            include: {
+              product: {
+                include: {
+                  productAttributes: {
+                    include: {
+                      templateAttribute: true,
+                    },
+                  },
+                  subcategory: {
+                    include: {
+                      category: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Fetched all material requests",
+        data: materialRequest,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: `Error - ${error.message}`,
+      });
+    }
+  },
   getAllMyMaterialRequests: async (req, res, next) => {
     try {
       // console.log(req.user);
@@ -502,6 +616,7 @@ const materialRequiestController = {
           message: "Material request not found",
         });
       }
+
       if (data.isApproviedByDH) {
         if (!req.body.logisticSuperViserId) {
           return res.status(403).json({
@@ -531,7 +646,7 @@ const materialRequiestController = {
           id: materialReqId,
         },
         data: {
-          logisticSuperViserId: data.logisticSuperViserId,
+          logisticSuperViserId: +req.body.logisticSuperViserId,
           isApproviedByDH: data.isApproviedByDH,
         },
         include: {

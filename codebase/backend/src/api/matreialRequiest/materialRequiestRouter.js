@@ -3,9 +3,17 @@ import { isAdmin, isDH } from "../../middleware/auth.js";
 import materialRequestController from "./materialRequiestController.js";
 const materialRequestRoute = express.Router();
 materialRequestRoute.get(
-  "/my",
-  materialRequestController.getAllMyMaterialRequests
+  "/departmenthead",
+  materialRequestController.getAllMaterialRequestsByDepartmentHead
 ),
+  materialRequestRoute.get(
+    "/ls",
+    materialRequestController.getAllMaterialRequestsByLs
+  ),
+  materialRequestRoute.get(
+    "/my",
+    materialRequestController.getAllMyMaterialRequests
+  ),
   materialRequestRoute.get(
     "/:id",
     materialRequestController.getSingleaterialRequiest
