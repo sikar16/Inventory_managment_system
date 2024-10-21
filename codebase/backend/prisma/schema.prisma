@@ -119,11 +119,10 @@ model Product {
   storeInventory         StoreInventory[]
   materialRequestItem    MaterialRequestItem[]
   purceasedRequestedItem PurceasedRequestedItem[]
-  // purchasedRequestedItems PurceasedRequestedItem[] @relation("ProductRequestedItems")
-
-  purchasedOrderItem     PurchasedOrderItem[]           
+  purchasedOrderItem PurchasedOrderItem[]        
 
   OfferItem OfferItem[]
+  GRNItem GRNItem[]
 }
 
 model ProductAttribute {
@@ -137,6 +136,10 @@ model ProductAttribute {
   templateAttribute TemplateAttribute @relation(fields: [templateAttributeId], references: [id])
 
   MaterialRequestItem MaterialRequestItem[]
+  purceasedRequestedItem PurceasedRequestedItem[]
+  purchasedOrderItem PurchasedOrderItem[]
+  offerItem OfferItem[]
+  GRNItem GRNItem[]
 }
 
 model Address {
@@ -298,8 +301,8 @@ model PurceasedRequestedItem {
   //reference           
   purchasedRequest      PurchasedRequest    @relation(fields: [purchasedRequestId], references: [id])
   // relation
-  products              Product[]
-  // product               Product             @relation(fields: [productId], references: [id], name: "ProductRequestedItems")
+  products              Product  @relation(fields: [productId], references: [id])
+   productAttributes     ProductAttribute[]
 }
 
 model PurchasedOrder {
@@ -325,7 +328,7 @@ model PurchasedOrderItem {
   remark                String
   purchasedOrder        PurchasedOrder @relation(fields: [purchasOrderId], references: [id]) // Relation to PurchasedOrder
   products              Product @relation(fields: [productId], references: [id]) // Relation to Product
-
+  productAttributes     ProductAttribute[]
   MaterialRequest MaterialRequest[]
 }
 
@@ -351,7 +354,9 @@ model OfferItem {
   unitPrice        Decimal
   supplayerOffer   SupplayerOffer @relation(fields: [supplayerOfferId], references: [id])
   // relation
-  products         Product[]
+  products              Product @relation(fields: [productId], references: [id]) // Relation to Product
+  productAttributes     ProductAttribute[]
+  
 }
 
 model Winner {
@@ -387,6 +392,8 @@ model GRNItem {
   grnId     Int
   //reference
   grn       GRN    @relation(fields: [grnId], references: [id])
+  products              Product @relation(fields: [productId], references: [id]) // Relation to Product
+  productAttributes     ProductAttribute[]
 }
 
 // ------x-----model part ---------x---------//

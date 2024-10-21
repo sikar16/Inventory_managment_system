@@ -17,7 +17,24 @@ const grnController = {
         include: {
           _count: true,
           supplayer: true,
-          grnItem: true,
+          grnItem: {
+            include: {
+              products: {
+                include: { productAttributes: true, subcategory: true },
+              },
+            },
+          },
+          purchasedOrder: {
+            include: {
+              items: {
+                include: {
+                  products: {
+                    include: { productAttributes: true, subcategory: true },
+                  },
+                },
+              },
+            },
+          },
         },
       });
 
@@ -47,7 +64,24 @@ const grnController = {
         include: {
           _count: true,
           supplayer: true,
-          grnItem: true,
+          grnItem: {
+            include: {
+              products: {
+                include: { productAttributes: true, subcategory: true },
+              },
+            },
+          },
+          purchasedOrder: {
+            include: {
+              items: {
+                include: {
+                  products: {
+                    include: { productAttributes: true, subcategory: true },
+                  },
+                },
+              },
+            },
+          },
         },
       });
 

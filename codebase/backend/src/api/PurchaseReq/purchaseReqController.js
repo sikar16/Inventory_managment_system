@@ -29,9 +29,9 @@ const purchasedReqConntroller = {
         //           }
         //         }
         //       }
-              
+
         //     }
-        //   }        
+        //   }
         // },
       });
 
@@ -58,44 +58,43 @@ const purchasedReqConntroller = {
   getAllpurchasedReq: async (req, res, next) => {
     try {
       const purchaseReq = await prisma.purchasedRequest.findMany({
-        include:{
+        include: {
           user: {
+            include: {
+              department: true,
+            },
+          },
+          items: {
+            include: {
+              purchasedRequest: {
                 include: {
-                  department: true,
+                  items: {
+                    include: {
+                      purchasedRequest: {
+                        include: {
+                          items: {
+                            include: {
+                              products: {
+                                include: {
+                                  productAttributes: true,
+                                  subcategory: {
+                                    include: {
+                                      category: true,
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
                 },
               },
-          items:{
-            include:{
-              purchasedRequest:{
-                include:{
-                  items:{
-                    include:{
-                      purchasedRequest:{
-                        include:{
-                          items:{
-                            include:{
-                              products:{
-                                include:{
-                                  productAttributes:true,
-                                  subcategory:{
-                                    include:{
-                                      category:true,                                      
-                                    }
-                                  }
-                                }
-                              }
-                            }
-
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+            },
+          },
+        },
         // include: {
         //   _count: true,
         //   user: {
@@ -114,11 +113,10 @@ const purchasedReqConntroller = {
         //           }
         //         }
         //       }
-              
+
         //     }
         //   }
 
-          
         // },
       });
       return res.status(200).json({
