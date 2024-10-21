@@ -97,9 +97,30 @@ export const purchasedReqApi = createApi({
       },
     }),
 
-
+    approvePurchasedReq: builder.mutation({
+      query: ({ body, param }: { body: { isApproviedByFinance: boolean; }; param: number; }) => ({
+        url: `/approve/finance/${param}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["purchasedReq"],
+      transformResponse: (response: any) => {
+        console.log(response);
+        return response.success ? response.message : "something happened";
+      },
+      transformErrorResponse: (response: any) => {
+        const message = response?.data?.message;
+        return extractErrorMessage(message);
+      },
+    }),
 
   }),
 });
 
-export const { useAddNewpurchasedReqMutation, useGetSinglepurchasedReqQuery, useGetAllpurchasedReqQuery, useDeletepurchasedReqMutation } = purchasedReqApi;
+export const {
+  useAddNewpurchasedReqMutation,
+  useGetSinglepurchasedReqQuery,
+  useGetAllpurchasedReqQuery,
+  useDeletepurchasedReqMutation,
+  useApprovePurchasedReqMutation
+} = purchasedReqApi;

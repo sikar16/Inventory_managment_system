@@ -322,13 +322,15 @@ const RequestDetail: React.FC = () => {
             ))}
           </tbody>
         </table>
-        <button
+        {isDH && <button
           className={`px-4 py-2 text-white rounded-md transition duration-300 
                 ${materialReq.isApproviedByDH
               ? 'bg-red-600 hover:bg-red-500 dark:bg-red-800 hover:dark:bg-red-700'
               : 'bg-green-600 hover:bg-green-500 dark:bg-green-800 hover:dark:bg-green-700'}`}>
           {materialReq.isApproviedByDH ? <p >Reject</p> : <p>Approve</p>}
         </button>
+        }
+
 
       </div>
     );

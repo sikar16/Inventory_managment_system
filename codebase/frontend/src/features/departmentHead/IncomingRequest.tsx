@@ -257,9 +257,9 @@ export default function IncomingRequest() {
                             <MenuItem onClick={handleView}>
                               View detail
                             </MenuItem>
-                            <MenuItem onClick={handleApprove}>
+                            {/* <MenuItem onClick={handleApprove}>
                               {matReq?.isApproviedByDH ? "Reject" : "Approve"}
-                            </MenuItem>
+                            </MenuItem> */}
 
                             <MenuItem
                               onClick={() => handleEdit(singleMaterialRequest)}

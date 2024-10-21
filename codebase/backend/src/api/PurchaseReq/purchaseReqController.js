@@ -15,23 +15,24 @@ const purchasedReqConntroller = {
         where: {
           id: +purchasedReqId,
         },
-        include: {
-          _count: true,
-          user: true,
-          items:{
-            include:{
-              product:{
-                include:{
-                  subcategory:{
-                    include:{
-                      category:true
-                    }
-                  }
-                }
-              }
+        // include: {
+        //   _count: true,
+        //   user: true,
+        //   items:{
+        //     include:{
+        //       product:{
+        //         include:{
+        //           subcategory:{
+        //             include:{
+        //               category:true
+        //             }
+        //           }
+        //         }
+        //       }
               
-            }
-          }        },
+        //     }
+        //   }        
+        // },
       });
 
       if (!purchasedReq) {
@@ -57,30 +58,68 @@ const purchasedReqConntroller = {
   getAllpurchasedReq: async (req, res, next) => {
     try {
       const purchaseReq = await prisma.purchasedRequest.findMany({
-        include: {
-          _count: true,
+        include:{
           user: {
-            include: {
-              department: true,
-            },
-          },
+                include: {
+                  department: true,
+                },
+              },
           items:{
             include:{
-              product:{
+              purchasedRequest:{
                 include:{
-                  subcategory:{
+                  items:{
                     include:{
-                      category:true
+                      purchasedRequest:{
+                        include:{
+                          items:{
+                            include:{
+                              products:{
+                                include:{
+                                  productAttributes:true,
+                                  subcategory:{
+                                    include:{
+                                      category:true,                                      
+                                    }
+                                  }
+                                }
+                              }
+                            }
+
+                          }
+                        }
+                      }
                     }
                   }
                 }
               }
-              
             }
           }
+        }
+        // include: {
+        //   _count: true,
+        //   user: {
+        //     include: {
+        //       department: true,
+        //     },
+        //   },
+        //   items:{
+        //     include:{
+        //       product:{
+        //         include:{
+        //           subcategory:{
+        //             include:{
+        //               category:true
+        //             }
+        //           }
+        //         }
+        //       }
+              
+        //     }
+        //   }
 
           
-        },
+        // },
       });
       return res.status(200).json({
         success: true,

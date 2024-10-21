@@ -35,7 +35,11 @@ import MaterialRequiest from "../features/logesticsSuperviser/MaterialRequiest";
 // import PurchasedRequiestDetail from "../features/logesticsSuperviser/PurchasedRequiestDetail";
 import PurchasedOrder from "../features/logesticsSuperviser/PurchasedOrder";
 import PurchasedRequiestDetail from "../features/logesticsSuperviser/PurchasedRequiestDetail";
+import SupplierOffer from "../features/logesticsSuperviser/SupplierOffer";
 import SupplierResponce from "../features/logesticsSuperviser/SupplierResponce";
+import PurchasedReqestF from "../features/finance/PurchasedReqestF";
+import PurchasedOrderF from "../features/finance/PurchasedOrderF";
+import PurchasedRequestDetail from "../features/finance/PurchasedRequiestDetail";
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -191,17 +195,19 @@ export const router = createBrowserRouter(
         <Route
           path="/finance/purchase-requests"
           element={
-            <>
-              <h1>purchase request</h1>
-            </>
+            <PurchasedReqestF />
+          }
+        />
+        <Route
+          path="/finance/purchase-requests-detetail"
+          element={
+            <PurchasedRequestDetail />
           }
         />
         <Route
           path="/finance/purchase-order"
           element={
-            <>
-              <h1>purchase order</h1>
-            </>
+            <PurchasedOrderF />
           }
         />
         <Route path="/finance/*" element={<NotFound />} />
