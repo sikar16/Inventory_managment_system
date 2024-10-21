@@ -8,7 +8,7 @@ userRouter.get("/role/:role", [isAdmin], userController.getAllUserByRole);
 
 userRouter.get("/:id", userController.getSingleUser);
 
-userRouter.get("/", [isAdmin], userController.getAllUsers);
+userRouter.get("/", userController.getAllUsers);
 userRouter.post("/register", [isAdmin], userController.createUser);
 
 userRouter.put("/change-password", userController.changePassword);

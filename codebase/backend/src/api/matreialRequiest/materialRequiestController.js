@@ -415,20 +415,10 @@ const materialRequiestController = {
           message: "Invalid material request ID",
         });
       }
-  
-      const requiredFields = ["logisticSuperViserId", "isApproviedByDH"];
-      for (const field of requiredFields) {
-        if (!req.body[field]) {
-          return res.status(403).json({
-            success: false,
-            message: `${field} is required`,
-          });
-        }
-      }
+     
   
       // Zod validation
       const data = materialRequiestSchem.approveMeterialReqItem.parse(req.body);
-  
       const isMaterialReqExist = await prisma.materialRequest.findFirst({
         where: {
           id: materialReqId,
@@ -436,7 +426,6 @@ const materialRequiestController = {
         },
       });
       
-      console.log(materialReqId)
   
       if (!isMaterialReqExist) {
         return res.status(404).json({
@@ -444,21 +433,28 @@ const materialRequiestController = {
           message: "Material request not found",
         });
       }
-  
+  if(data.isApproviedByDH){
+    if(!req.body.logisticSuperViserId){
+      return res.status(403).json({
+        success: false,
+        message: `logisticSuperViser is required`,
+      });
+    }
       // Check if the logistic supervisor exists
       const isLogisticSupervisorExist = await prisma.users.findFirst({
         where: {
-          id: data.logisticSuperViserId,
-          role: "LOGISTIC_SUPERVISER", // Ensure consistent role naming
+          id: + req.body.logisticSuperViserId,
+          role:"LOGESTIC_SUPERVISER"
+           // Ensure consistent role naming
         },
       });
-  
       if (!isLogisticSupervisorExist) {
         return res.status(400).json({
           success: false,
           message: "Logistic supervisor not found",
         });
       }
+    }
   
       // Update the material request
       const updatedMaterialRequest = await prisma.materialRequest.update({

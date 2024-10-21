@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import LogoContainer from "../../component/LogoContainer";
-import IconContainer from "../../component/icon/Icon_container";
 
 const SupplierOffer: React.FC = () => {
     // State to manage which dropdown is open

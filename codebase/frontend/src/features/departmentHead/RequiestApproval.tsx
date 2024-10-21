@@ -61,7 +61,7 @@ const RequiestApproval: React.FC = () => {
     isSuccess,
   } = useGetSingleMaterialReqQuery(id);
 
-  console.log(materialReq?.isApproviedByDH);
+  // console.log(materialReq?.isApproviedByDH);
 
 
   const rows = isSuccess
@@ -77,7 +77,7 @@ const RequiestApproval: React.FC = () => {
     )
     : [];
 
-  console.log(1);
+  // console.log(1);
 
   if (isError) {
     return <p> `${error.toString()}` </p>;

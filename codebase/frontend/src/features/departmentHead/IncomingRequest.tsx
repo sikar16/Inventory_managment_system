@@ -41,7 +41,7 @@ function createData(
   no: number,
   requestId: string,
   departmentHeadId: string,
-  isApproviedByDH: boolean,
+  isApproviedByDH: string,
   createdAt: string
 ) {
   return { no, requestId, departmentHeadId, isApproviedByDH, createdAt };
@@ -53,7 +53,7 @@ export default function IncomingRequest() {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [matReq, setMatReq] = React.useState<MaterialRequest_type | null>(null);
-  const [selectedRow, setSelectedRow] = React.useState<RowData | null>(null);
+  const [selectedRow, setSelectedRow] = React.useState<MaterialRequest_type | null>(null);
   const [openDialog, setOpenDialog] = React.useState(false);
 
 
@@ -135,11 +135,16 @@ export default function IncomingRequest() {
     if (matReq) {
       console.log(`Viewing request with id: ${matReq.id}`);
       navigate("/department-head/requiestApproval", { state: { id: matReq.id } });
+      console.log(matReq.id)
     }
   };
-  const handleApprove = async (row: RowData) => {
-    setSelectedRow(row);  // Set the selected row first
-    handleOpenDialog();  // Then open the dialog
+  const handleApprove = async () => {
+    if (matReq) {
+      setSelectedRow(matReq);  // Set the selected row first
+      handleOpenDialog();
+      console.log(matReq.id)
+    }
+    // Then open the dialog
   };
 
 
@@ -252,7 +257,7 @@ export default function IncomingRequest() {
                             <MenuItem onClick={handleView}>
                               View detail
                             </MenuItem>
-                            <MenuItem onClick={() => handleApprove(row)}>
+                            <MenuItem onClick={handleApprove}>
                               {matReq?.isApproviedByDH ? "Reject" : "Approve"}
                             </MenuItem>
 

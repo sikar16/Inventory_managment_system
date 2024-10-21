@@ -24,7 +24,6 @@ const materialRequiestSchem = {
   }),
   approveMeterialReqItem: z.object({
     isApproviedByDH: z.boolean(),
-    logisticSuperViserId: z.number(),
   }),
 };
 

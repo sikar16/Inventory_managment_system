@@ -1,34 +1,37 @@
 import { useEffect, useState } from "react";
 import { useToast } from "../../context/ToastContext";
 import { useApproveReqMutation } from "../../services/materialReq_service";
-
-interface RowData {
-    no: number; // Assuming 'no' represents the request ID
-}
+import { MaterialRequest_type } from "../../_types/materialReq_type";
+import { useGetAllUsersQuery } from "../../services/user_service";
+import { useForm } from "react-hook-form";
 
 interface ApproveReqProps {
-    selectedRow: RowData | null;
+    selectedRow: MaterialRequest_type;
     handleCloseDialog: () => void;
 }
 
+type FormValues = {
+    logisticSuperViserId: number;
+    isApproviedByDH: boolean
+};
+
 const ApproveReq: React.FC<ApproveReqProps> = ({ selectedRow, handleCloseDialog }) => {
     const { setToastData } = useToast();
-    const [isApproved, setIsApproved] = useState<boolean>(false);
-    const [approveRequest, { isError, isSuccess, isLoading, error, reset }] =
-        useApproveReqMutation();
+    const [isApproved, setIsApproved] = useState<boolean>(selectedRow?.isApproviedByDH);
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<FormValues>();
 
-    // Hardcode the logistic supervisor ID (assuming there is only one supervisor)
-    const logisticSuperViserId = 1; // Replace 1 with the actual supervisor ID
+    const [approveRequest, { isError, isSuccess, isLoading, error }] = useApproveReqMutation();
+    const { data: userList } = useGetAllUsersQuery("user");
 
-    const handleApprove = async () => {
-        if (selectedRow?.no) {
+    const handleApprove = async (data: FormValues) => {
+        if (selectedRow?.id) {
             try {
                 await approveRequest({
                     body: {
                         isApproviedByDH: !isApproved, // Toggle the approval status
-                        logisticSuperViserId: logisticSuperViserId, // Hardcoded supervisor ID
+                        logisticSuperViserId: data.logisticSuperViserId, // Use form data
                     },
-                    param: selectedRow.no,
+                    param: selectedRow.id,
                 });
                 setIsApproved(!isApproved); // Toggle approval status
             } catch (error) {
@@ -36,7 +39,6 @@ const ApproveReq: React.FC<ApproveReqProps> = ({ selectedRow, handleCloseDialog 
             }
         }
     };
-
 
     useEffect(() => {
         if (isSuccess) {
@@ -52,19 +54,38 @@ const ApproveReq: React.FC<ApproveReqProps> = ({ selectedRow, handleCloseDialog 
 
     return (
         <div>
-            <div className="w-[200px] ">
-                <label htmlFor="isApproved" className="block text-sm font-medium">
-                    Approve Request
-                </label>
-                <input
-                    type="checkbox"
-                    id="isApproved"
-                    checked={isApproved}
-                    onChange={() => setIsApproved(!isApproved)} // Toggling approval status
-                    className="focus:outline-none bg-slate-100 py-2 rounded-md"
-                />
-
+            <div className="w-[200px]">
+                {isApproved ? (
+                    <label htmlFor="isApproved" className="block text-sm font-medium text-red-500">
+                        Reject Request
+                    </label>
+                ) : (
+                    <label htmlFor="isApproved" className="block text-sm font-medium text-green-800">
+                        Approve Request
+                    </label>
+                )}
             </div>
+
+            {!isApproved && (
+                <div className="w-full md:w-[45%] my-5">
+                    <label htmlFor="logisticSuperViserId" className="block text-sm font-medium text-gray-700">
+                        Logistic Supervisor
+                    </label>
+                    <select
+                        id="logisticSuperViserId"
+                        {...register('logisticSuperViserId', { required: 'Logistic Supervisor is required' })}
+                        className="focus:outline-none bg-slate-100 w-full py-2 rounded-md"
+                    >
+                        <option value="">Select Logistic Supervisor</option>
+                        {userList?.filter((i) => i.role === "LOGESTIC_SUPERVISER").map((user) => (
+                            <option key={user.id} value={user.id}>
+                                {user.profile.firstName} {user.profile.lastName}
+                            </option>
+                        ))}
+                    </select>
+                    <p className="text-red-600 text-[13px] mt-1">{errors.logisticSuperViserId?.message}</p>
+                </div>
+            )}
 
             <div className="flex justify-center mt-2">
                 {isLoading ? (
@@ -72,11 +93,11 @@ const ApproveReq: React.FC<ApproveReqProps> = ({ selectedRow, handleCloseDialog 
                 ) : (
                     <button
                         type="button"
-                        onClick={handleApprove}
-                        className="bg-[#002A47] text-white px-6 py-2 rounded-md"
+                        onClick={handleSubmit(handleApprove)}
+                        className={`${isApproved ? "bg-red-500" : "bg-green-800"} text-white px-6 py-2 rounded-md`}
                         disabled={isLoading}
                     >
-                        {isApproved ? "Revoke Approval" : "Approve"} {/* Update button text */}
+                        {isApproved ? "Reject" : "Approve"}
                     </button>
                 )}
             </div>

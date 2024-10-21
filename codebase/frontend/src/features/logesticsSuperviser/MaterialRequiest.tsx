@@ -48,7 +48,7 @@ function createData(
   isApprovedBy: string,
 
 ) {
-  return { no, requestId, departmentHeadId, departmentName, isApprovedBy, createdAt, isApprovedBy };
+  return { no, requestId, departmentHeadId, departmentName, isApprovedBy, createdAt };
 }
 
 type RowData = ReturnType<typeof createData>;

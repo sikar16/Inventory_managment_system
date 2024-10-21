@@ -50,10 +50,9 @@ const items = [
     }
 ];
 
-const GoodReceiverNote = ({ receivedBy }) => {
+const GoodReceiverNote = ({ receivedBy }: { receivedBy: any }) => {
     const totalItems = items.reduce((sum, item) => sum + item.quantityReceived, 0);
     const totalPrice = items.reduce((sum, item) => sum + item.totalPrice, 0);
-
     return (
         <div className="p-5 w-[80%] mx-auto border border-gray-300">
             <h1 className="text-center text-3xl mb-5 text-[#002344] font-medium">Good Receiver Note</h1>

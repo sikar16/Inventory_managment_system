@@ -77,7 +77,8 @@ const RequestDetail: React.FC = () => {
     )
     : [];
 
-  console.log(1);
+
+
 
   if (isError) {
     return <p> `${error.toString()}` </p>;
@@ -326,12 +327,13 @@ const RequestDetail: React.FC = () => {
                 ${materialReq.isApproviedByDH
               ? 'bg-red-600 hover:bg-red-500 dark:bg-red-800 hover:dark:bg-red-700'
               : 'bg-green-600 hover:bg-green-500 dark:bg-green-800 hover:dark:bg-green-700'}`}>
-          {materialReq.isApproviedByDH ? <p>Reject</p> : <p>Approve</p>}
+          {materialReq.isApproviedByDH ? <p >Reject</p> : <p>Approve</p>}
         </button>
 
       </div>
     );
   }
+
 };
 
 export default RequestDetail;

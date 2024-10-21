@@ -35,7 +35,6 @@ import MaterialRequiest from "../features/logesticsSuperviser/MaterialRequiest";
 // import PurchasedRequiestDetail from "../features/logesticsSuperviser/PurchasedRequiestDetail";
 import PurchasedOrder from "../features/logesticsSuperviser/PurchasedOrder";
 import PurchasedRequiestDetail from "../features/logesticsSuperviser/PurchasedRequiestDetail";
-import SupplierOffer from "../features/logesticsSuperviser/SupplierOffer";
 import SupplierResponce from "../features/logesticsSuperviser/SupplierResponce";
 export const router = createBrowserRouter(
   createRoutesFromElements(

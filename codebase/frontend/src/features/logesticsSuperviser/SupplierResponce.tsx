@@ -22,23 +22,11 @@ interface PurchaseOrder {
 
 // Example demo data for multiple rows
 
-{ }
+
 
 const purchaseOrders: PurchaseOrder[] = [
 
-    {
-        id: 1,
-        category: 'Electronics',
-        product: 'Lenovo',
-        quantity: 20,
-        unitPrice: 20000,
-        attributes: {
-            category: 'Electronics',
-            subCategory: 'Computer',
-            attributes: 'ID',
-            battery: '3500mAh',
-        },
-    }
+
     //,
     //     {
     //         id: 2,
@@ -164,9 +152,9 @@ const SupplierResponce: React.FC = () => {
                                 <tr>
                                     <td colSpan={6} className="border border-gray-300 p-2">
                                         <strong>attributes:</strong>
-                                        <p><strong>Sub-Category:</strong> {order.attributes.subCategory}</p>
+                                        {/* <p><strong>Sub-Category:</strong> {order.attributes.subCategory}</p>
                                         <p><strong>Attributes:</strong> {order.attributes.attributes}</p>
-                                        <p><strong>Battery:</strong> {order.attributes.battery}</p>
+                                        <p><strong>Battery:</strong> {order.attributes.battery}</p> */}
                                     </td>
                                 </tr>
                             )}

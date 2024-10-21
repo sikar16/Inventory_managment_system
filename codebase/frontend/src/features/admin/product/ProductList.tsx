@@ -79,7 +79,7 @@ export default function ProductList() {
             (product.subcategory?.id === selectedSubCategory.id);
 
         const matchesTemplate =
-            selectedTemplate === "" || product.templateId === selectedTemplate; // Assuming products have a templateId
+            selectedTemplate === "" || product.templateId === parseInt(`${selectedTemplate}`); // Assuming products have a templateId
 
         return matchesSearchTerm && matchesCategory && matchesSubCategory && matchesTemplate;
     });
@@ -251,6 +251,10 @@ export default function ProductList() {
                 <DialogContent>
                     <AddProduct handleCloseDialog={() => {
                         console.log("data");
+                    }} onAddProduct={function (product: any): void {
+                        console.log(product);
+                        throw new Error('Function not implemented.');
+
                     }} />
                 </DialogContent>
             </Dialog>

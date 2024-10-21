@@ -57,7 +57,14 @@ export const materialReqApi = createApi({
       },
     }),
 
-    addNewMaterialReq: builder.mutation<void, MaterialRequest_type>({
+    addNewMaterialReq: builder.mutation<void, {
+      departmentHeadId: number,
+      items: {
+        productId: number;
+        quantityRequested: number;
+        remark: string;
+      }[]
+    }>({
       query: (data) => ({
         url: `/`,
         method: "POST",
@@ -98,7 +105,7 @@ export const materialReqApi = createApi({
     }),
 
     approveReq: builder.mutation({
-      query: ({ body, param }: { body: { isApproviedByDH: boolean }; param: number }) => ({
+      query: ({ body, param }: { body: { isApproviedByDH: boolean; logisticSuperViserId: number | null }; param: number; }) => ({
         url: `/approve/${param}`,
         method: "PUT",
         body,

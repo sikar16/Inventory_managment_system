@@ -8,7 +8,6 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { useGetAllpurchasedOrderQuery } from "../../services/purchasedOrder_service";
-import { useToast } from "../../context/ToastContext";
 
 // Column definitions for the table
 interface Column {
@@ -35,8 +34,8 @@ export default function PurchasedOrder() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [openDropdown, setOpenDropdown] = React.useState<number | null>(null);
-  const [selectedSuppliers, setSelectedSuppliers] = React.useState<string[]>([]); // Step 1: State for selected suppliers
-  const { setToastData } = useToast();
+  // const [selectedSuppliers, setSelectedSuppliers] = React.useState<string[]>([]); 
+  // const { setToastData } = useToast();
 
 
   // Fetching purchased order data
@@ -254,13 +253,13 @@ export default function PurchasedOrder() {
 
                           <TableRow>
                             <TableCell>
-                              {purchasedOrder.map((po, index) => (
+                              {/* {purchasedOrder.map((po, index) => (
                                 <React.Fragment key={index}>
-                                  {po.items.map((item, itemIndex) => (
+                                 {po.items.map((item, itemIndex) => (
                                     <p></p>
-                                  ))}
+                                  ))} 
                                 </React.Fragment>
-                              ))}
+                              ))} */}
 
 
 
