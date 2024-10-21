@@ -1,29 +1,18 @@
 import express, { urlencoded } from "express";
 import cors from "cors";
 import { HOST, PORT } from "./src/config/secret.js";
+import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(urlencoded({ extended: true }));
-const allowedOrigins = [
-  "https://bluesparks.inventory.huludelala.com",
-  "http://localhost:5173",
-];
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (allowedOrigins.includes(origin) || !origin) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+app.use(cors());
+app.use(express.static(path.join(__dirname, "../dist")));
 
 //application route
 import appRouter from "./src/route/index.js";
