@@ -61,24 +61,20 @@ const RequestDetail: React.FC = () => {
     isSuccess,
   } = useGetSingleMaterialReqQuery(id);
 
-  console.log(materialReq?.isApproviedByDH);
-
+  console.log(materialReq);
 
   const rows = isSuccess
     ? materialReq.items.map((item, index) =>
-      createData(
-        index + 1,
-        item.product.name,
-        item.product.subcategory.name,
-        item.product.subcategory.category.name,
-        parseInt(item.quantityRequested),
-        item.remark
+        createData(
+          index + 1,
+          item.product.name,
+          item.product.subcategory.name,
+          item.product.subcategory.category.name,
+          parseInt(item.quantityRequested),
+          item.remark
+        )
       )
-    )
     : [];
-
-
-
 
   if (isError) {
     return <p> `${error.toString()}` </p>;
@@ -322,20 +318,21 @@ const RequestDetail: React.FC = () => {
             ))}
           </tbody>
         </table>
-        {isDH && <button
-          className={`px-4 py-2 text-white rounded-md transition duration-300 
-                ${materialReq.isApproviedByDH
-              ? 'bg-red-600 hover:bg-red-500 dark:bg-red-800 hover:dark:bg-red-700'
-              : 'bg-green-600 hover:bg-green-500 dark:bg-green-800 hover:dark:bg-green-700'}`}>
-          {materialReq.isApproviedByDH ? <p >Reject</p> : <p>Approve</p>}
-        </button>
-        }
-
-
+        {isDH && (
+          <button
+            className={`px-4 py-2 text-white rounded-md transition duration-300 
+                ${
+                  materialReq.isApproviedByDH
+                    ? "bg-red-600 hover:bg-red-500 dark:bg-red-800 hover:dark:bg-red-700"
+                    : "bg-green-600 hover:bg-green-500 dark:bg-green-800 hover:dark:bg-green-700"
+                }`}
+          >
+            {materialReq.isApproviedByDH ? <p>Reject</p> : <p>Approve</p>}
+          </button>
+        )}
       </div>
     );
   }
-
 };
 
 export default RequestDetail;

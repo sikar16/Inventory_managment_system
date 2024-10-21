@@ -9,7 +9,7 @@ import { TemplateAttributeType } from "../_types/template_type";
 import { useGetAllproductCategoryQuery } from "../services/productCategorySerivce";
 import { useNavigate } from "react-router-dom";
 import { useAddNewMaterialReqMutation } from "../services/materialReq_service";
-
+import { useToast } from "../context/ToastContext";
 interface FormData {
   categoryId: string;
   subcategoryId: string;
@@ -22,6 +22,7 @@ interface FormData {
 }
 
 const MaterialRequestForm: React.FC = () => {
+  const { toastData, setToastData } = useToast();
   const { isSuccess: isCategorySuccess, data: categoryList = [] } =
     useGetAllproductCategoryQuery();
   const { data: subCategoriesList = [] } =
@@ -76,15 +77,26 @@ const MaterialRequestForm: React.FC = () => {
       })),
     }));
 
-    console.log("Submitting validated requests:", validatedRequests);
+    const requestData = {
+      items: validatedRequests.flatMap((i) => i.items),
+    };
+    console.log(requestData);
 
     try {
       await addNewMaterialReq({
-        departmentHeadId: 5,
-        items: validatedRequests[0].items,
+        items: requestData.items,
       });
       console.log("Request submitted successfully");
-    } catch (error) {
+      setToastData({
+        message: "Request submitted successfully",
+        success: true,
+      });
+      navigate(-1);
+    } catch (error: any) {
+      setToastData({
+        message: error.message,
+        success: false,
+      });
       console.error("Error submitting request:", error);
     }
   };

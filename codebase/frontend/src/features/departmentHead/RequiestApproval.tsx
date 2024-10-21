@@ -15,7 +15,6 @@ interface Column {
   align?: "left" | "right" | "center"; // Optional align property
 }
 
-
 const columns: Column[] = [
   { id: "no", label: "No", minWidth: 50 },
   { id: "product", label: "Product", minWidth: 70, align: "left" },
@@ -47,11 +46,11 @@ function createData(
   return { no, product, subCategory, category, quantity, remark };
 }
 
-const RequiestApproval: React.FC = () => {
+const RequestApproval: React.FC = () => {
   const location = useLocation();
   const { id } = location.state || {}; // Extract the ID from location state
   const { isEmployee, isLS, isDH } = useAuth(); // Auth context
-  const [selectedRow, setSelectedRow] = useState<MaterialRequest_type>(
+  const [selectedRow, setSelectedRow] = useState<MaterialRequest_type | null>(
     null
   );
   const [openDialog, setOpenDialog] = useState(false); // Dialog state for approval
@@ -75,15 +74,15 @@ const RequiestApproval: React.FC = () => {
   // Create table rows based on the material request data
   const rows = isSuccess
     ? materialReq.items.map((item, index) =>
-      createData(
-        index + 1,
-        item.product.name,
-        item.product.subcategory.name,
-        item.product.subcategory.category.name,
-        parseInt(item.quantityRequested),
-        item.remark
+        createData(
+          index + 1,
+          item.product.name,
+          item.product.subcategory.name,
+          item.product.subcategory.category.name,
+          parseInt(item.quantityRequested),
+          item.remark
+        )
       )
-    )
     : [];
 
   const handleApprove = async () => {
@@ -119,7 +118,8 @@ const RequiestApproval: React.FC = () => {
               <strong>Role:</strong> {materialReq.employee.role}
             </p>
             <p>
-              <strong>Department:</strong> {materialReq.employee.department.name}
+              <strong>Department:</strong>{" "}
+              {materialReq.employee.department.name}
             </p>
             <p>
               <strong>Email:</strong> {materialReq.employee.email}
@@ -259,8 +259,9 @@ const RequiestApproval: React.FC = () => {
         {(isLS || isDH) && (
           <div className="p-6">
             <button
-              className={`${materialReq.isApproviedByDH ? "bg-red-600" : "bg-green-500"} px-5 py-2 text-white rounded-lg`}
-
+              className={`${
+                materialReq.isApproviedByDH ? "bg-red-600" : "bg-green-500"
+              } px-5 py-2 text-white rounded-lg`}
               onClick={handleApprove}
             >
               {materialReq.isApproviedByDH ? "Reject" : "Approve"}
@@ -289,4 +290,4 @@ const RequiestApproval: React.FC = () => {
   return null;
 };
 
-export default RequiestApproval;
+export default RequestApproval;

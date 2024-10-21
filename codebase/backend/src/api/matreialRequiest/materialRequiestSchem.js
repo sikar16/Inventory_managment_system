@@ -1,8 +1,7 @@
 import z from "zod";
 
-const materialRequiestSchem = {
+const materialRequestSachem = {
   create: z.object({
-    departmentHeadId: z.number(),
     items: z.array(
       z.object({
         productId: z.number(),
@@ -12,7 +11,6 @@ const materialRequiestSchem = {
     ),
   }),
 
-  
   updateDepartmentHead: z.object({
     departmentHeadId: z.number(),
   }),
@@ -27,4 +25,4 @@ const materialRequiestSchem = {
   }),
 };
 
-export default materialRequiestSchem;
+export default materialRequestSachem;

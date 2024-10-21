@@ -38,6 +38,25 @@ export const materialReqApi = createApi({
         return extractErrorMessage(message);
       },
     }),
+    getAllMyMaterialReq: builder.query<MaterialRequest_type[], void>({
+      query: () => ({
+        url: `/my`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      transformResponse: (response: any) => {
+        return response.success
+          ? (response.data as MaterialRequest_type[])
+          : [];
+      },
+      providesTags: ["MaterialReq"],
+      transformErrorResponse: (response: any) => {
+        const message = response?.data?.message || "Unknown error";
+        return extractErrorMessage(message);
+      },
+    }),
     getSingleMaterialReq: builder.query<MaterialRequest_type, void>({
       query: (id) => ({
         url: `/${id}`,
@@ -57,14 +76,12 @@ export const materialReqApi = createApi({
       },
     }),
 
-    addNewMaterialReq: builder.mutation<void, {
-      departmentHeadId: number,
-      items: {
-        productId: number;
-        quantityRequested: number;
-        remark: string;
-      }[]
-    }>({
+    addNewMaterialReq: builder.mutation<
+      void,
+      {
+        items: any;
+      }
+    >({
       query: (data) => ({
         url: `/`,
         method: "POST",
@@ -105,7 +122,13 @@ export const materialReqApi = createApi({
     }),
 
     approveReq: builder.mutation({
-      query: ({ body, param }: { body: { isApproviedByDH: boolean; logisticSuperViserId: number | null }; param: number; }) => ({
+      query: ({
+        body,
+        param,
+      }: {
+        body: { isApproviedByDH: boolean; logisticSuperViserId: number | null };
+        param: number;
+      }) => ({
         url: `/approve/${param}`,
         method: "PUT",
         body,
@@ -120,15 +143,14 @@ export const materialReqApi = createApi({
         return extractErrorMessage(message);
       },
     }),
-
-
   }),
 });
 
 export const {
   useGetAllMaterialReqQuery,
+  useGetAllMyMaterialReqQuery,
   useAddNewMaterialReqMutation,
   useDeleteMaterialReqMutation,
   useGetSingleMaterialReqQuery,
-  useApproveReqMutation
+  useApproveReqMutation,
 } = materialReqApi;

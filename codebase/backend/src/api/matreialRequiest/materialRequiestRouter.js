@@ -1,35 +1,38 @@
 import express from "express";
 import { isAdmin, isDH } from "../../middleware/auth.js";
-import materialRequiestController from "./materialRequiestController.js";
-const materialRequiestRoute = express.Router();
-
-materialRequiestRoute.get(
-  "/:id",
-  materialRequiestController.getSinglematerialRequiest
+import materialRequestController from "./materialRequiestController.js";
+const materialRequestRoute = express.Router();
+materialRequestRoute.get(
+  "/my",
+  materialRequestController.getAllMyMaterialRequests
 ),
-  materialRequiestRoute.get(
-    "/",
-    materialRequiestController.getAllMaterialRequests
+  materialRequestRoute.get(
+    "/:id",
+    materialRequestController.getSingleaterialRequiest
   ),
-  materialRequiestRoute.post(
+  materialRequestRoute.get(
     "/",
-    materialRequiestController.createMaterialRequest
+    materialRequestController.getAllMaterialRequests
   ),
-  materialRequiestRoute.put(
+  materialRequestRoute.post(
+    "/",
+    materialRequestController.createMaterialRequest
+  ),
+  materialRequestRoute.put(
     "/item/:id",
-    materialRequiestController.updatematerialRequiestItem
+    materialRequestController.updatematerialRequiestItem
   ),
-  materialRequiestRoute.put(
+  materialRequestRoute.put(
     "/departement/:id",
-    materialRequiestController.updatedDepartmentHead
+    materialRequestController.updatedDepartmentHead
   ),
-  materialRequiestRoute.put(
+  materialRequestRoute.put(
     "/approve/:id",
     [isDH],
-    materialRequiestController.approveMaterialRequiest
+    materialRequestController.approveMaterialRequiest
   ),
-  materialRequiestRoute.delete(
+  materialRequestRoute.delete(
     "/:id",
-    materialRequiestController.deletematerialRequiest
+    materialRequestController.deletematerialRequiest
   );
-export default materialRequiestRoute;
+export default materialRequestRoute;

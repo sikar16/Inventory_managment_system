@@ -29,7 +29,7 @@ import { LogesticsLayout } from "../layout/Logestics/LogesticsLayout";
 import { FinanceLayout } from "../layout/Finance/FinanceLayout";
 import { GeneralManagerLayout } from "../layout/generalManager/GeneralManagerLayout";
 import { WarehouseLayout } from "../layout/Warehouse/WarehouseLayout";
-import RequiestApproval from "../features/departmentHead/RequiestApproval";
+import RequestApproval from "../features/departmentHead/RequiestApproval";
 import PurchasedReqest from "../features/logesticsSuperviser/PurchasedReqest";
 import MaterialRequiest from "../features/logesticsSuperviser/MaterialRequiest";
 // import PurchasedRequiestDetail from "../features/logesticsSuperviser/PurchasedRequiestDetail";
@@ -107,7 +107,7 @@ export const router = createBrowserRouter(
         />
         <Route
           path="/department-head/requiestApproval"
-          element={<RequiestApproval />}
+          element={<RequestApproval />}
         />
         <Route path="/department-head/approvals" element={<Approvals />} />
         <Route path="/department-head/*" element={<NotFound />} />
@@ -194,22 +194,13 @@ export const router = createBrowserRouter(
         <Route path="/finance/requiest-detaile" element={<RequiestDetail />} />
         <Route
           path="/finance/purchase-requests"
-          element={
-            <PurchasedReqestF />
-          }
+          element={<PurchasedReqestF />}
         />
         <Route
           path="/finance/purchase-requests-detetail"
-          element={
-            <PurchasedRequestDetail />
-          }
+          element={<PurchasedRequestDetail />}
         />
-        <Route
-          path="/finance/purchase-order"
-          element={
-            <PurchasedOrderF />
-          }
-        />
+        <Route path="/finance/purchase-order" element={<PurchasedOrderF />} />
         <Route path="/finance/*" element={<NotFound />} />
       </Route>
 

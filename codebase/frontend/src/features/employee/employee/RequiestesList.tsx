@@ -14,7 +14,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Link, useNavigate } from "react-router-dom";
 import {
   useDeleteMaterialReqMutation,
-  useGetAllMaterialReqQuery,
+  useGetAllMyMaterialReqQuery,
 } from "../../../services/materialReq_service";
 import { MaterialRequest_type } from "../../../_types/materialReq_type";
 
@@ -62,7 +62,7 @@ export default function RequestsList() {
     isError,
     isLoading,
     isSuccess,
-  } = useGetAllMaterialReqQuery();
+  } = useGetAllMyMaterialReqQuery();
 
   function formatDateToReadable(dateString: string) {
     const date = new Date(dateString);

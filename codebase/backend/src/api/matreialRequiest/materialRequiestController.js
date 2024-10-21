@@ -1,8 +1,8 @@
 import prisma from "../../config/prisma.js";
-import materialRequiestSchem from "./materialRequiestSchem.js";
+import materialRequestSachem from "./materialRequiestSchem.js";
 
 const materialRequiestController = {
-  getSinglematerialRequiest: async (req, res, next) => {
+  getSingleaterialRequiest: async (req, res, next) => {
     try {
       const materialReqId = parseInt(req.params.id, 10);
       // console.log(req.params.id);
@@ -133,10 +133,68 @@ const materialRequiestController = {
       });
     }
   },
+  getAllMyMaterialRequests: async (req, res, next) => {
+    try {
+      // console.log(req.user);
+      const materialRequest = await prisma.materialRequest.findMany({
+        where: { requesterId: +req.user.id },
+        include: {
+          employee: {
+            include: {
+              profile: true,
+              department: true,
+            },
+          },
+          logisticSupervisor: {
+            include: {
+              department: true,
+              profile: true,
+            },
+          },
+          departmentHead: {
+            include: {
+              department: true,
+              profile: true,
+            },
+          },
+          items: {
+            include: {
+              product: {
+                include: {
+                  productAttributes: {
+                    include: {
+                      templateAttribute: true,
+                    },
+                  },
+                  subcategory: {
+                    include: {
+                      category: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Fetched all material requests",
+        data: materialRequest,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: `Error - ${error.message}`,
+      });
+    }
+  },
 
   createMaterialRequest: async (req, res, next) => {
+    console.log(req.body);
     try {
-      const requiredField = ["departmentHeadId", "items"];
+      const requiredField = ["items"];
       for (const field of requiredField) {
         if (!req.body[field]) {
           return res.status(403).json({
@@ -146,19 +204,23 @@ const materialRequiestController = {
         }
       }
       // zod validation
-      const data = materialRequiestSchem.create.parse(req.body);
-      const isDepartmentHeadExist = await prisma.users.findFirst({
+      const data = materialRequestSachem.create.parse(req.body);
+      //get the department head of requester
+
+      const depHead = await prisma.users.findFirst({
         where: {
-          id: +data.departmentHeadId,
+          departmentId: +req.user.departmentId,
           role: "DEPARTMENT_HEAD",
         },
       });
-      if (!isDepartmentHeadExist) {
+
+      if (!depHead) {
         return res.status(400).json({
           success: false,
           message: "Department head not found",
         });
       }
+
       // product exist
       for (let index = 0; index < data.items.length; index++) {
         const item = data.items[index];
@@ -167,6 +229,7 @@ const materialRequiestController = {
             id: +item.productId,
           },
         });
+
         if (!isProductExist) {
           return res.status(404).json({
             success: false,
@@ -189,7 +252,7 @@ const materialRequiestController = {
           },
         },
         data: {
-          departmentHeadId: +data.departmentHeadId,
+          departmentHeadId: +depHead.id,
           requesterId: +req.user.id,
           items: {
             create: data.items.map((item) => ({
@@ -235,7 +298,7 @@ const materialRequiestController = {
         }
       }
 
-      const data = materialRequiestSchem.updateDepartmentHead.parse(req.body);
+      const data = materialRequestSachem.updateDepartmentHead.parse(req.body);
       const isMaterialReqExist = await prisma.materialRequest.findFirst({
         where: {
           id: +materialReqId,
@@ -303,7 +366,7 @@ const materialRequiestController = {
           message: "Invalid material request item  ID",
         });
       }
-      const data = materialRequiestSchem.updateMeterialReqItem.parse(req.body);
+      const data = materialRequestSachem.updateMeterialReqItem.parse(req.body);
       const isMaterialReqItemExist = await prisma.materialRequestItem.findFirst(
         {
           where: {
@@ -425,7 +488,7 @@ const materialRequiestController = {
       }
 
       // Zod validation
-      const data = materialRequiestSchem.approveMeterialReqItem.parse(req.body);
+      const data = materialRequestSachem.approveMeterialReqItem.parse(req.body);
       const isMaterialReqExist = await prisma.materialRequest.findFirst({
         where: {
           id: materialReqId,
