@@ -25,13 +25,13 @@ const ApprovePurchasedReq: React.FC<ApproveReqProps> = ({
     useApproveReqMutation();
   //   const handleCloseDialog = () => setOpenDialog(false);
 
-  const handleApprove = async (data: FormValues) => {
+  const handleApprove = async () => {
     if (selectedRow?.id) {
       try {
         await approveRequest({
           body: {
             isApproviedByDH: !isApproved, // Toggle the approval status
-            logisticSuperViserId: data.logisticSuperViserId, // Use form data
+            logisticSuperViserId: 0, // Use form data
           },
           param: selectedRow.id,
         });
@@ -46,7 +46,7 @@ const ApprovePurchasedReq: React.FC<ApproveReqProps> = ({
     if (isSuccess) {
       setToastData({ message: "Request Approved Successfully", success: true });
       handleCloseDialog();
-      reset();
+      // reset();
     }
     if (isError) {
       setToastData({
@@ -55,7 +55,13 @@ const ApprovePurchasedReq: React.FC<ApproveReqProps> = ({
       });
       console.log(error);
     }
-  }, [isSuccess, isError, setToastData, handleCloseDialog, reset, error]);
+  }, [isSuccess, isError, setToastData, handleCloseDialog, error]);
+
+  function handleSubmit(
+    _handleApprove: (data: FormValues) => Promise<void>
+  ): import("react").MouseEventHandler<HTMLButtonElement> | undefined {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <div>

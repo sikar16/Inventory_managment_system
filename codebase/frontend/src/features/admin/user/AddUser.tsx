@@ -22,7 +22,7 @@ type FormValues = {
 
 const AddUser = () => {
   const navigator = useNavigate();
-  const { toastData, setToastData } = useToast();
+  const { setToastData } = useToast();
   const { register, control, handleSubmit, formState } = useForm<FormValues>();
   const { errors } = formState;
 
