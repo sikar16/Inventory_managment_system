@@ -3,8 +3,15 @@ import { useGetSingleMaterialReqQuery } from "../../../services/materialReq_serv
 import { useLocation, useNavigate } from "react-router-dom";
 import Loader from "../../../component/Loading";
 import { useAuth } from "../../../context/AuthContext";
-import { Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
-import ApproveReq from "../../departmentHead/ApproveReq";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
+import { MaterialRequestItem } from "../../../_types/materialReq_type";
+import { useAddNewpurchasedReqMutation } from "../../../services/purchasedReq_service";
+import { useToast } from "../../../context/ToastContext";
 
 // Sample data
 interface Column {
@@ -44,21 +51,26 @@ function createData(
 }
 
 const RequestDetail: React.FC = () => {
+  const [PR] = useAddNewpurchasedReqMutation();
   const location = useLocation();
   const { id } = location.state || {}; // Use optional chaining to avoid errors
   const { isEmployee, isLS, isDH } = useAuth();
-  // console.log(`id : ${id}`);
 
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDialog2, setOpenDialog2] = React.useState(false);
-  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [selectedProducts, setSelectedProducts] = useState<
+    MaterialRequestItem[]
+  >([]);
+  const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
+  const [unitPrices, setUnitPrices] = useState<{ [key: number]: number }>({});
 
   const handleToggleDetails = (no: number) => {
     setExpandedRow(expandedRow === no ? null : no);
   };
 
   const navigate = useNavigate();
+  const { toastData, setToastData } = useToast();
 
   const handleClose = () => {
     navigate(-1); // This navigates back to the previous page
@@ -71,28 +83,25 @@ const RequestDetail: React.FC = () => {
     isSuccess,
   } = useGetSingleMaterialReqQuery(id);
 
-  console.log(materialReq);
-
   const rows = isSuccess
     ? materialReq.items.map((item, index) =>
-      createData(
-        index + 1,
-        item.product.name,
-        item.product.subcategory.name,
-        item.product.subcategory.category.name,
-        parseInt(item.quantityRequested),
-        item.remark
+        createData(
+          index + 1,
+          item.product.name,
+          item.product.subcategory.name,
+          item.product.subcategory.category.name,
+          parseInt(item.quantityRequested),
+          item.remark
+        )
       )
-    )
     : [];
 
   const handleConvertToPR = () => {
-    console.log("kkwww")
+    setQuantities([]);
+    setUnitPrices([]);
+    setSelectedProducts([]);
     setOpenDialog(true);
-    console.log("mmmmmm")
-  }
-
-
+  };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -102,17 +111,49 @@ const RequestDetail: React.FC = () => {
     setOpenDialog2(false);
   };
 
-  const handleCheckboxChange = (productName) => {
+  const handleCheckboxChange = (product: MaterialRequestItem) => {
     setSelectedProducts((prevSelected) =>
-      prevSelected.includes(productName)
-        ? prevSelected.filter((name) => name !== productName)
-        : [...prevSelected, productName]
+      prevSelected.includes(product)
+        ? prevSelected.filter((i) => i.id !== product.id)
+        : [...prevSelected, product]
     );
+  };
+  // In the handlePR function, calculate totalPrice and include unitPrice in the requestBody
+  const handlePR = async () => {
+    const items = selectedProducts.map((product) => ({
+      productId: product.product.id,
+      quantityToBePurchased: quantities[product.product.id] || 0,
+      unitPrice: unitPrices[product.product.id] || 0, // Default to 0 if no unit price is entered
+    }));
+
+    // Calculate totalPrice
+    const totalPrice = items.reduce((sum, item) => {
+      return sum + item.quantityToBePurchased * item.unitPrice;
+    }, 0);
+
+    // Prepare the request body
+    const requestBody = {
+      totalPrice,
+      items,
+    };
+    try {
+      await PR(requestBody);
+      setToastData({
+        message: "purchase request added sucessfully",
+        success: true,
+      });
+      setOpenDialog2(false);
+    } catch (error: any) {
+      setToastData({
+        message: error.message || "",
+        success: false,
+      });
+    }
   };
 
   const handleConfirmToPR = () => {
-    setOpenDialog(false);  // Close the first dialog
-    setOpenDialog2(true);  // Open the second dialog
+    setOpenDialog(false); // Close the first dialog
+    setOpenDialog2(true); // Open the second dialog
   };
 
   if (isError) {
@@ -129,56 +170,54 @@ const RequestDetail: React.FC = () => {
           <header className="text-2xl py-1 px-2 rounded-e-full">
             {!isEmployee && <h2>Employee Information</h2>}
           </header>
-          {isDH &&
-            (!isEmployee && (
-              <div className="p-3 text-sm">
-                <p>
-                  <strong>Name: </strong>
-                  {materialReq.employee.profile.firstName}{" "}
-                  {materialReq.employee.profile.lastName}{" "}
-                  {materialReq.employee.profile.middleName}
-                </p>
-                <p>
-                  <strong>Role:</strong>
-                  {materialReq.employee.role}
-                </p>
-                <p>
-                  <strong> Department:</strong>
-                  {materialReq.employee.department.name}
-                </p>
-                <p>
-                  {" "}
-                  <strong>Email:</strong>
-                  {materialReq.employee.email}
-                </p>
-                <p>
-                  <strong>Phone:</strong>
-                  {materialReq.employee.profile.phone}
-                </p>
-              </div>
-            ))}
-          {isLS &&
-            (!isEmployee && (
-              <>
-                <p>
-                  <strong>Role:</strong>
-                  {materialReq.departmentHead?.role}
-                </p>
-                <p>
-                  <strong> Department:</strong>
-                  {materialReq.departmentHead?.department.name}
-                </p>
-                <p>
-                  {" "}
-                  <strong>Email:</strong>
-                  {materialReq.departmentHead?.email}
-                </p>
-                <p>
-                  <strong>Phone:</strong>
-                  {materialReq.departmentHead?.profile.phone}
-                </p>
-              </>
-            ))}
+          {isDH && !isEmployee && (
+            <div className="p-3 text-sm">
+              <p>
+                <strong>Name: </strong>
+                {materialReq.employee.profile.firstName}{" "}
+                {materialReq.employee.profile.lastName}{" "}
+                {materialReq.employee.profile.middleName}
+              </p>
+              <p>
+                <strong>Role:</strong>
+                {materialReq.employee.role}
+              </p>
+              <p>
+                <strong> Department:</strong>
+                {materialReq.employee.department.name}
+              </p>
+              <p>
+                {" "}
+                <strong>Email:</strong>
+                {materialReq.employee.email}
+              </p>
+              <p>
+                <strong>Phone:</strong>
+                {materialReq.employee.profile.phone}
+              </p>
+            </div>
+          )}
+          {isLS && !isEmployee && (
+            <>
+              <p>
+                <strong>Role:</strong>
+                {materialReq.departmentHead?.role}
+              </p>
+              <p>
+                <strong> Department:</strong>
+                {materialReq.departmentHead?.department.name}
+              </p>
+              <p>
+                {" "}
+                <strong>Email:</strong>
+                {materialReq.departmentHead?.email}
+              </p>
+              <p>
+                <strong>Phone:</strong>
+                {materialReq.departmentHead?.profile.phone}
+              </p>
+            </>
+          )}
           <h2 className=" px-2 rounded-e-full mb-5 text-2xl">
             Material Request Overview
           </h2>
@@ -362,10 +401,11 @@ const RequestDetail: React.FC = () => {
             {isDH && (
               <button
                 className={`px-4 py-2 text-white rounded-md transition duration-300 
-                ${materialReq.isApproviedByDH
+                ${
+                  materialReq.isApproviedByDH
                     ? "bg-red-600 hover:bg-red-500 dark:bg-red-800 hover:dark:bg-red-700"
                     : "bg-green-600 hover:bg-green-500 dark:bg-green-800 hover:dark:bg-green-700"
-                  }`}
+                }`}
               >
                 {materialReq.isApproviedByDH ? <p>Reject</p> : <p>Approve</p>}
               </button>
@@ -373,10 +413,14 @@ const RequestDetail: React.FC = () => {
           </div>
 
           <div>
-            {isLS &&
-              <button className="text-white bg-[#002a47] text-sm px-5 py-1 rounded-md mt-[5%]" onClick={handleConvertToPR}>
+            {isLS && (
+              <button
+                className="text-white bg-[#002a47] text-sm px-5 py-1 rounded-md mt-[5%]"
+                onClick={handleConvertToPR}
+              >
                 Convert to PR
-              </button>}
+              </button>
+            )}
           </div>
         </div>
         <div>
@@ -415,9 +459,12 @@ const RequestDetail: React.FC = () => {
                             <input
                               type="checkbox"
                               id={`checkbox-${index}`}
-                              onChange={() => handleCheckboxChange(i.product.name)}
+                              onChange={() => handleCheckboxChange(i)}
                             />
-                            <label htmlFor={`checkbox-${index}`} className="ps-3">
+                            <label
+                              htmlFor={`checkbox-${index}`}
+                              className="ps-3"
+                            >
                               {i.product.name}
                             </label>
                           </li>
@@ -431,17 +478,18 @@ const RequestDetail: React.FC = () => {
               <DialogActions>
                 <button
                   onClick={handleConfirmToPR}
-                  className="border rounded-md border-blue-900 px-2 hover:bg-[#002a47] hover:text-white">
+                  className="border rounded-md border-blue-900 px-2 hover:bg-[#002a47] hover:text-white"
+                >
                   Confirm
                 </button>
               </DialogActions>
             </DialogContent>
           </Dialog>
-
           {/* Second Dialog: Add Quantity for Selected Products */}
+
           <Dialog open={openDialog2} onClose={handleCloseDialog2}>
             <div className="flex justify-between me-5">
-              <DialogTitle>Add Quantity</DialogTitle>
+              <DialogTitle>Add Quantity and Unit Price</DialogTitle>
               <DialogActions>
                 <svg
                   onClick={handleCloseDialog2}
@@ -463,33 +511,98 @@ const RequestDetail: React.FC = () => {
             </div>
 
             <DialogContent>
-              <div>
-
+              <div className="space-y-4">
                 <ul>
                   {selectedProducts.length > 0 ? (
                     selectedProducts.map((product, index) => (
-                      <table className="flex justify-between">
-                        <tr className="gap-3">
-                          <th className="pe-3">{index + 1}.</th>
-                          <td>{product}</td>
-                          <td>
-                            <input type="number" className="border border-gray-200" />
-                          </td>
-                        </tr>
-
-                      </table>
+                      <div key={product.product.id} className="mb-4">
+                        <table className="table-auto w-full border border-gray-300 rounded-md">
+                          <thead>
+                            <tr className="bg-gray-100">
+                              <th className="px-4 py-2 text-left">#</th>
+                              <th className="px-4 py-2 text-left">
+                                Product Name
+                              </th>
+                              <th className="px-4 py-2 text-left">Quantity</th>
+                              <th className="px-4 py-2 text-left">
+                                Unit Price
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td className="border px-4 py-2">{index + 1}.</td>
+                              <td className="border px-4 py-2">
+                                {product.product.name}
+                              </td>
+                              <td className="border px-4 py-2">
+                                <label
+                                  htmlFor={`quantity-${product.product.id}`}
+                                  className="block text-sm font-medium text-gray-700"
+                                >
+                                  Quantity
+                                </label>
+                                <input
+                                  id={`quantity-${product.product.id}`}
+                                  type="number"
+                                  className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                                  value={quantities[product.product.id] || 0}
+                                  onChange={(e) =>
+                                    setQuantities({
+                                      ...quantities,
+                                      [product.product.id]: parseInt(
+                                        e.target.value
+                                      ),
+                                    })
+                                  }
+                                />
+                              </td>
+                              <td className="border px-4 py-2">
+                                <label
+                                  htmlFor={`unitPrice-${product.product.id}`}
+                                  className="block text-sm font-medium text-gray-700"
+                                >
+                                  Unit Price
+                                </label>
+                                <input
+                                  id={`unitPrice-${product.product.id}`}
+                                  type="number"
+                                  className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                                  placeholder="Unit Price"
+                                  value={unitPrices[product.product.id] || 0}
+                                  onChange={(e) =>
+                                    setUnitPrices({
+                                      ...unitPrices,
+                                      [product.product.id]: parseInt(
+                                        e.target.value
+                                      ),
+                                    })
+                                  }
+                                />
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     ))
                   ) : (
-                    <p>No products selected.</p>
+                    <p className="text-gray-500">No products selected.</p>
                   )}
                 </ul>
+                <DialogActions className="pt-4">
+                  <button
+                    onClick={handlePR}
+                    className="bg-blue-900 text-white rounded-md px-4 py-2 hover:bg-[#002a47] transition-colors duration-200"
+                  >
+                    Order Now
+                  </button>
+                </DialogActions>
               </div>
             </DialogContent>
           </Dialog>
         </div>
       </>
     );
-
   }
 };
 

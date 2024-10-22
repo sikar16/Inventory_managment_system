@@ -37,7 +37,7 @@ import PurchasedOrder from "../features/logesticsSuperviser/PurchasedOrder";
 import PurchasedRequiestDetail from "../features/logesticsSuperviser/PurchasedRequiestDetail";
 import SupplierOffer from "../features/logesticsSuperviser/SupplierOffer";
 import SupplierResponse from "../features/logesticsSuperviser/SupplierResponce";
-import PurchasedReqestF from "../features/finance/PurchasedReqestF";
+import PurchasedRequestF from "../features/finance/PurchasedReqestF";
 import PurchasedOrderF from "../features/finance/PurchasedOrderF";
 import PurchasedRequestDetail from "../features/finance/PurchasedRequiestDetail";
 import PurchasedRequestM from "../features/manager/PurchasedReqestM";
@@ -196,7 +196,7 @@ export const router = createBrowserRouter(
         <Route path="/finance/requiest-detaile" element={<RequiestDetail />} />
         <Route
           path="/finance/purchase-requests"
-          element={<PurchasedReqestF />}
+          element={<PurchasedRequestF />}
         />
         <Route
           path="/finance/purchase-requests-detetail"
@@ -252,4 +252,3 @@ export const router = createBrowserRouter(
     </>
   )
 );
-

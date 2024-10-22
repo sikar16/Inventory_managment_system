@@ -31,7 +31,18 @@ const columns: Column[] = [
   { id: "department", label: "Department", minWidth: 200, align: "left" },
   { id: "totalPrice", label: "Total price", minWidth: 200, align: "left" },
   { id: "createdAt", label: "Created at", minWidth: 200, align: "left" },
-  { id: "isApprovedBy", label: "Approved  ", minWidth: 50, align: "center" },
+  {
+    id: "isApprovedBy",
+    label: "Approved By Finance",
+    minWidth: 50,
+    align: "center",
+  },
+  {
+    id: "isApprovedByGM",
+    label: "Approved By GM ",
+    minWidth: 50,
+    align: "center",
+  },
 ];
 
 function createData(
@@ -40,6 +51,7 @@ function createData(
   department: string,
   totalPrice: string,
   isApprovedBy: string,
+  isApprovedByGM: string,
   createdAt: string
 ) {
   return {
@@ -48,13 +60,14 @@ function createData(
     department,
     totalPrice,
     isApprovedBy,
+    isApprovedByGM,
     createdAt,
   };
 }
 
 type RowData = ReturnType<typeof createData>;
 
-export default function PurchasedReqestF() {
+export default function PurchasedRequestF() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -78,24 +91,20 @@ export default function PurchasedReqestF() {
   }
 
   // Determine approval status dynamically
-  const approvalStatus = (i: PurchasedRequest_type) => {
-    if (i.isApproviedByGM) return "Approved by GM";
-    if (i.isApproviedByFinance) return "Approved by Finance";
-    return "Pending";
-  };
 
   // Create rows for the table
   const rows: RowData[] = isSuccess
     ? purchasedReq.map((i, index) =>
-      createData(
-        index + 1,
-        `${i.id}`,
-        `${i.user.department.name}`,
-        `${i.totalPrice}`,
-        approvalStatus(i),
-        `${formatDateToReadable(i.createdAt.toString())}`
+        createData(
+          index + 1,
+          `${i.id}`,
+          `${i.user.department.name}`,
+          `${i.totalPrice}`,
+          `${i.isApproviedByFinance ? "Approved by Finance" : "Pending"}`,
+          `${i.isApproviedByGM ? "Approved by GM" : "Pending"}`,
+          `${formatDateToReadable(i.createdAt.toString())}`
+        )
       )
-    )
     : [];
 
   // Handle page change for pagination
@@ -163,7 +172,9 @@ export default function PurchasedReqestF() {
   return (
     <div className="pt-6">
       <div className="flex justify-between mb-3 mx-2">
-        <p className="text-[#002a47] text-4xl font-medium">Purchased Requests</p>
+        <p className="text-[#002a47] text-4xl font-medium">
+          Purchased Requests
+        </p>
         <Link to="/employee/create-requests">
           {/* <button className="bg-[#002A47] px-3 py-1 text-white rounded-md">
             Create request

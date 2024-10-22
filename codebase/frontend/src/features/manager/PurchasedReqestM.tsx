@@ -31,7 +31,18 @@ const columns: Column[] = [
   { id: "department", label: "Department", minWidth: 200, align: "left" },
   { id: "totalPrice", label: "Total price", minWidth: 200, align: "left" },
   { id: "createdAt", label: "Created at", minWidth: 200, align: "left" },
-  { id: "isApprovedBy", label: "Approved  ", minWidth: 50, align: "center" },
+  {
+    id: "isApprovedBy",
+    label: "Approved By Finance",
+    minWidth: 50,
+    align: "center",
+  },
+  {
+    id: "isApprovedByGM",
+    label: "Approved By GM ",
+    minWidth: 50,
+    align: "center",
+  },
 ];
 
 function createData(
@@ -40,6 +51,7 @@ function createData(
   department: string,
   totalPrice: string,
   isApprovedBy: string,
+  isApprovedByGM: string,
   createdAt: string
 ) {
   return {
@@ -48,10 +60,10 @@ function createData(
     department,
     totalPrice,
     isApprovedBy,
+    isApprovedByGM,
     createdAt,
   };
 }
-
 type RowData = ReturnType<typeof createData>;
 
 export default function PurchasedRequestM() {
@@ -78,11 +90,6 @@ export default function PurchasedRequestM() {
   }
 
   // Determine approval status dynamically
-  const approvalStatus = (i: PurchasedRequest_type) => {
-    if (i.isApproviedByGM) return "Approved by GM";
-    if (i.isApproviedByFinance) return "Approved by Finance";
-    return "Pending";
-  };
 
   // Create rows for the table
   const rows: RowData[] = isSuccess
@@ -92,7 +99,8 @@ export default function PurchasedRequestM() {
           `${i.id}`,
           `${i.user.department.name}`,
           `${i.totalPrice}`,
-          approvalStatus(i),
+          `${i.isApproviedByFinance ? "Approved by Finance" : "Pending"}`,
+          `${i.isApproviedByGM ? "Approved by GM" : "Pending"}`,
           `${formatDateToReadable(i.createdAt.toString())}`
         )
       )

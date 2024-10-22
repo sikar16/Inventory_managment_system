@@ -7,14 +7,14 @@ const purchasedReqSchema = {
       z.object({
         productId: z.number().nonnegative(),
         quantityToBePurchased: z.number().positive(),
-        remark: z.string().min(1),
-        unitPrice: z.number().nonnegative(), 
+        unitPrice: z.number().nonnegative(),
+        remark: z.string().min(1).optional(),
       })
     ),
   }),
 
   updateItems: z.object({
-    purchasedRequestId: z.number().nonnegative(), 
+    purchasedRequestId: z.number().nonnegative(),
     productId: z.number().nonnegative(),
     quantityToBePurchased: z.number().positive(),
     remark: z.string().min(1),
@@ -22,11 +22,11 @@ const purchasedReqSchema = {
   }),
 
   updateFinance: z.object({
-    isApproviedByFinance: z.boolean(), 
+    isApproviedByFinance: z.boolean(),
   }),
 
   updateGM: z.object({
-    gmid: z.number().nonnegative(), 
+    gmid: z.number().nonnegative(),
     isApproviedByGM: z.boolean(),
   }),
 
@@ -40,8 +40,6 @@ const purchasedReqSchema = {
 };
 
 export default purchasedReqSchema;
-
-
 
 // import z from "zod";
 

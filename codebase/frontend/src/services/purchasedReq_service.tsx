@@ -1,7 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getToken } from "../util/getToken";
 import extractErrorMessage from "../util/extractErrorMessage";
-import { PurchasedRequest_type } from "../_types/purchasedReq_type";
+import {
+  PurchaseDetailType,
+  PurchasedRequest_type,
+} from "../_types/purchasedReq_type";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -57,7 +60,7 @@ export const purchasedReqApi = createApi({
         return extractErrorMessage(message);
       },
     }),
-    getSinglepurchasedReq: builder.query<PurchasedRequest_type, void>({
+    getSinglepurchasedReq: builder.query<PurchaseDetailType, void>({
       query: (id) => ({
         url: `/${id}`,
         method: "GET",
@@ -66,7 +69,7 @@ export const purchasedReqApi = createApi({
         },
       }),
       transformResponse: (response: any) => {
-        return response.data as PurchasedRequest_type;
+        return response.data as PurchaseDetailType;
       },
 
       providesTags: ["purchasedReq"],
@@ -76,9 +79,9 @@ export const purchasedReqApi = createApi({
       },
     }),
 
-    addNewpurchasedReq: builder.mutation<void, PurchasedRequest_type>({
+    addNewpurchasedReq: builder.mutation<any, any>({
       query: (data) => ({
-        url: `/`,
+        url: `/create`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",

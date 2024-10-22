@@ -49,8 +49,8 @@ const PurchasedRequestDetail: React.FC = () => {
     }
   };
 
-  const handleToggleDetails = (no: number) => {
-    setExpandedRow(expandedRow === no ? null : no);
+  const handleToggleDetails = (rowId: number) => {
+    setExpandedRow(expandedRow === rowId ? null : rowId);
   };
 
   const {
@@ -61,7 +61,7 @@ const PurchasedRequestDetail: React.FC = () => {
   } = useGetSinglepurchasedReqQuery(id);
 
   if (isError) {
-    return <p>{`${error}` || "An error occurred"}</p>;
+    return <p>{`An error occurred ${error}`}</p>;
   }
 
   if (isLoading) {
@@ -93,15 +93,16 @@ const PurchasedRequestDetail: React.FC = () => {
           {purchasedReq?.items.map((row, rowIndex) => (
             <React.Fragment key={row.id}>
               <tr>
-                {columns.map((column) => (
-                  <td
-                    key={column.id}
-                    className="p-2"
-                    style={{ textAlign: column.align }}
-                  >
-                    {row.productId}
-                  </td>
-                ))}
+                <td className="p-2">{rowIndex + 1}</td>
+                <td className="p-2">{row.products.name}</td>
+                <td className="p-2">{row.products.subcategory.name}</td>
+                <td className="p-2">
+                  {row.products.subcategory.category.name}
+                </td>
+                <td className="p-2">{row.quantityToBePurchased}</td>
+                <td className="p-2">
+                  {row.remark == undefined ? "N/A" : row.remark}
+                </td>
                 <td className="p-2">
                   <button onClick={() => handleToggleDetails(row.id)}>
                     {expandedRow === row.id ? (
@@ -142,45 +143,39 @@ const PurchasedRequestDetail: React.FC = () => {
                     <div className="space-y-4 w-[85%] justify-center m-auto p-5">
                       <div className="flex gap-4">
                         <p>
-                          <strong>Category:</strong> {rowIndex}
+                          <strong>Product:</strong> {row.products.name}
                         </p>
                         <p>
-                          <strong>Sub-Category:</strong> {row.id}
+                          <strong>Category:</strong>{" "}
+                          {row.products.subcategory.category.name}
                         </p>
                         <p>
-                          <strong>Product Name:</strong> {row.id}
+                          <strong>Sub-Category:</strong>{" "}
+                          {row.products.subcategory.category.name}
                         </p>
                       </div>
                       <p>
-                        <strong>Quantity:</strong> {row.unitPrice}
+                        <strong>Quantity:</strong> {row.quantityToBePurchased}
                       </p>
 
-                      {purchasedReq.items?.length > 0 && (
+                      {row.products.productAttributes.length > 0 && (
                         <div className="grid grid-cols-2 gap-10 p-1 rounded-lg">
                           <div>
                             <p className="text-lg font-semibold">Key</p>
                             <ul className="list-disc list-inside">
-                              {purchasedReq.items.map((item) =>
-                                item.products.map((product) =>
-                                  product.productAttributes.map((attr) => (
-                                    <li key={attr.id}>
-                                      {attr.templateAttribute.name}
-                                    </li>
-                                  ))
-                                )
-                              )}
+                              {row.products.productAttributes.map((attr) => (
+                                <li key={attr.id}>
+                                  {attr.templateAttribute.name}
+                                </li>
+                              ))}
                             </ul>
                           </div>
                           <div>
                             <p className="text-lg font-semibold">Value</p>
                             <ul className="list-disc list-inside">
-                              {purchasedReq.items.map((item) =>
-                                item.products.map((product) =>
-                                  product.productAttributes.map((attr) => (
-                                    <li key={attr.id}>{attr.value}</li>
-                                  ))
-                                )
-                              )}
+                              {row.products.productAttributes.map((attr) => (
+                                <li key={attr.id}>{attr.value}</li>
+                              ))}
                             </ul>
                           </div>
                         </div>
@@ -202,7 +197,7 @@ const PurchasedRequestDetail: React.FC = () => {
             }`}
             onClick={handleApprove}
           >
-            {purchasedReq?.isApproviedByFinance ? " reject" : "Approve"}
+            {purchasedReq?.isApproviedByFinance ? "Reject" : "Approve"}
           </button>
         </div>
       )}

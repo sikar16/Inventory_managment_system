@@ -18,28 +18,16 @@ const purchasedReqConntroller = {
         include: {
           items: {
             include: {
-              purchasedRequest: {
+              products: {
                 include: {
-                  items: {
+                  subcategory: {
                     include: {
-                      purchasedRequest: {
-                        include: {
-                          items: {
-                            include: {
-                              products: {
-                                include: {
-                                  productAttributes: true,
-                                  subcategory: {
-                                    include: {
-                                      category: true,
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
+                      category: true,
+                    },
+                  },
+                  productAttributes: {
+                    include: {
+                      templateAttribute: true,
                     },
                   },
                 },
@@ -224,7 +212,7 @@ const purchasedReqConntroller = {
             create: data.items.map((item) => ({
               productId: +item.productId,
               quantityToBePurchased: item.quantityToBePurchased,
-              remark: item.remark,
+              remark: `${item.remark}`,
               unitPrice: item.unitPrice,
             })),
           },

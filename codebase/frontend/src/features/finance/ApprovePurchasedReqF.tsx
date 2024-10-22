@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useToast } from "../../context/ToastContext";
-import { PurchasedRequest_type } from "../../_types/purchasedReq_type";
+import { PurchaseDetailType } from "../../_types/purchasedReq_type";
 import { useApprovePurchasedReqMutation } from "../../services/purchasedReq_service";
 
 interface ApproveReqProps {
-  purchasedReq: PurchasedRequest_type | undefined;
+  purchasedReq: PurchaseDetailType | undefined;
   handleCloseDialog: () => void;
 }
 
