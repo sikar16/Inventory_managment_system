@@ -56,8 +56,7 @@ export default function IncomingRequest() {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [matReq, setMatReq] = React.useState<MaterialRequest_type | null>(null);
-  const [selectedRow, setSelectedRow] =
-    React.useState<MaterialRequest_type | null>(null);
+  const [selectedRow] = React.useState<MaterialRequest_type | null>(null);
   const [openDialog, setOpenDialog] = React.useState(false);
 
   // Fetching data using the hook
@@ -76,14 +75,14 @@ export default function IncomingRequest() {
 
   const rows: RowData[] = isSuccess
     ? materialReq.map((i, index) =>
-      createData(
-        index + 1,
-        `${i.id}`,
-        `${i.employee.profile.firstName} ${i.employee.profile.lastName}`,
-        `${i.isApproviedByDH}`,
-        formatDateToReadable(i.createdAt)
+        createData(
+          index + 1,
+          `${i.id}`,
+          `${i.employee.profile.firstName} ${i.employee.profile.lastName}`,
+          `${i.isApproviedByDH}`,
+          formatDateToReadable(i.createdAt)
+        )
       )
-    )
     : [];
 
   const handleChangePage = (_event: unknown, newPage: number) => {
@@ -129,7 +128,6 @@ export default function IncomingRequest() {
       console.error("Failed to edit request:", error);
     }
   };
-  const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
 
   const navigate = useNavigate();
@@ -142,14 +140,6 @@ export default function IncomingRequest() {
       });
       console.log(matReq.id);
     }
-  };
-  const handleApprove = async () => {
-    if (matReq) {
-      setSelectedRow(matReq); // Set the selected row first
-      handleOpenDialog();
-      console.log(matReq.id);
-    }
-    // Then open the dialog
   };
 
   return (

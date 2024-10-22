@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useGetSingleMaterialReqQuery } from "../../../services/materialReq_service";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Loader from "../../../component/Loading";
 import { useAuth } from "../../../context/AuthContext";
 import {
@@ -69,12 +69,8 @@ const RequestDetail: React.FC = () => {
     setExpandedRow(expandedRow === no ? null : no);
   };
 
-  const navigate = useNavigate();
-  const { toastData, setToastData } = useToast();
+  const { setToastData } = useToast();
 
-  const handleClose = () => {
-    navigate(-1); // This navigates back to the previous page
-  };
   const {
     data: materialReq,
     isError,

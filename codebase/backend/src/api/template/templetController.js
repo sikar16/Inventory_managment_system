@@ -44,8 +44,8 @@ const templateController = {
       const take = parseInt(req.query.take) || 10;
 
       const templete = await prisma.template.findMany({
-        take,
-        skip,
+        // take,
+        // skip,
         include: {
           attributes: true,
           _count: true,

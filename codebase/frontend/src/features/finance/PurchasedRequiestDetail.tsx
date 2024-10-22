@@ -23,16 +23,6 @@ const columns: Column[] = [
   { id: "remark", label: "Remark", minWidth: 70, align: "left" },
 ];
 
-// Define the structure for a row in the table
-interface Data {
-  no: number;
-  product: string;
-  subCategory: string;
-  category: string;
-  quantity: number;
-  remark: string;
-}
-
 const PurchasedRequestDetail: React.FC = () => {
   const location = useLocation();
   const { id } = location.state || {};

@@ -133,15 +133,6 @@ export default function MaterialRequiest() {
     }
   };
 
-  const handleEdit = async (i: MaterialRequest_type) => {
-    console.log(i);
-    try {
-      console.log("Category Edit successfully");
-    } catch (error) {
-      console.error("Failed to edit category:", error);
-    }
-  };
-
   const navigate = useNavigate();
 
   const handleView = async () => {

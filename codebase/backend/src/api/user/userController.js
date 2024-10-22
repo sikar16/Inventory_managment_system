@@ -112,7 +112,7 @@ const userController = {
       });
     }
   },
-  getAllUserByRole:async (req, res, next) => {
+  getAllUserByRole: async (req, res, next) => {
     try {
       const userRole = req.params.role;
 
@@ -127,8 +127,8 @@ const userController = {
       const users = await prisma.users.findMany({
         take,
         skip,
-        where:{
-          role:userRole
+        where: {
+          role: userRole,
         },
         include: {
           profile: {
@@ -152,6 +152,7 @@ const userController = {
     }
   },
   createUser: async (req, res, next) => {
+    console.log(req.body);
     try {
       const data = userSchema.register.parse(req.body);
       // Check if the email is already registered
@@ -258,6 +259,7 @@ const userController = {
           },
         },
       });
+      console.log(newUser);
 
       return res.status(200).json({
         success: true,

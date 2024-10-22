@@ -22,7 +22,7 @@ interface FormData {
 }
 
 const MaterialRequestForm: React.FC = () => {
-  const { toastData, setToastData } = useToast();
+  const { setToastData } = useToast();
   const { isSuccess: isCategorySuccess, data: categoryList = [] } =
     useGetAllproductCategoryQuery();
   const { data: subCategoriesList = [] } =
