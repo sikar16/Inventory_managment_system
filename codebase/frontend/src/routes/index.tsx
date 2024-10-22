@@ -253,21 +253,3 @@ export const router = createBrowserRouter(
   )
 );
 
-{
-  /* <Route path='/employee' element={<EmployeeLayout />}>
-                <Route path='/employee/requests-list' element={<RequiestesList />} />
-                <Route path='/employee/create-requests' element={<MaterialRequestForm />} />
-                <Route path='/employee/department-head' element={<DepartmentHeadLayout />}>
-                </Route>
-                <Route path='/employee/dashbord' element={<Analysis />} />
-                <Route path='/employee/incoming-requests' element={<IncomingRequest />} />
-                <Route path='/employee/material-request' element={<MaterialRequestForm />} />
-                <Route path='/employee/requiest-detaile' element={<RequiestDetail />} />
-                <Route path='/employee/purchase-requests' element={<><h1>purchase request</h1></>} />
-                <Route path='/employee/purchase-order' element={<><h1>purchase order</h1></>} />
-                <Route path='/employee/supplier-response' element={<><h1>supplier response</h1></>} />
-                <Route path='/employee/stock' element={<><h1>stock</h1></>} />
-                <Route path='/employee/report' element={<><h1>report</h1></>} />
-                <Route path='/employee/*' element={<NotFound />} />
-            </Route> */
-}

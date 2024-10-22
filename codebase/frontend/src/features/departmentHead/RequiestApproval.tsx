@@ -74,15 +74,15 @@ const RequestApproval: React.FC = () => {
   // Create table rows based on the material request data
   const rows = isSuccess
     ? materialReq.items.map((item, index) =>
-        createData(
-          index + 1,
-          item.product.name,
-          item.product.subcategory.name,
-          item.product.subcategory.category.name,
-          parseInt(item.quantityRequested),
-          item.remark
-        )
+      createData(
+        index + 1,
+        item.product.name,
+        item.product.subcategory.name,
+        item.product.subcategory.category.name,
+        parseInt(item.quantityRequested),
+        item.remark
       )
+    )
     : [];
 
   const handleApprove = async () => {
@@ -259,9 +259,8 @@ const RequestApproval: React.FC = () => {
         {(isLS || isDH) && (
           <div className="p-6">
             <button
-              className={`${
-                materialReq.isApproviedByDH ? "bg-red-600" : "bg-green-500"
-              } px-5 py-2 text-white rounded-lg`}
+              className={`${materialReq.isApproviedByDH ? "bg-red-600" : "bg-green-500"
+                } px-5 py-2 text-white rounded-lg`}
               onClick={handleApprove}
             >
               {materialReq.isApproviedByDH ? "Reject" : "Approve"}

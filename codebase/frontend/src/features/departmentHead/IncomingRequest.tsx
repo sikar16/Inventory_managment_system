@@ -31,8 +31,8 @@ const columns: Column[] = [
   { id: "no", label: "No", minWidth: 50 },
   { id: "requestId", label: "Request Id", minWidth: 100 },
   {
-    id: "departmentHeadId",
-    label: "Department Head Id",
+    id: "requesterName",
+    label: "Requester Name",
     minWidth: 100,
     align: "left",
   },
@@ -43,11 +43,11 @@ const columns: Column[] = [
 function createData(
   no: number,
   requestId: string,
-  departmentHeadId: string,
+  requesterName: string,
   isApproviedByDH: string,
   createdAt: string
 ) {
-  return { no, requestId, departmentHeadId, isApproviedByDH, createdAt };
+  return { no, requestId, requesterName, isApproviedByDH, createdAt };
 }
 
 type RowData = ReturnType<typeof createData>;
@@ -76,14 +76,14 @@ export default function IncomingRequest() {
 
   const rows: RowData[] = isSuccess
     ? materialReq.map((i, index) =>
-        createData(
-          index + 1,
-          `${i.id}`,
-          `${i.departmentHead?.profile.firstName} ${i.departmentHead?.profile.lastName} ${i.departmentHead?.profile.middleName}`,
-          `${i.isApproviedByDH}`,
-          formatDateToReadable(i.createdAt)
-        )
+      createData(
+        index + 1,
+        `${i.id}`,
+        `${i.employee.profile.firstName} ${i.employee.profile.lastName}`,
+        `${i.isApproviedByDH}`,
+        formatDateToReadable(i.createdAt)
       )
+    )
     : [];
 
   const handleChangePage = (_event: unknown, newPage: number) => {
