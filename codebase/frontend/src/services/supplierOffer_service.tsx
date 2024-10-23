@@ -76,7 +76,7 @@ export const supplierOfferApi = createApi({
       },
     }),
 
-    addNewsupplierOfferApi: builder.mutation<void, SupplierOffer>({
+    addNewsupplierOfferApi: builder.mutation<void, any>({
       query: (data) => ({
         url: `/`,
         method: "POST",

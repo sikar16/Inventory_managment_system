@@ -28,9 +28,7 @@ export const purchasedOrderApi = createApi({
         },
       }),
       transformResponse: (response: any) => {
-        return response.success
-          ? (response.data as PurchasedOrderType[])
-          : [];
+        return response.success ? (response.data as PurchasedOrderType[]) : [];
       },
       providesTags: ["purchasedOrder"],
       transformErrorResponse: (response: any) => {
@@ -57,7 +55,7 @@ export const purchasedOrderApi = createApi({
       },
     }),
 
-    addNewpurchasedOrder: builder.mutation<void, PurchasedOrderType>({
+    addNewpurchasedOrder: builder.mutation<void, any>({
       query: (data) => ({
         url: `/`,
         method: "POST",
@@ -99,4 +97,9 @@ export const purchasedOrderApi = createApi({
   }),
 });
 
-export const { useAddNewpurchasedOrderMutation, useGetSinglepurchasedOrderQuery, useGetAllpurchasedOrderQuery, useDeletepurchasedOrderMutation } = purchasedOrderApi;
+export const {
+  useAddNewpurchasedOrderMutation,
+  useGetSinglepurchasedOrderQuery,
+  useGetAllpurchasedOrderQuery,
+  useDeletepurchasedOrderMutation,
+} = purchasedOrderApi;

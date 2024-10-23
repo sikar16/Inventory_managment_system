@@ -71,10 +71,12 @@ const supplierOfferController = {
   },
 
   createSupplierOffer: async (req, res, next) => {
+    // console.log(req.body);
+
     try {
       const requiredField = [
         "purchasedOrderId",
-        "supplayerId",
+        "suppliersId",
         "totalPrice",
         "items",
       ];
@@ -87,17 +89,7 @@ const supplierOfferController = {
         }
       }
       const data = supplierOfferSachem.create.parse(req.body);
-
-      const isSupplierExist = await prisma.suppliers.findFirst({
-        where: { id: data.supplayerId },
-      });
-
-      if (!isSupplierExist) {
-        return res.status(404).json({
-          success: false,
-          message: "Supplier not found",
-        });
-      }
+      // console.log(data);
       const isPurchasedOrderExist = await prisma.purchasedOrder.findFirst({
         where: { id: data.purchasedOrderId },
       });
@@ -108,11 +100,23 @@ const supplierOfferController = {
           message: "purchased order not found",
         });
       }
+      for (let i = 0; i < data.suppliersId.length; i++) {
+        const element = data.suppliersId[i];
+        const isSupplierExist = await prisma.suppliers.findFirst({
+          where: { id: +element },
+        });
+        if (!isSupplierExist) {
+          return res.status(404).json({
+            success: false,
+            message: "Supplier not found",
+          });
+        }
+      }
 
       for (const item of data.items) {
         const isProductExist = await prisma.product.findFirst({
           where: {
-            id: item.productId,
+            id: +item.productId,
           },
         });
         if (!isProductExist) {
@@ -122,41 +126,44 @@ const supplierOfferController = {
           });
         }
       }
-
-      const newSupplierOffer = await prisma.supplayerOffer.create({
-        include: {
-          _count: true,
-          supplayer: true,
-          purchasedOrder: true,
-          offerItem: {
-            include: {
-              products: {
-                include: {
-                  productAttributes: true,
+      let newSupplierOffers = [];
+      for (let i = 0; i < data.suppliersId.length; i++) {
+        const element = data.suppliersId[i];
+        const newSupplierOffer = await prisma.supplayerOffer.create({
+          include: {
+            _count: true,
+            supplayer: true,
+            purchasedOrder: true,
+            offerItem: {
+              include: {
+                products: {
+                  include: {
+                    productAttributes: true,
+                  },
                 },
+                supplayerOffer: true,
               },
-              supplayerOffer: true,
             },
           },
-        },
-        data: {
-          totalPrice: data.totalPrice,
-          supplayerId: data.supplayerId,
-          purchasedOrderId: data.purchasedOrderId,
-          offerItem: {
-            create: data.items.map((item) => ({
-              productId: +item.productId,
-              quantity: +item.quantity,
-              unitPrice: +item.unitPrice,
-            })),
+          data: {
+            totalPrice: data.totalPrice,
+            supplayerId: +element,
+            purchasedOrderId: +data.purchasedOrderId,
+            offerItem: {
+              create: data.items.map((item) => ({
+                productId: +item.productId,
+                quantity: +item.quantity,
+                unitPrice: +item.unitPrice,
+              })),
+            },
           },
-        },
-      });
-
+        });
+        newSupplierOffers.push(newSupplierOffer);
+      }
       return res.status(201).json({
         success: true,
         message: "Supplier offer created successfully",
-        data: newSupplierOffer,
+        data: newSupplierOffers,
       });
     } catch (error) {
       return res.status(500).json({

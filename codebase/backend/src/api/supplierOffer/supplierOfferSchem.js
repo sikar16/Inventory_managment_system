@@ -3,15 +3,15 @@ import { z } from "zod";
 const supplierOfferSchem = {
   create: z.object({
     purchasedOrderId: z.number(),
-    supplayerId: z.number(),
+    suppliersId: z.array(z.number()),
     totalPrice: z.number(),
     items: z.array(
       z.object({
         productId: z.number(),
         quantity: z.number(),
-        unitPrice: z.number()
+        unitPrice: z.number(),
       })
-    )
+    ),
   }),
   updateSupplier: z.object({
     supplayerId: z.number(),
@@ -19,7 +19,7 @@ const supplierOfferSchem = {
   updateSupplierOfferItems: z.object({
     productId: z.number(),
     quantity: z.number(),
-    unitPrice: z.number()
+    unitPrice: z.number(),
   }),
   updateSupplierOffer: z.object({
     totalPrice: z.number(),
