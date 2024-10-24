@@ -1,107 +1,240 @@
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import { useState } from 'react';
-import { supplierCategoryType } from '../../../_types/supplierCategory_type';
-const columns: {
-    id: string;
-    label: string;
-    minWidth: number;
-    align?: "left" | "center" | "right" | "inherit" | "justify"; // Optional align property
-}[] = [
-        { id: 'no', label: 'No', minWidth: 50 },
-        { id: 'suppliersid', label: 'Suppliers id', minWidth: 70 },
-        { id: 'category', label: 'Category', minWidth: 70, align: 'left' },
-    ];
+import { useMemo, useState } from "react";
+import {
+  MaterialReactTable,
+  useMaterialReactTable,
+  type MRT_ColumnDef,
+} from "material-react-table";
+import {
+  Box,
+  Dialog,
+  ListItemIcon,
+  MenuItem,
+  lighten,
+  Autocomplete,
+  TextField,
+} from "@mui/material";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { DeleteForever } from "@mui/icons-material";
+import { useToast } from "../../../context/ToastContext";
+import Warning from "../../../component/Warning";
+import { ErrorResponseType } from "../../../_types/request_reponse_type";
+import { useDeleteSupplierCategoryMutation } from "../../../services/supplierCategoryService";
+import { supplierCategoryType } from "../../../_types/supplierCategory_type";
+import UpdateSupplierCategory from "./form/UpdateSupplierCategory";
 
-interface RowType {
-    no: number;
-    suppliersid: string;
-    category: string;
-}
+export type SupplierCategoryListTableProps = {
+  supplierCategoryList: supplierCategoryType[] | undefined;
+};
 
-function createData(no: number, suppliersid: string, category: string): RowType {
-    return { no, suppliersid, category };
-}
+const SupplierCategoryListTable = ({
+  supplierCategoryList,
+}: SupplierCategoryListTableProps) => {
+  const { setToastData } = useToast();
+  const [selectedRowData, setSelectedRowData] =
+    useState<supplierCategoryType | null>(null);
+  const [deleteSupplierCategory, { isLoading, isSuccess }] =
+    useDeleteSupplierCategoryMutation();
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openReset] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
-interface SupplierCategoryProps {
-    suppliersCategorylist: supplierCategoryType[];
-}
+  const handleClickOpenEdit = (row: supplierCategoryType) => {
+    setSelectedRowData(row);
+    setOpenEdit(true);
+  };
 
-const SupplierCategoryTable: React.FC<SupplierCategoryProps> = ({ suppliersCategorylist }) => {
-    const rows = suppliersCategorylist.map((i, index) =>  // Use index for 'no'
-        createData(
-            index + 1, // Assuming 'no' is the index + 1
-            `${i.id}`,
-            `${i.name}`
-        )
-    );
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+  const handleCloseEdit = () => {
+    setOpenEdit(false);
+  };
 
-    const handleChangePage = (_event: unknown, newPage: number) => {
-        setPage(newPage);
-    };
+  const handleClickOpenDelete = (row: supplierCategoryType) => {
+    setSelectedRowData(row);
+    setOpenDelete(true);
+  };
 
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-    };
-    return (
-        <>
-            <div className="flex mx-[7%]">
-                <Paper sx={{ overflow: 'hidden', maxWidth: 800, width: '100%' }}>
-                    <TableContainer sx={{ maxHeight: 440 }}>
-                        <Table stickyHeader aria-label="sticky table">
-                            <TableHead>
-                                <TableRow>
-                                    {columns.map((column) => (
-                                        <TableCell
-                                            key={column.id}
-                                            align={column.align}
-                                            style={{ minWidth: column.minWidth }}
-                                        >
-                                            {column.label}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((row) => (
-                                        <TableRow hover role="checkbox" tabIndex={-1} key={row.suppliersid}>
-                                            {columns.map((column) => {
-                                                const value = row[column.id as keyof RowType];
-                                                return (
-                                                    <TableCell key={column.id} align={column.align}>
-                                                        {value}
-                                                    </TableCell>
-                                                );
-                                            })}
-                                        </TableRow>
-                                    ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 15]}
-                        component="div"
-                        count={rows.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </Paper>
-            </div>
-        </>
-    )
-}
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
 
-export default SupplierCategoryTable
+  const handleDeleteDepartment = async () => {
+    if (selectedRowData?.id != null) {
+      try {
+        await deleteSupplierCategory(selectedRowData.id).unwrap();
+        setToastData({
+          message: "Supplayer Category deleted successfully",
+          success: true,
+        });
+        handleCloseDelete();
+      } catch (error: any) {
+        handleCloseDelete();
+        const res: ErrorResponseType = error;
+        setToastData({
+          message: res.data.message,
+          success: false,
+        });
+      }
+    } else {
+      handleCloseDelete();
+      setToastData({
+        message: "Supplayer Category not selected is missing",
+        success: false,
+      });
+    }
+  };
+
+  // Get unique suggestions from the user data for Autocomplete
+
+  const nameSuggestions =
+    supplierCategoryList == undefined
+      ? []
+      : supplierCategoryList.map((user) => user.name);
+
+  const columns = useMemo<MRT_ColumnDef<supplierCategoryType>[]>(
+    () => [
+      {
+        id: "Supplayer category",
+        header: "Supplayer category",
+        columns: [
+          {
+            accessorFn: (row) => `${row.name}`,
+            id: "name",
+            header: "Name",
+            size: 250,
+            Filter: ({ column }) => (
+              <Autocomplete
+                options={nameSuggestions}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Filter by Name"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+                onChange={(_event, value) => column.setFilterValue(value)}
+              />
+            ),
+          },
+        ],
+      },
+    ],
+    [nameSuggestions]
+  );
+
+  const table = useMaterialReactTable({
+    columns,
+    data: supplierCategoryList == undefined ? [] : supplierCategoryList,
+    enableColumnFilterModes: true,
+    enableColumnOrdering: true,
+    enableGrouping: true,
+    enableColumnPinning: true,
+    enableFacetedValues: true,
+    enableRowActions: true,
+    enableRowSelection: true,
+    initialState: {
+      pagination: {
+        pageSize: 20,
+        pageIndex: 0,
+      },
+      showGlobalFilter: true, // This should be true
+      columnPinning: {
+        left: ["mrt-row-expand", "mrt-row-select"],
+        right: ["mrt-row-actions"],
+      },
+    },
+    paginationDisplayMode: "pages",
+    positionToolbarAlertBanner: "bottom",
+    muiSearchTextFieldProps: {
+      size: "small",
+      variant: "outlined",
+    },
+    muiPaginationProps: {
+      color: "secondary",
+      rowsPerPageOptions: [5, 10, 20, 30],
+      shape: "rounded",
+      variant: "outlined",
+    },
+    renderRowActionMenuItems: ({ row, closeMenu }) => [
+      <MenuItem
+        key={`edit-${row.original.id}`}
+        onClick={() => {
+          handleClickOpenEdit(row.original);
+          closeMenu();
+        }}
+        sx={{ m: 0 }}
+      >
+        <ListItemIcon>
+          <PersonAddIcon />
+        </ListItemIcon>
+        Edit
+      </MenuItem>,
+
+      <MenuItem
+        key={`delete-${row.original.id}`}
+        onClick={() => {
+          handleClickOpenDelete(row.original);
+          closeMenu();
+        }}
+        sx={{ m: 0 }}
+      >
+        <ListItemIcon>
+          <DeleteForever />
+        </ListItemIcon>
+        Delete
+      </MenuItem>,
+    ],
+
+    renderTopToolbar: () => (
+      <Box
+        sx={(theme) => ({
+          backgroundColor: lighten(theme.palette.background.default, 0.05),
+          display: "flex",
+          gap: "0.5rem",
+          p: "8px",
+          justifyContent: "space-between",
+        })}
+      >
+        <Autocomplete
+          options={nameSuggestions}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Search..."
+              variant="outlined"
+              size="small"
+              sx={{ width: "300px" }} // Adjust the width as needed
+            />
+          )}
+          onChange={(_event, value) => {
+            // Set global filter based on the selected suggestion
+            table.setGlobalFilter(value);
+          }}
+        />
+      </Box>
+    ),
+  });
+
+  return (
+    <Box>
+      <MaterialReactTable table={table} />
+      <Dialog open={openEdit}>
+        <UpdateSupplierCategory
+          handleCloseDialog={handleCloseEdit}
+          selectedCategory={selectedRowData}
+        />
+      </Dialog>
+      <Dialog open={openReset}></Dialog>
+      <Dialog open={openDelete}>
+        <Warning
+          handleClose={handleCloseDelete}
+          handleAction={handleDeleteDepartment}
+          message={`Are you sure you want to delete product category ${selectedRowData?.id} :  ${selectedRowData?.name}?`}
+          isLoading={isLoading}
+          isSuccess={isSuccess}
+        />
+      </Dialog>
+    </Box>
+  );
+};
+
+export default SupplierCategoryListTable;
