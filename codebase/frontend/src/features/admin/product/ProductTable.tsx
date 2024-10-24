@@ -1,218 +1,297 @@
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import {
+  MaterialReactTable,
+  useMaterialReactTable,
+  type MRT_ColumnDef,
+} from "material-react-table";
+import {
+  Box,
+  Dialog,
+  ListItemIcon,
+  MenuItem,
+  lighten,
+  Autocomplete,
+  TextField,
+} from "@mui/material";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { DeleteForever } from "@mui/icons-material";
+import { useToast } from "../../../context/ToastContext";
+import Warning from "../../../component/Warning";
+import { ErrorResponseType } from "../../../_types/request_reponse_type";
+
 import { ProductType } from "../../../_types/product_type";
 import { useDeleteProductMutation } from "../../../services/product_service";
-import { IconButton } from "@mui/material";
+import UpdateProduct from "./form/UpdateProduct";
 
-type ColumnType = {
-  id: string;
-  label: string;
-  minWidth: number;
-  align?: "left" | "center" | "right" | "inherit" | "justify";
+export type ProductListTableProps = {
+  productList: ProductType[] | undefined;
 };
 
-const columns: ColumnType[] = [
-  { id: "no", label: "No", minWidth: 50 },
-  { id: "productId", label: "Product Id", minWidth: 70 },
-  { id: "product", label: "Product", minWidth: 70, align: "left" },
-  { id: "category", label: "Category", minWidth: 70, align: "left" },
-  { id: "subCategory", label: "Sub Category", minWidth: 70, align: "left" },
-  { id: "createdDate", label: "Created date", minWidth: 70, align: "left" },
-];
+const ProductListTable = ({ productList }: ProductListTableProps) => {
+  const { setToastData } = useToast();
+  const [selectedRowData, setSelectedRowData] = useState<ProductType | null>(
+    null
+  );
+  const [deleteProductCategory, { isLoading, isSuccess }] =
+    useDeleteProductMutation();
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openReset] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
-function createData(
-  no: number,
-  productId: string,
-  product: string,
-  category: string,
-  subCategory: string,
-  createdDate: string
-) {
-  return { no, productId, product, category, subCategory, createdDate };
-}
+  const handleClickOpenEdit = (row: ProductType) => {
+    setSelectedRowData(row);
+    setOpenEdit(true);
+  };
 
-interface ProductProps {
-  productList: ProductType[];
-  anchorEl: null | HTMLElement;
-  setAnchorEl: (value: null | HTMLElement) => void;
-  setSelectedProduct: (product: ProductType) => void;
-  setOpenDetails: (open: boolean) => void;
-  selectedProduct: ProductType | null;
-}
-function formatDateToReadable(dateString: string) {
-  const date = new Date(dateString);
-  // const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  return date.toLocaleDateString("en-US");
-}
+  const handleCloseEdit = () => {
+    setOpenEdit(false);
+  };
 
-const ProductTable: React.FC<ProductProps> = ({
-  productList,
-  anchorEl,
-  setAnchorEl,
-  setSelectedProduct,
-  setOpenDetails,
-}) => {
-  const rows = productList.map((i) =>
-    createData(
-      i.id,
-      `${i.id}`,
-      `${i.name}`,
-      `${i.subcategory.category.name}`,
-      `${i.subcategory?.name}`,
-      formatDateToReadable(i.createdAt.toString())
-    )
+  const handleClickOpenDelete = (row: ProductType) => {
+    setSelectedRowData(row);
+    setOpenDelete(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+
+  const handleDeleteDepartment = async () => {
+    if (selectedRowData?.id != null) {
+      try {
+        await deleteProductCategory(selectedRowData.id).unwrap();
+        setToastData({
+          message: "Department deleted successfully",
+          success: true,
+        });
+        handleCloseDelete();
+      } catch (error: any) {
+        handleCloseDelete();
+        const res: ErrorResponseType = error;
+        setToastData({
+          message: res.data.message,
+          success: false,
+        });
+      }
+    } else {
+      handleCloseDelete();
+      setToastData({
+        message: "Department not selected is missing",
+        success: false,
+      });
+    }
+  };
+
+  // Get unique suggestions from the user data for Autocomplete
+
+  const nameSuggestions =
+    productList == undefined ? [] : productList.map((user) => user.name);
+
+  const categorySuggestions =
+    productList == undefined
+      ? []
+      : Array.from(
+          new Set(productList.map((user) => user.subcategory.category.name))
+        );
+
+  const subcategorySuggestions =
+    productList == undefined
+      ? []
+      : Array.from(new Set(productList.map((user) => user.subcategory.name)));
+
+  const columns = useMemo<MRT_ColumnDef<ProductType>[]>(
+    () => [
+      {
+        id: "product",
+        header: "Product",
+        columns: [
+          {
+            accessorFn: (row) => `${row.name}`,
+            id: "name",
+            header: "Name",
+            size: 250,
+            Filter: ({ column }) => (
+              <Autocomplete
+                options={nameSuggestions}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Filter by Name"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+                onChange={(_event, value) => column.setFilterValue(value)}
+              />
+            ),
+          },
+          {
+            accessorFn: (row) => `${row.subcategory.name}`,
+            id: "subcategory",
+            header: "subcategory",
+            size: 250,
+            Filter: ({ column }) => (
+              <Autocomplete
+                options={subcategorySuggestions}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Filter by Name"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+                onChange={(_event, value) => column.setFilterValue(value)}
+              />
+            ),
+          },
+          {
+            accessorFn: (row) => `${row.subcategory.category.name}`,
+            id: "category",
+            header: "category",
+            size: 250,
+            Filter: ({ column }) => (
+              <Autocomplete
+                options={categorySuggestions}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Filter by Name"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+                onChange={(_event, value) => column.setFilterValue(value)}
+              />
+            ),
+          },
+
+          {
+            accessorFn: (row) => `${row.createdAt}`,
+            id: "createdAt",
+            header: "createdAt",
+            size: 250,
+          },
+        ],
+      },
+    ],
+    [nameSuggestions]
   );
 
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const table = useMaterialReactTable({
+    columns,
+    data: productList == undefined ? [] : productList,
+    enableColumnFilterModes: true,
+    enableColumnOrdering: true,
+    enableGrouping: true,
+    enableColumnPinning: true,
+    enableFacetedValues: true,
+    enableRowActions: true,
+    enableRowSelection: true,
+    initialState: {
+      pagination: {
+        pageSize: 5,
+        pageIndex: 0,
+      },
+      showGlobalFilter: true, // This should be true
+      columnPinning: {
+        left: ["mrt-row-expand", "mrt-row-select"],
+        right: ["mrt-row-actions"],
+      },
+    },
+    paginationDisplayMode: "pages",
+    positionToolbarAlertBanner: "bottom",
+    muiSearchTextFieldProps: {
+      size: "small",
+      variant: "outlined",
+    },
+    muiPaginationProps: {
+      color: "secondary",
+      rowsPerPageOptions: [5, 10, 20, 30],
+      shape: "rounded",
+      variant: "outlined",
+    },
+    renderRowActionMenuItems: ({ row, closeMenu }) => [
+      <MenuItem
+        key={`edit-${row.original.id}`}
+        onClick={() => {
+          handleClickOpenEdit(row.original);
+          closeMenu();
+        }}
+        sx={{ m: 0 }}
+      >
+        <ListItemIcon>
+          <PersonAddIcon />
+        </ListItemIcon>
+        Edit
+      </MenuItem>,
 
-  const handleChangePage = (_event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
+      <MenuItem
+        key={`delete-${row.original.id}`}
+        onClick={() => {
+          handleClickOpenDelete(row.original);
+          closeMenu();
+        }}
+        sx={{ m: 0 }}
+      >
+        <ListItemIcon>
+          <DeleteForever />
+        </ListItemIcon>
+        Delete
+      </MenuItem>,
+    ],
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
-  const handleClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    product: ProductType
-  ) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedProduct(product);
-  };
-
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
-
-  const handleViewDetails = (id: string) => {
-    setOpenDetails(true);
-    handleCloseMenu();
-    console.log("Selected Product ID:", id);
-  };
-
-  const [deleteProduct] = useDeleteProductMutation();
-
-  const handleDelete = async (id: string) => {
-    const isConfirmed = window.confirm(
-      "Are you sure you want to delete this product?"
-    );
-
-    if (!isConfirmed) {
-      return; // If the user cancels, exit the function without proceeding
-    }
-
-    try {
-      await deleteProduct(parseInt(id)).unwrap();
-      console.log(`Product with ID ${id} deleted successfully`);
-    } catch (error) {
-      console.error(`Failed to delete product with ID ${id}:`, error);
-    }
-
-    handleCloseMenu(); // Close the menu after deletion
-  };
+    renderTopToolbar: () => (
+      <Box
+        sx={(theme) => ({
+          backgroundColor: lighten(theme.palette.background.default, 0.05),
+          display: "flex",
+          gap: "0.5rem",
+          p: "8px",
+          justifyContent: "space-between",
+        })}
+      >
+        <Autocomplete
+          options={nameSuggestions}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Search..."
+              variant="outlined"
+              size="small"
+              sx={{ width: "300px" }} // Adjust the width as needed
+            />
+          )}
+          onChange={(_event, value) => {
+            // Set global filter based on the selected suggestion
+            table.setGlobalFilter(value);
+          }}
+        />
+      </Box>
+    ),
+  });
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, index) => {
-                const product = productList[index]; // Get the product corresponding to the row index
-                return (
-                  <TableRow
-                    hover
-                    role="checkbox"
-                    tabIndex={-1}
-                    key={row.productId}
-                  >
-                    {columns.map((column) => {
-                      const value = row[column.id as keyof typeof row];
-                      return (
-                        <TableCell
-                          key={column.id}
-                          align={column.align || "left"}
-                        >
-                          {value}
-                        </TableCell>
-                      );
-                    })}
-                    <TableCell>
-                      <IconButton
-                        aria-label="more"
-                        aria-controls="long-menu"
-                        aria-haspopup="true"
-                        onClick={(event) => handleClick(event, product)} // Pass the full product object
-                      >
-                        <MoreVertIcon />
-                      </IconButton>
-                      <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={handleCloseMenu}
-                      >
-                        <MenuItem
-                          onClick={() =>
-                            handleViewDetails(product.id.toString())
-                          }
-                        >
-                          View Details
-                        </MenuItem>
-                        <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
-                        <MenuItem
-                          onClick={() => handleDelete(product.id.toString())}
-                        >
-                          Delete
-                        </MenuItem>
-                      </Menu>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 150]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Paper>
+    <Box>
+      <MaterialReactTable table={table} />
+      <Dialog open={openEdit}>
+        <UpdateProduct
+          handleCloseDialog={handleCloseEdit}
+          product={selectedRowData}
+        />
+      </Dialog>
+      <Dialog open={openReset}></Dialog>
+      <Dialog open={openDelete}>
+        <Warning
+          handleClose={handleCloseDelete}
+          handleAction={handleDeleteDepartment}
+          message={`Are you sure you want to delete product category ${selectedRowData?.id} :  ${selectedRowData?.name}?`}
+          isLoading={isLoading}
+          isSuccess={isSuccess}
+        />
+      </Dialog>
+    </Box>
   );
 };
 
-export default ProductTable;
+export default ProductListTable;

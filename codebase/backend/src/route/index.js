@@ -22,7 +22,7 @@ appRouter.use("/supplierCategory", supplierCategoryRouter);
 appRouter.use("/store", storeRouter);
 appRouter.use("/productCategory", productCategoryRoute);
 appRouter.use("/productSubCategory", productSubCategoryRoute);
-appRouter.use("/temeplate", temeplateRouter);
+appRouter.use("/template", temeplateRouter);
 appRouter.use("/product", productRouter);
 appRouter.use("/materialReq", materialRequiestRoute);
 appRouter.use("/purchasedReq", purchasedReqRouter);
@@ -30,7 +30,5 @@ appRouter.use("/purchasedOrder", purchasedOrderRouter);
 appRouter.use("/grn", grnRoute);
 appRouter.use("/supplierOffer", supplierOfferRoute);
 appRouter.use("/winner", winnerRouter);
-
-
 
 export default appRouter;

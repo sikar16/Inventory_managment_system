@@ -3,16 +3,17 @@ import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
-import { useAddNewProductMutation } from "../../../services/product_service";
-import { useGetAlltemplateQuery } from "../../../services/template_service";
-import { useGetAllProductCategoryQuery } from "../../../services/productCategorySerivce";
-import { useGetAllProductSubCategoryQuery } from "../../../services/productSubcategory_service";
-import { ProductSubCategoryType } from "../../../_types/productSubcategory_type";
-import { TemplateType } from "../../../_types/template_type";
+import Button from "@mui/material/Button";
+import { useAddNewProductMutation } from "../../../../services/product_service";
+import { useGetAllTemplatesQuery } from "../../../../services/template_service";
+import { useGetAllProductCategoryQuery } from "../../../../services/productCategorySerivce";
+import { useGetAllProductSubCategoryQuery } from "../../../../services/productSubcategory_service";
+import { useToast } from "../../../../context/ToastContext";
+import { ProductSubCategoryType } from "../../../../_types/productSubcategory_type";
+import { ErrorResponseType } from "../../../../_types/request_reponse_type";
 
 interface AddProductProps {
   handleCloseDialog: () => void;
-  onAddProduct: (product: any) => void;
 }
 
 const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
@@ -30,13 +31,17 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
 
   const { data: categories = [] } = useGetAllProductCategoryQuery();
   const { data: allSubCategories = [] } = useGetAllProductSubCategoryQuery();
-  const { data: allTemplates = [] } = useGetAlltemplateQuery("template");
-  const [addProduct, { isSuccess: isAddSuccess }] = useAddNewProductMutation();
+  const { data: allTemplates = [] } = useGetAllTemplatesQuery();
+  const [addProduct, { isError, isSuccess, isLoading, error }] =
+    useAddNewProductMutation();
+
+  const { setToastData } = useToast(); // Using toast to display success/error messages
 
   const filteredSubCategories = allSubCategories.filter(
     (subCategory: ProductSubCategoryType) =>
       subCategory.categoryId === selectedCategory
   );
+
   useEffect(() => {
     if (typeof selectedTemplate === "object" && selectedTemplate.id) {
       const selectedTemplateData = allTemplates.find(
@@ -65,23 +70,17 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
   const handleSubCategoryChange = (event: SelectChangeEvent<string>) => {
     setSelectedSubCategory(Number(event.target.value)); // Convert to number
   };
+
   const handleTemplateChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
     if (value === "Other") {
       setSelectedTemplate("Other");
     } else {
-      const template = allTemplates.find(
-        (temp: TemplateType) => temp.name === value
-      );
+      const template = allTemplates.find((temp) => temp.name === value);
       if (template) {
         setSelectedTemplate(template);
       }
     }
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    handleCloseDialog();
   };
 
   const handleAddProduct = async () => {
@@ -101,20 +100,25 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
       name: productName,
       category: selectedCategory,
       subcategoryId: subCategoryId,
-      template: selectedTemplate === selectedTemplate,
+      template: selectedTemplate,
       items,
     };
 
     try {
-      await addProduct(formData);
-      if (isAddSuccess) {
-        handleCloseDialog();
-      }
-      console.log(formData);
-    } catch (error) {
-      console.error("Error adding product:", error);
+      // Unwrap to correctly handle success/failure
+      await addProduct({ data: formData }).unwrap();
+      setToastData({
+        message: "Product added successfully",
+        success: true,
+      });
+      handleCloseDialog(); // Close the dialog after success
+    } catch (err: any) {
+      const res: ErrorResponseType = err;
+      setToastData({
+        message: res?.data?.message || "Failed to add product",
+        success: false,
+      });
     }
-    handleCloseDialog();
   };
 
   const handleAttributeChange = (
@@ -128,9 +132,11 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
       )
     );
   };
+
+  console.log(attributes);
   return (
     <div className="mx-10 mb-10 w-[400px]">
-      <form className="space-y-2" onSubmit={handleSubmit}>
+      <form className="space-y-2">
         <TextField
           autoFocus
           margin="dense"
@@ -156,6 +162,7 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
             </MenuItem>
           ))}
         </Select>
+
         <InputLabel id="subCategory-label">Sub Category</InputLabel>
         <Select
           labelId="subCategory-label"
@@ -177,6 +184,7 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
             </MenuItem>
           )}
         </Select>
+
         <InputLabel id="template-label">Template</InputLabel>
         <Select
           labelId="template-label"
@@ -196,6 +204,7 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
             </MenuItem>
           ))}
         </Select>
+
         {attributes.length > 0 && (
           <div className="w-full">
             <p className="mt-4 mb-2">Attributes</p>
@@ -205,16 +214,15 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
                   label="Name"
                   variant="outlined"
                   size="small"
+                  disabled
                   value={attr.key}
-                  onChange={(e) =>
-                    handleAttributeChange(index, "key", e.target.value)
-                  }
                   className="w-full"
                 />
                 <TextField
                   label="Value"
                   variant="outlined"
                   size="small"
+                  placeholder={attr.key}
                   value={attr.value}
                   onChange={(e) =>
                     handleAttributeChange(index, "value", e.target.value)
@@ -225,13 +233,24 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
             ))}
           </div>
         )}
+
         <div className="pt-10">
-          <div className="flex justify-end">
-            <button
-              onClick={handleAddProduct}
-              className="bg-[#002a47] py-1 px-3 text-white rounded-md"
+          <div className="flex justify-between gap-5">
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={handleCloseDialog}
             >
-              Add Product
+              Discard
+            </Button>
+
+            <button
+              type="button"
+              disabled={isLoading}
+              className="bg-[#002a47] py-1 px-3 text-white rounded-md"
+              onClick={handleAddProduct}
+            >
+              {isLoading ? "Adding..." : "Add Product"}
             </button>
           </div>
         </div>

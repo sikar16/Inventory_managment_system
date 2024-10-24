@@ -4,7 +4,7 @@ import { useGetAllProductSubCategoryQuery } from "../services/productSubcategory
 import { ProductCategoryType } from "../_types/productCategory_type";
 import { ProductSubCategoryType } from "../_types/productSubcategory_type";
 import { ProductType } from "../_types/product_type";
-import { useGetAllproductQuery } from "../services/product_service";
+import { useGetAllProductsQuery } from "../services/product_service";
 import { TemplateAttributeType } from "../_types/template_type";
 import { useGetAllProductCategoryQuery } from "../services/productCategorySerivce";
 import { useNavigate } from "react-router-dom";
@@ -26,7 +26,7 @@ const MaterialRequestForm: React.FC = () => {
   const { isSuccess: isCategorySuccess, data: categoryList = [] } =
     useGetAllProductCategoryQuery();
   const { data: subCategoriesList = [] } = useGetAllProductSubCategoryQuery();
-  const { data: productList = [] } = useGetAllproductQuery("product");
+  const { data: productList = [] } = useGetAllProductsQuery();
 
   const [selectedProductAttributes, setSelectedProductAttributes] = useState<{
     [key: number]: TemplateAttributeType[];

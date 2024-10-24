@@ -1,201 +1,260 @@
-import * as React from "react";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import { CSSTransition } from "react-transition-group";
+import { useMemo, useState } from "react";
 import {
-  TemplateAttributeType,
-  TemplateType,
-} from "../../../_types/template_type";
+  MaterialReactTable,
+  useMaterialReactTable,
+  type MRT_ColumnDef,
+} from "material-react-table";
+import {
+  Box,
+  Dialog,
+  ListItemIcon,
+  MenuItem,
+  lighten,
+  Autocomplete,
+  TextField,
+} from "@mui/material";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { DeleteForever } from "@mui/icons-material";
+import { useToast } from "../../../context/ToastContext";
+import Warning from "../../../component/Warning";
+import { ErrorResponseType } from "../../../_types/request_reponse_type";
 
-// Define column types for better control over alignment and labels
-interface Column {
-  id: keyof RowData;
-  label: string;
-  minWidth: number;
-  align?: "left" | "right" | "center";
-}
+import {
+  TemplateResponseType,
+  useDeleteTemplateMutation,
+} from "../../../services/template_service";
 
-// Row data definition
-interface RowData {
-  no: number;
-  templateId: string;
-  template: string;
-  attributes: TemplateAttributeType[];
-}
+export type TemplateListTableProps = {
+  templateList: TemplateResponseType[] | undefined;
+};
 
-// Define columns with alignment, width, and labeling
-const columns: Column[] = [
-  { id: "no", label: "No", minWidth: 50 },
-  { id: "templateId", label: "Template ID", minWidth: 70 },
-  { id: "template", label: "Template", minWidth: 70, align: "left" },
-];
+const TemplateListTable = ({
+  templateList: templateList,
+}: TemplateListTableProps) => {
+  const { setToastData } = useToast();
+  const [selectedRowData, setSelectedRowData] =
+    useState<TemplateResponseType | null>(null);
+  const [deleteTemplate, { isLoading, isSuccess }] =
+    useDeleteTemplateMutation();
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openReset] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
-// Function to create rows of data
-function createData(
-  no: number,
-  templateId: string,
-  template: string,
-  attributes: TemplateAttributeType[]
-) {
-  return { no, templateId, template, attributes };
-}
+  const handleClickOpenEdit = (row: TemplateResponseType) => {
+    setSelectedRowData(row);
+    setOpenEdit(true);
+  };
 
-// Props for the Template Table
-interface TemplateProps {
-  templateList: TemplateType[];
-}
+  const handleCloseEdit = () => {
+    setOpenEdit(false);
+  };
 
-const TemplateTable: React.FC<TemplateProps> = ({ templateList }) => {
-  // Map data from templateList to rows
-  const rows = templateList.map((i) =>
-    createData(i.id, `${i.id}`, `${i.name}`, i.attributes)
+  const handleClickOpenDelete = (row: TemplateResponseType) => {
+    setSelectedRowData(row);
+    setOpenDelete(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+
+  const handleDeleteDepartment = async () => {
+    if (selectedRowData?.id != null) {
+      try {
+        await deleteTemplate(selectedRowData.id).unwrap();
+        setToastData({
+          message: "Department deleted successfully",
+          success: true,
+        });
+        handleCloseDelete();
+      } catch (error: any) {
+        handleCloseDelete();
+        const res: ErrorResponseType = error;
+        setToastData({
+          message: error.toString(),
+          success: false,
+        });
+      }
+    } else {
+      handleCloseDelete();
+      setToastData({
+        message: "Department not selected is missing",
+        success: false,
+      });
+    }
+  };
+
+  // Get unique suggestions from the user data for Autocomplete
+
+  const nameSuggestions =
+    templateList == undefined ? [] : templateList.map((user) => user.name);
+
+  const columns = useMemo<MRT_ColumnDef<TemplateResponseType>[]>(
+    () => [
+      {
+        id: "template",
+        header: "template",
+        columns: [
+          {
+            accessorFn: (row) => `${row.name}`,
+            id: "name",
+            header: "Name",
+            size: 250,
+            Filter: ({ column }) => (
+              <Autocomplete
+                options={nameSuggestions}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Filter by Name"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+                onChange={(_event, value) => column.setFilterValue(value)}
+              />
+            ),
+          },
+          {
+            accessorFn: (row) => `${row.createdAt}`,
+            id: "createdAt",
+            header: "createdAt",
+            size: 250,
+            Filter: ({ column }) => (
+              <Autocomplete
+                options={nameSuggestions}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Filter by Name"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+                onChange={(_event, value) => column.setFilterValue(value)}
+              />
+            ),
+          },
+        ],
+      },
+    ],
+    [nameSuggestions]
   );
 
-  // Pagination and row expansion states
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [openFaqIndex, setOpenFaqIndex] = React.useState<number | null>(null);
+  const table = useMaterialReactTable({
+    columns,
+    data: templateList == undefined ? [] : templateList,
+    enableColumnFilterModes: true,
+    enableColumnOrdering: true,
+    enableGrouping: true,
+    enableColumnPinning: true,
+    enableFacetedValues: true,
+    enableRowActions: true,
+    enableRowSelection: true,
+    initialState: {
+      pagination: {
+        pageSize: 20,
+        pageIndex: 0,
+      },
+      showGlobalFilter: true, // This should be true
+      columnPinning: {
+        left: ["mrt-row-expand", "mrt-row-select"],
+        right: ["mrt-row-actions"],
+      },
+    },
+    paginationDisplayMode: "pages",
+    positionToolbarAlertBanner: "bottom",
+    muiSearchTextFieldProps: {
+      size: "small",
+      variant: "outlined",
+    },
+    muiPaginationProps: {
+      color: "secondary",
+      rowsPerPageOptions: [5, 10, 20, 30],
+      shape: "rounded",
+      variant: "outlined",
+    },
+    renderRowActionMenuItems: ({ row, closeMenu }) => [
+      <MenuItem
+        key={`edit-${row.original.id}`}
+        onClick={() => {
+          handleClickOpenEdit(row.original);
+          closeMenu();
+        }}
+        sx={{ m: 0 }}
+      >
+        <ListItemIcon>
+          <PersonAddIcon />
+        </ListItemIcon>
+        Edit
+      </MenuItem>,
 
-  // Toggle row expansion
-  const handleToggle = (index: number) => {
-    setOpenFaqIndex(openFaqIndex === index ? null : index);
-  };
+      <MenuItem
+        key={`delete-${row.original.id}`}
+        onClick={() => {
+          handleClickOpenDelete(row.original);
+          closeMenu();
+        }}
+        sx={{ m: 0 }}
+      >
+        <ListItemIcon>
+          <DeleteForever />
+        </ListItemIcon>
+        Delete
+      </MenuItem>,
+    ],
 
-  // Pagination handlers
-  const handleChangePage = (_event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+    renderTopToolbar: () => (
+      <Box
+        sx={(theme) => ({
+          backgroundColor: lighten(theme.palette.background.default, 0.05),
+          display: "flex",
+          gap: "0.5rem",
+          p: "8px",
+          justifyContent: "space-between",
+        })}
+      >
+        <Autocomplete
+          options={nameSuggestions}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Search..."
+              variant="outlined"
+              size="small"
+              sx={{ width: "300px" }} // Adjust the width as needed
+            />
+          )}
+          onChange={(_event, value) => {
+            // Set global filter based on the selected suggestion
+            table.setGlobalFilter(value);
+          }}
+        />
+      </Box>
+    ),
+  });
 
   return (
-    <div className="flex justify-center p-4">
-      <Paper
-        sx={{
-          overflow: "hidden",
-          width: "100%",
-          maxWidth: "900px",
-          borderRadius: "12px",
-          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        <TableContainer sx={{ maxHeight: 500 }}>
-          <Table stickyHeader aria-label="template table">
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ minWidth: column.minWidth }}
-                    className="bg-gray-100 dark:bg-gray-700 font-semibold text-gray-900 dark:text-gray-100"
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
-                <TableCell className="bg-gray-100 dark:bg-gray-700"></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => (
-                  <React.Fragment key={row.templateId}>
-                    <TableRow hover role="checkbox" tabIndex={-1}>
-                      {columns.map((column) => {
-                        const value = row[column.id as keyof RowData];
-                        return (
-                          <TableCell
-                            key={column.id}
-                            align={column.align}
-                            className="text-gray-800 dark:text-gray-300"
-                          >
-                            {Array.isArray(value)
-                              ? value.map((item, itemIndex) => (
-                                <p key={itemIndex}>{item.name}</p>
-                              ))
-                              : value}
-                          </TableCell>
-                        );
-                      })}
-                      <TableCell>
-                        <button
-                          className="flex items-center transition-colors duration-200 hover:bg-primary/10 dark:hover:bg-gray-800 rounded-lg p-2"
-                          onClick={() => handleToggle(index)}
-                        >
-                          <div className="flex h-10 w-10 items-center justify-center bg-primary/5 text-primary dark:bg-white/5 rounded-lg">
-                            {openFaqIndex === index ? (
-                              <ExpandLessIcon />
-                            ) : (
-                              <ExpandMoreIcon />
-                            )}
-                          </div>
-                        </button>
-                      </TableCell>
-                    </TableRow>
-
-                    {/* FAQ Row Expansion */}
-                    <CSSTransition
-                      in={openFaqIndex === index}
-                      timeout={300}
-                      classNames=""
-                      unmountOnExit
-                    >
-                      <TableRow>
-                        <TableCell colSpan={columns.length + 1}>
-                          <div className="pl-16 py-4 bg-gray-50 dark:bg-gray-900 transition-all duration-500 ease-in-out rounded-lg shadow-sm">
-                            <p className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                              Template Attributes
-                            </p>
-                            <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-300">
-                              {row.attributes.map(
-                                (attribute, attrIndex) => (
-                                  <p key={attrIndex} className="flex">
-                                    <span className="font-medium mr-3">
-                                      {attribute.name}:
-                                    </span>
-                                    <span>{attribute.dataType}</span>
-                                  </p>
-                                )
-                              )}
-                            </div>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    </CSSTransition>
-                  </React.Fragment>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
-        {/* Pagination */}
-        <TablePagination
-          rowsPerPageOptions={[10, 15, 20]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+    <Box>
+      <MaterialReactTable table={table} />
+      <Dialog open={openEdit}>
+        {/* <UpdateProductCategory
+          handleCloseDialog={handleCloseEdit}
+          selectedRowData={selectedRowData}
+        /> */}
+      </Dialog>
+      <Dialog open={openReset}></Dialog>
+      <Dialog open={openDelete}>
+        <Warning
+          handleClose={handleCloseDelete}
+          handleAction={handleDeleteDepartment}
+          message={`Are you sure you want to delete product category ${selectedRowData?.id} :  ${selectedRowData?.name}?`}
+          isLoading={isLoading}
+          isSuccess={isSuccess}
         />
-      </Paper>
-    </div>
+      </Dialog>
+    </Box>
   );
 };
 
-export default TemplateTable;
+export default TemplateListTable;

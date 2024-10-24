@@ -13,7 +13,7 @@ export interface TemplateAttributeType {
   id: number;
   templateId: number;
   name: string;
-  dataType: AttributeDataType;
+  dataType: string;
 }
 
 // Template Type

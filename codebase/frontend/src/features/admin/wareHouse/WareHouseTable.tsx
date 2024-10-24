@@ -16,7 +16,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
-import AddProduct from "../product/AddProduct";
+import AddProduct from "../product/form/AddProduct";
 
 interface Column {
   id: keyof RowData;
@@ -241,7 +241,7 @@ const WareHouseTable: React.FC<StoreProps> = ({ storeList }) => {
         </div>
         <DialogContent>
           <AddProduct
-            onAddProduct={handleAddProduct}
+            // onAddProduct={handleAddProduct}
             handleCloseDialog={handleCloseDialog}
           />
         </DialogContent>

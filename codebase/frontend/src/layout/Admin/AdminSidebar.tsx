@@ -301,7 +301,7 @@ const AdminSidebar = () => {
               </Link>
             </li>
             {/*   Warehouse*/}
-            <li className="hs-accordion" id="users-accordion">
+            {/* <li className="hs-accordion" id="users-accordion">
               <Link
                 to="/admin/warehouse"
                 onClick={() => handleToggleView("warehouse")}
@@ -327,7 +327,7 @@ const AdminSidebar = () => {
                   Warehouse
                 </button>
               </Link>
-            </li>
+            </li> */}
 
             {/*   Report*/}
             <li className="hs-accordion" id="users-accordion">
