@@ -1,155 +1,257 @@
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { SetStateAction, useState } from 'react';
-import { SupplierType } from '../../../_types/supplier_type';
+import { useMemo, useState } from "react";
+import {
+  MaterialReactTable,
+  useMaterialReactTable,
+  type MRT_ColumnDef,
+} from "material-react-table";
+import {
+  Box,
+  Dialog,
+  ListItemIcon,
+  MenuItem,
+  lighten,
+  Autocomplete,
+  TextField,
+} from "@mui/material";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { DeleteForever } from "@mui/icons-material";
+import { useToast } from "../../../context/ToastContext";
+import Warning from "../../../component/Warning";
+import { ErrorResponseType } from "../../../_types/request_reponse_type";
+import { SupplierType } from "../../../_types/supplier_type";
+import { useDeleteSupplierMutation } from "../../../services/supplier_service";
+import UpdateSuppliers from "./form/UpdateSuppliers";
 
-interface Column {
-    id: string;
-    label: string;
-    minWidth: number;
-    align?: 'left' | 'center' | 'right'; // Optional alignment property
-}
-
-const columns: Column[] = [
-    { id: 'no', label: 'No', minWidth: 50 },
-    { id: 'supplierId', label: 'SupplierId', minWidth: 50 },
-    { id: 'supplierName', label: 'Supplier Name', minWidth: 200 },
-    { id: 'category', label: 'Category', minWidth: 200, align: 'left' },
-    { id: 'address', label: 'Address', minWidth: 200, align: 'left' },
-    { id: 'actions', label: 'Actions', minWidth: 100, align: 'center' },
-];
-interface RowType {
-    no: number;
-    supplierId: string;
-    supplierName: string;
-    category: string;
-    address: string;
-}
-function createData(no: number, supplierId: string, supplierName: string, category: string, address: string): RowType {
-    return { no, supplierId, supplierName, category, address };
-}
-
-interface SuppliersTableProps {
-    supplierslist: SupplierType[];
-}
-
-const SupplierTable: React.FC<SuppliersTableProps> = ({ supplierslist }) => {
-    const rows = supplierslist.map((i) =>
-        createData(
-            i.id,
-            `${i.id}`,
-            `${i.fullName}`,
-            `${i.category?.name}`,
-            // `${i.profile.address.city} ${i.profile.address.subCity}`
-            `${i.address?.country}, ${i.address?.city}, ${i.address?.subCity}, ${i.address?.wereda}`.trim().replace(/, +$/, '') // Combine and clean up address
-        )
-    );
-
-    console.log(rows)
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-    const [selectedRow, setSelectedRow] = useState(null);
-
-    const handleChangePage = (_event: unknown, newPage: SetStateAction<number>) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event: { target: { value: string | number; }; }) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-    };
-
-    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget); // No need for type assertion now
-        setSelectedRow(selectedRow);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-
-    return (
-        <>
-            <div>
-                <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                    <TableContainer sx={{ maxHeight: 440 }}>
-                        <Table stickyHeader aria-label="sticky table">
-                            <TableHead>
-                                <TableRow>
-                                    {columns.map((column) => (
-                                        <TableCell
-                                            key={column.id}
-                                            align={column.align}
-                                            style={{ minWidth: column.minWidth }}
-                                        >
-                                            {column.label}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                                        {columns.map((column) => {
-                                            const value = row[column.id as keyof RowType];
-                                            return (
-                                                <TableCell key={column.id} align={column.align}>
-                                                    {column.id === 'actions' ? (
-                                                        <div>
-                                                            <IconButton
-                                                                aria-label="more"
-                                                                aria-controls="long-menu"
-                                                                aria-haspopup="true"
-                                                                onClick={(event) => handleMenuClick(event)}
-                                                            >
-                                                                <MoreVertIcon />
-                                                            </IconButton>
-                                                            <Menu
-                                                                id="long-menu"
-                                                                anchorEl={anchorEl}
-                                                                keepMounted
-                                                                open={Boolean(anchorEl)}
-                                                                onClose={handleMenuClose}
-                                                            >
-                                                                <MenuItem>Update</MenuItem>
-                                                                <MenuItem>Delete</MenuItem>
-                                                            </Menu>
-                                                        </div>
-                                                    ) : (
-                                                        value
-                                                    )}
-                                                </TableCell>
-                                            );
-                                        })}
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 15]}
-                        component="div"
-                        count={rows.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </Paper>
-            </div>
-        </>
-    );
+export type SupplayerListTableProps = {
+  supplayerList: SupplierType[] | undefined;
 };
 
-export default SupplierTable;
+const SupplayerListTable = ({ supplayerList }: SupplayerListTableProps) => {
+  const { setToastData } = useToast();
+  const [selectedRowData, setSelectedRowData] = useState<SupplierType | null>(
+    null
+  );
+  const [deleteProductCategory, { isLoading, isSuccess }] =
+    useDeleteSupplierMutation();
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openReset] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+
+  const handleClickOpenEdit = (row: SupplierType) => {
+    setSelectedRowData(row);
+    setOpenEdit(true);
+  };
+
+  const handleCloseEdit = () => {
+    setOpenEdit(false);
+  };
+
+  const handleClickOpenDelete = (row: SupplierType) => {
+    setSelectedRowData(row);
+    setOpenDelete(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+
+  const handleDeleteDepartment = async () => {
+    if (selectedRowData?.id != null) {
+      try {
+        await deleteProductCategory(selectedRowData.id).unwrap();
+        setToastData({
+          message: "Department deleted successfully",
+          success: true,
+        });
+        handleCloseDelete();
+      } catch (error: any) {
+        handleCloseDelete();
+        const res: ErrorResponseType = error;
+        setToastData({
+          message: res.data.message,
+          success: false,
+        });
+      }
+    } else {
+      handleCloseDelete();
+      setToastData({
+        message: "Department not selected is missing",
+        success: false,
+      });
+    }
+  };
+
+  const nameSuggestions =
+    supplayerList == undefined
+      ? []
+      : supplayerList.map((user) => user.fullName);
+
+  const columns = useMemo<MRT_ColumnDef<SupplierType>[]>(
+    () => [
+      {
+        id: "sub category",
+        header: "Sub Category",
+        columns: [
+          {
+            accessorFn: (row) => `${row.fullName}`,
+            id: "name",
+            header: "Name",
+            size: 250,
+            Filter: ({ column }) => (
+              <Autocomplete
+                options={nameSuggestions}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Filter by Name"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+                onChange={(_event, value) => column.setFilterValue(value)}
+              />
+            ),
+          },
+          {
+            accessorFn: (row) => `${row.category.name}`,
+            id: "category",
+            header: "Category",
+            size: 250,
+            Filter: ({ column }) => (
+              <Autocomplete
+                options={nameSuggestions}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Filter by Name"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+                onChange={(_event, value) => column.setFilterValue(value)}
+              />
+            ),
+          },
+        ],
+      },
+    ],
+    [nameSuggestions]
+  );
+
+  const table = useMaterialReactTable({
+    columns,
+    data: supplayerList == undefined ? [] : supplayerList,
+    enableColumnFilterModes: true,
+    enableColumnOrdering: true,
+    enableGrouping: true,
+    enableColumnPinning: true,
+    enableFacetedValues: true,
+    enableRowActions: true,
+    enableRowSelection: true,
+    initialState: {
+      pagination: {
+        pageSize: 5,
+        pageIndex: 0,
+      },
+      showGlobalFilter: true, // This should be true
+      columnPinning: {
+        left: ["mrt-row-expand", "mrt-row-select"],
+        right: ["mrt-row-actions"],
+      },
+    },
+    paginationDisplayMode: "pages",
+    positionToolbarAlertBanner: "bottom",
+    muiSearchTextFieldProps: {
+      size: "small",
+      variant: "outlined",
+    },
+    muiPaginationProps: {
+      color: "secondary",
+      rowsPerPageOptions: [5, 10, 20, 30],
+      shape: "rounded",
+      variant: "outlined",
+    },
+    renderRowActionMenuItems: ({ row, closeMenu }) => [
+      <MenuItem
+        key={`edit-${row.original.id}`}
+        onClick={() => {
+          handleClickOpenEdit(row.original);
+          closeMenu();
+        }}
+        sx={{ m: 0 }}
+      >
+        <ListItemIcon>
+          <PersonAddIcon />
+        </ListItemIcon>
+        Edit
+      </MenuItem>,
+
+      <MenuItem
+        key={`delete-${row.original.id}`}
+        onClick={() => {
+          handleClickOpenDelete(row.original);
+          closeMenu();
+        }}
+        sx={{ m: 0 }}
+      >
+        <ListItemIcon>
+          <DeleteForever />
+        </ListItemIcon>
+        Delete
+      </MenuItem>,
+    ],
+
+    renderTopToolbar: () => (
+      <Box
+        sx={(theme) => ({
+          backgroundColor: lighten(theme.palette.background.default, 0.05),
+          display: "flex",
+          gap: "0.5rem",
+          p: "8px",
+          justifyContent: "space-between",
+        })}
+      >
+        <Autocomplete
+          options={nameSuggestions}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Search..."
+              variant="outlined"
+              size="small"
+              sx={{ width: "300px" }} // Adjust the width as needed
+            />
+          )}
+          onChange={(_event, value) => {
+            // Set global filter based on the selected suggestion
+            table.setGlobalFilter(value);
+          }}
+        />
+      </Box>
+    ),
+  });
+
+  return (
+    <Box>
+      <MaterialReactTable table={table} />
+      <Dialog open={openEdit}>
+        <UpdateSuppliers
+          handleCloseDialog={handleCloseEdit}
+          selectedRowData={selectedRowData}
+        />
+      </Dialog>
+      <Dialog open={openReset}></Dialog>
+      <Dialog open={openDelete}>
+        <Warning
+          handleClose={handleCloseDelete}
+          handleAction={handleDeleteDepartment}
+          message={`Are you sure you want to delete product category ${selectedRowData?.id} :  ${selectedRowData?.fullName}?`}
+          isLoading={isLoading}
+          isSuccess={isSuccess}
+        />
+      </Dialog>
+    </Box>
+  );
+};
+
+export default SupplayerListTable;
