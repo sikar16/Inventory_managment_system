@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { useAssignRoleMutation } from "../../../services/user_service";
-import { useToast } from "../../../context/ToastContext";
+import { useAssignRoleMutation } from "../../../../services/user_service";
+import { useToast } from "../../../../context/ToastContext";
+import { UserType } from "../../../../_types/user_type";
 
 interface RowData {
   no: number;
@@ -21,7 +22,7 @@ interface RowData {
   actions: boolean;
 }
 interface AssignRoleProps {
-  selectedRow: RowData | null;
+  selectedRow: UserType | null;
   handleCloseDialog: () => void;
 }
 
@@ -39,9 +40,9 @@ const AssignRole: React.FC<AssignRoleProps> = ({
       role: role, // The role from the state
     };
 
-    if (selectedRow?.no) {
+    if (selectedRow?.id) {
       try {
-        await assignRole({ body: data, param: selectedRow.no });
+        await assignRole({ body: data, param: selectedRow.id });
       } catch (error) {
         // Handle error case
       }
@@ -69,7 +70,13 @@ const AssignRole: React.FC<AssignRoleProps> = ({
 
   return (
     <div>
-      <div className="w-full md:w-[45%] ">
+      <p
+        onClick={handleCloseDialog}
+        className="hover:underline font-bold size-10 text-sm text-slate-900"
+      >
+        X
+      </p>
+      <div className="w-full md:w-[45%] p-5 ">
         <label htmlFor="role" className="block text-sm font-medium ">
           Role
         </label>

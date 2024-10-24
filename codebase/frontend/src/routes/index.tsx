@@ -20,7 +20,6 @@ import ConfirmPassword from "../features/ConfirmPassword";
 import ForgetPassword from "../features/ForgetPassword";
 import Profile from "../features/Profile";
 import SubCategoryList from "../features/admin/subCategory/SubCategoryList";
-import AddUser from "../features/admin/user/AddUser";
 import NotFound from "../features/NotFound";
 import RequiestesList from "../features/employee/employee/RequiestesList";
 import DepartmentHeadLayout from "../layout/DepartmentHead/DepartmentHeadLayout";
@@ -64,10 +63,10 @@ export const router = createBrowserRouter(
             </>
           }
         />
-        <Route path="/admin/user" element={<UserList departments={[]} />} />
+        <Route path="/admin/user" element={<UserList />} />
 
         <Route path="/admin/department-list" element={<Department_list />} />
-        <Route path="/admin/user" element={<UserList departments={[]} />} />
+        <Route path="/admin/user" element={<UserList />} />
         <Route path="/admin/product" element={<ProductList />} />
         <Route path="/admin/category" element={<CategoryList />} />
         <Route path="/admin/sub-category" element={<SubCategoryList />} />

@@ -3,6 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { MeUserType, UserType } from "../_types/user_type";
 import extractErrorMessage from "../util/extractErrorMessage";
 import { getToken } from "../util/getToken";
+
 const baseUrl = import.meta.env.VITE_API_URL;
 
 interface FormDataType {
@@ -18,6 +19,7 @@ interface FormDataType {
   departmentId: number;
   password: string;
 }
+
 // Define the LoginResponse type based on your API's response structure
 type LoginResponse = {
   success: boolean;
@@ -45,70 +47,53 @@ export const userApi = createApi({
   }),
   tagTypes: ["user"],
   endpoints: (builder) => ({
-    getAllUsers: builder.query({
-      query: () => ({
-        url: `/`,
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          // Authorization: "token",
-        },
-      }),
+    getAllUsers: builder.query<UserType[], void>({
+      query: () => `/`,
       transformResponse: (response: any) =>
         response.success ? (response.data as UserType[]) : ([] as UserType[]),
       providesTags: ["user"],
     }),
-    getMy: builder.query({
-      query: () => ({
-        url: `/get-me`,
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          // Authorization: "token",
-        },
-      }),
+
+    getMy: builder.query<MeUserType | null, void>({
+      query: () => `/get-me`,
       transformResponse: (response: any) =>
         response.success ? (response.data as MeUserType) : null,
       providesTags: ["user"],
     }),
 
-    getSingleUser: builder.query({
-      query: (id: number) => ({
-        url: `/${id}`,
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          // Authorization: "token",
-        },
-      }),
+    getSingleUser: builder.query<UserType, number>({
+      query: (id: number) => `/${id}`,
     }),
 
-    addNewuser: builder.mutation({
+    addNewUser: builder.mutation<string, FormDataType>({
       query: (body: FormDataType) => ({
         url: `/register`,
         method: "POST",
         body,
       }),
-      invalidatesTags: ["user"],
+      invalidatesTags: ["user"], // Invalidate user tags to refetch
       transformResponse: (response: any) => {
         console.log(response);
         return response.success ? response.message : "something happened";
       },
       transformErrorResponse: (response: any) => {
+        console.log(response);
         const message = response?.data?.message;
         return extractErrorMessage(message);
       },
     }),
-    assignRole: builder.mutation({
-      query: ({ body, param }: { body: { role: string }; param: number }) => ({
+
+    assignRole: builder.mutation<
+      string,
+      { body: { role: string }; param: number }
+    >({
+      query: ({ body, param }) => ({
         url: `/assignRole/${param}`,
         method: "PUT",
         body,
       }),
-
-      invalidatesTags: ["user"],
+      invalidatesTags: ["user"], // Invalidate user tags to refetch
       transformResponse: (response: any) => {
-        console.log(response);
         return response.success ? response.message : "something happened";
       },
       transformErrorResponse: (response: any) => {
@@ -116,41 +101,30 @@ export const userApi = createApi({
         return extractErrorMessage(message);
       },
     }),
-    updateUser: builder.mutation({
+
+    updateUser: builder.mutation<void, UserType>({
       query: (userData: UserType) => ({
         url: `/${userData.id}`,
         method: "PUT",
         body: userData,
         headers: {
           "Content-Type": "application/json",
-          // Authorization: "token",
         },
       }),
+      invalidatesTags: ["user"], // Invalidate user tags to refetch
     }),
 
-    deleteUser: builder.mutation({
+    deleteUser: builder.mutation<void, number>({
       query: (id: number) => ({
         url: `/${id}`,
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          // Authorization: "token",
         },
       }),
-      invalidatesTags: ["user"],
-      // transformErrorResponse: (response: any) => {
-      //   try {
-      //     const message = response?.data?.message;
-      //     return extractErrorMessage(message);
-      //   } catch (error:any) {
-      //     return 'An unexpected error occurred while processing your request.';
-      //   }
-      // },
+      invalidatesTags: ["user"], // Invalidate user tags to refetch
     }),
 
-    // Add the login mutation here
-
-    // Define the mutation in your service
     loginUser: builder.mutation<LoginResponse, LoginDataType>({
       query: (loginData) => ({
         url: `http://localhost:8888/api/user/login`, // Adjust to your actual login API endpoint
@@ -174,7 +148,7 @@ export const userApi = createApi({
 export const {
   useGetAllUsersQuery,
   useGetSingleUserQuery,
-  useAddNewuserMutation,
+  useAddNewUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
   useLoginUserMutation,

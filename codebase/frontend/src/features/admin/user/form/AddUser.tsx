@@ -1,8 +1,8 @@
-import { useAddNewuserMutation } from "../../../services/user_service";
-import { Link } from "react-router-dom";
+import { useAddNewUserMutation } from "../../../../services/user_service";
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
-import { useGetAllDepartmentQuery } from "../../../services/department_service";
+import { useGetAllDepartmentQuery } from "../../../../services/department_service";
+import { useToast } from "../../../../context/ToastContext";
 
 type FormValues = {
   firstName: string;
@@ -18,13 +18,17 @@ type FormValues = {
   wereda: string;
   password: string;
 };
+interface AddUserProps {
+  handleCloseDialog: () => void;
+}
 
-const AddUser = () => {
+const AddUser: React.FC<AddUserProps> = ({ handleCloseDialog }) => {
   const { register, control, handleSubmit, formState } = useForm<FormValues>();
   const { errors } = formState;
+  const { setToastData } = useToast();
 
-  const [adduser] = useAddNewuserMutation();
-  const { data: department = [] } = useGetAllDepartmentQuery("department");
+  const [addUser] = useAddNewUserMutation();
+  const { data: department = [] } = useGetAllDepartmentQuery();
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -33,10 +37,17 @@ const AddUser = () => {
         password: data.password,
         departmentId: Number(data.departmentId),
       };
-      await adduser(formattedData);
-      console.log("User added:", formattedData);
-    } catch (error) {
-      console.error("Error adding user:", error);
+      await addUser(formattedData);
+      setToastData({
+        message: "User added successfully",
+        success: true,
+      });
+      handleCloseDialog();
+    } catch (error: any) {
+      setToastData({
+        message: error.toString(),
+        success: false,
+      });
     }
   };
 
@@ -49,9 +60,13 @@ const AddUser = () => {
               <h3 className="text-3xl font-medium text-[#002A47]">
                 User Registration
               </h3>
-              <Link to="/admin/user">
-                <p className="hover:underline text-black text-sm">Back</p>
-              </Link>
+
+              <p
+                onClick={handleCloseDialog}
+                className="hover:underline font-bold size-10 text-sm text-slate-900"
+              >
+                X
+              </p>
             </div>
 
             <div className="mt-4">
@@ -293,8 +308,6 @@ const AddUser = () => {
                 </div>
               </div>
             </div>
-
-            {/* Submit Button */}
 
             <div className="flex justify-center mt-16">
               <button
