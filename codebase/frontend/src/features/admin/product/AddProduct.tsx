@@ -5,7 +5,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
 import { useAddNewProductMutation } from "../../../services/product_service";
 import { useGetAlltemplateQuery } from "../../../services/template_service";
-import { useGetAllproductCategoryQuery } from "../../../services/productCategorySerivce";
+import { useGetAllProductCategoryQuery } from "../../../services/productCategorySerivce";
 import { useGetAllproductSubCategoryQuery } from "../../../services/productSubcategory_service";
 import { ProductSubCategoryType } from "../../../_types/productSubcategory_type";
 import { TemplateType } from "../../../_types/template_type";
@@ -28,7 +28,7 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
     { key: string; value: string; templateAttributeId: number }[]
   >([]);
 
-  const { data: categories = [] } = useGetAllproductCategoryQuery();
+  const { data: categories = [] } = useGetAllProductCategoryQuery();
   const { data: allSubCategories = [] } =
     useGetAllproductSubCategoryQuery("subcategory");
   const { data: allTemplates = [] } = useGetAlltemplateQuery("template");

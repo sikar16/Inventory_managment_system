@@ -6,7 +6,7 @@ import { useState } from "react";
 import AddDepartment from "./from/AddDepartment";
 
 const Department_list = () => {
-  const { data: departments } = useGetAllDepartmentQuery("departments");
+  const { data: departments } = useGetAllDepartmentQuery();
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {

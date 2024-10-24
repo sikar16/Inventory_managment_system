@@ -8,14 +8,18 @@ import TemplateTable from "./TemplateTable";
 import Title from "../../../component/TablesTitle";
 import Loader from "../../../component/Loading";
 import { useGetAlltemplateQuery } from "../../../services/template_service";
-import { useGetAllproductCategoryQuery } from "../../../services/productCategorySerivce";
+import { useGetAllProductCategoryQuery } from "../../../services/productCategorySerivce";
 import { useGetAllproductSubCategoryQuery } from "../../../services/productSubcategory_service";
 
 export default function TemplateList() {
   const [openDialog, setOpenDialog] = React.useState(false);
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [selectedCategory, setSelectedCategory] = React.useState<number | null>(null);
-  const [selectedSubCategory, setSelectedSubCategory] = React.useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [selectedCategory, setSelectedCategory] = React.useState<number | null>(
+    null
+  );
+  const [selectedSubCategory, setSelectedSubCategory] = React.useState<
+    number | null
+  >(null);
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -30,7 +34,7 @@ export default function TemplateList() {
     isLoading: isCategoryLoading,
     data: categories = [], // Default to an empty array
     error: categoryError,
-  } = useGetAllproductCategoryQuery();
+  } = useGetAllProductCategoryQuery();
 
   const {
     isError: isSubCategoryError,
@@ -39,32 +43,42 @@ export default function TemplateList() {
     error: subCategoryError,
   } = useGetAllproductSubCategoryQuery("subcategory");
 
-  const { isError, isLoading, data, error } = useGetAlltemplateQuery("template");
+  const { isError, isLoading, data, error } =
+    useGetAlltemplateQuery("template");
 
   if (isCategoryError || isSubCategoryError || isError) {
     return (
       <h1>
-        Error: {isCategoryError
+        Error:{" "}
+        {isCategoryError
           ? categoryError?.toString() || "Unknown category error"
           : isSubCategoryError
-            ? subCategoryError?.toString() || "Unknown subcategory error"
-            : error?.toString() || "Unknown error"}
+          ? subCategoryError?.toString() || "Unknown subcategory error"
+          : error?.toString() || "Unknown error"}
       </h1>
     );
   }
 
   if (isCategoryLoading || isSubCategoryLoading || isLoading) return <Loader />;
 
-  const filteredTemplates = data?.filter(template => {
-    const matchesSearchTerm = template.name.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredTemplates =
+    data?.filter((template) => {
+      const matchesSearchTerm = template.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
-    const matchesCategory = selectedCategory != null ? template.categoryId.id === selectedCategory : true;
+      const matchesCategory =
+        selectedCategory != null
+          ? template.categoryId.id === selectedCategory
+          : true;
 
-    const matchesSubCategory = selectedSubCategory != null ? template.subCategoryId.id === selectedSubCategory : true;
+      const matchesSubCategory =
+        selectedSubCategory != null
+          ? template.subCategoryId.id === selectedSubCategory
+          : true;
 
-    return matchesSearchTerm && matchesCategory && matchesSubCategory;
-  }) ?? [];
-
+      return matchesSearchTerm && matchesCategory && matchesSubCategory;
+    }) ?? [];
 
   return (
     <div className="mt-10">
@@ -74,11 +88,11 @@ export default function TemplateList() {
         onClick={handleOpenDialog}
       />
       <div className="flex flex-wrap mt-10 mx-10 mb-5">
-        <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
-          <p className='me-3 text-gray-500'>Category :</p>
+        <div className="bg-white px-3 py-3 rounded-md mb-2 flex items-center">
+          <p className="me-3 text-gray-500">Category :</p>
           <select
-            className='bg-[#F5F5F5] text-gray-700'
-            value={selectedCategory || ''}
+            className="bg-[#F5F5F5] text-gray-700"
+            value={selectedCategory || ""}
             onChange={(e) => {
               const categoryId = Number(e.target.value);
               setSelectedCategory(isNaN(categoryId) ? null : categoryId);
@@ -93,14 +107,16 @@ export default function TemplateList() {
           </select>
         </div>
 
-        <div className='bg-white px-3 py-3 rounded-md mb-2 flex items-center'>
-          <p className='me-3 text-gray-500'>Sub Category :</p>
+        <div className="bg-white px-3 py-3 rounded-md mb-2 flex items-center">
+          <p className="me-3 text-gray-500">Sub Category :</p>
           <select
-            className='bg-[#faf9f9] text-gray-700'
+            className="bg-[#faf9f9] text-gray-700"
             value={selectedSubCategory || ""}
             onChange={(e) => {
               const subCategoryId = Number(e.target.value);
-              setSelectedSubCategory(isNaN(subCategoryId) ? null : subCategoryId);
+              setSelectedSubCategory(
+                isNaN(subCategoryId) ? null : subCategoryId
+              );
             }}
           >
             <option value="">All Subcategories</option>
@@ -111,11 +127,10 @@ export default function TemplateList() {
             ))}
           </select>
         </div>
-
       </div>
 
       <hr className="w-full text-black bg-black" />
-      <div className='my-4 justify-center flex'>
+      <div className="my-4 justify-center flex">
         <input
           type="text"
           placeholder="Search"

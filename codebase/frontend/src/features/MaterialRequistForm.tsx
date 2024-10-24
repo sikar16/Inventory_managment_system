@@ -6,7 +6,7 @@ import { ProductSubCategoryType } from "../_types/productSubcategory_type";
 import { ProductType } from "../_types/product_type";
 import { useGetAllproductQuery } from "../services/product_service";
 import { TemplateAttributeType } from "../_types/template_type";
-import { useGetAllproductCategoryQuery } from "../services/productCategorySerivce";
+import { useGetAllProductCategoryQuery } from "../services/productCategorySerivce";
 import { useNavigate } from "react-router-dom";
 import { useAddNewMaterialReqMutation } from "../services/materialReq_service";
 import { useToast } from "../context/ToastContext";
@@ -24,7 +24,7 @@ interface FormData {
 const MaterialRequestForm: React.FC = () => {
   const { toastData, setToastData } = useToast();
   const { isSuccess: isCategorySuccess, data: categoryList = [] } =
-    useGetAllproductCategoryQuery();
+    useGetAllProductCategoryQuery();
   const { data: subCategoriesList = [] } =
     useGetAllproductSubCategoryQuery("subcategory");
   const { data: productList = [] } = useGetAllproductQuery("product");
