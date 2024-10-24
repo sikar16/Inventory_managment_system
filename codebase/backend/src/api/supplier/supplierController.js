@@ -1,6 +1,6 @@
 import prisma from "../../config/prisma.js";
 
-import supplierSchem from "./supplierSchem.js";
+import supplierSachem from "./supplierSchem.js";
 
 const supplierController = {
   getAllSupplier: async (req, res, next) => {
@@ -83,7 +83,7 @@ const supplierController = {
           });
         }
       }
-      const data = supplierSchem.createSupplier.parse(req.body);
+      const data = supplierSachem.createSupplier.parse(req.body);
 
       const isSupplierExist = await prisma.suppliers.findFirst({
         where: {
@@ -179,7 +179,7 @@ const supplierController = {
         });
       }
 
-      const data = supplierSchem.updateSupplier.parse(req.body);
+      const data = supplierSachem.updateSupplier.parse(req.body);
       //check if supplayer is exist
       const isSupplayerExist = await prisma.suppliers.findFirst({
         where: {

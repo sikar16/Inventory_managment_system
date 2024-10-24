@@ -9,12 +9,12 @@ import { useGetAllSupplierCategoryQuery } from "../../../../services/supplierCat
 import { useToast } from "../../../../context/ToastContext";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ErrorResponseType } from "../../../../_types/request_reponse_type";
-import { SupplierType } from "../../../../_types/supplier_type"; // Update this import based on your structure
+import { SupplierType } from "../../../../_types/supplier_type";
 import { supplierCategoryType } from "../../../../_types/supplierCategory_type";
 
 interface UpdateSuppliersProps {
   handleCloseDialog: () => void;
-  selectedRowData: SupplierType | null; // Assuming this type has the properties of a supplier
+  selectedRowData: SupplierType | null;
 }
 
 interface UpdateSupplierFormType {
@@ -41,12 +41,13 @@ const UpdateSuppliers: React.FC<UpdateSuppliersProps> = ({
     handleSubmit,
     formState: { errors },
     setValue,
+    watch,
   } = useForm<UpdateSupplierFormType>({
     defaultValues: {
       fullName: selectedRowData?.fullName || "",
       email: selectedRowData?.email || "",
       phone: selectedRowData?.phone || "",
-      categoryId: selectedRowData?.categoryId,
+      categoryId: selectedRowData?.categoryId, // Ensure this is set to an empty string if null
       country: selectedRowData?.address.country || "",
       city: selectedRowData?.address.city || "",
       subCity: selectedRowData?.address.subCity || "",
@@ -60,7 +61,7 @@ const UpdateSuppliers: React.FC<UpdateSuppliersProps> = ({
       setValue("fullName", selectedRowData.fullName);
       setValue("email", selectedRowData.email);
       setValue("phone", selectedRowData.phone);
-      setValue("categoryId", selectedRowData.categoryId);
+      setValue("categoryId", selectedRowData.categoryId); // Ensure to set categoryId correctly
       setValue("country", selectedRowData.address.country);
       setValue("city", selectedRowData.address.city);
       setValue("subCity", selectedRowData.address.subCity);
@@ -70,7 +71,6 @@ const UpdateSuppliers: React.FC<UpdateSuppliersProps> = ({
 
   const onSubmit: SubmitHandler<UpdateSupplierFormType> = async (data) => {
     if (selectedRowData) {
-      console.log(selectedRowData.id);
       try {
         await updateSupplier({
           body: {
@@ -79,13 +79,15 @@ const UpdateSuppliers: React.FC<UpdateSuppliersProps> = ({
             phone: data.phone,
             categoryId: data.categoryId,
             address: {
+              createdAt: selectedRowData.address.createdAt,
               country: data.country,
               city: data.city,
               subCity: data.subCity,
               wereda: data.wereda,
+              id: selectedRowData.address.id,
             },
           },
-          params: selectedRowData.id,
+          params: { id: selectedRowData.id },
         }).unwrap();
 
         setToastData({
@@ -155,6 +157,7 @@ const UpdateSuppliers: React.FC<UpdateSuppliersProps> = ({
           className="w-full mt-2"
           {...register("categoryId", { required: "Category is required" })}
           error={!!errors.categoryId}
+          value={watch("categoryId")} // Make sure the Select reflects the selected category
           disabled={isLoading}
         >
           {isSuccess &&

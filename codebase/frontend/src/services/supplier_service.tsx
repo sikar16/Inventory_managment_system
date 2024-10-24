@@ -48,14 +48,14 @@ export const supplierApi = createApi({
         return extractErrorMessage(response.data.message as string);
       },
     }),
-    updateSupplier: builder.mutation<void, { id: number; data: SupplierType }>({
-      query: ({ id, data }) => ({
-        url: `/${id}`,
+    updateSupplier: builder.mutation({
+      query: ({ body, params }: { body: any; params: { id: number } }) => ({
+        url: `/${params.id}`,
         method: "PUT", // Use PUT for updating
         headers: {
           "Content-Type": "application/json",
         },
-        body: data,
+        body: body,
       }),
       invalidatesTags: ["supplier"], // Invalidate cache after mutation
       transformErrorResponse: (response: any) => {

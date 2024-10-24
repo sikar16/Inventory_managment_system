@@ -109,9 +109,9 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
             helperText={errors.phone ? errors.phone.message : ""}
           />
 
-          <InputLabel id="category-label" className="mt-2">
+          <p id="category-label" className="mt-2">
             Category
-          </InputLabel>
+          </p>
           <Select
             labelId="category-label"
             variant="outlined"
