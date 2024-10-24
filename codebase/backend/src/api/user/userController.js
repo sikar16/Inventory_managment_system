@@ -89,8 +89,8 @@ const userController = {
       const skip = parseInt(req.query.skip) || 0;
       const take = parseInt(req.query.take) || 10;
       const users = await prisma.users.findMany({
-        take,
-        skip,
+        // take,
+        // skip,
         include: {
           profile: {
             include: {
@@ -112,7 +112,7 @@ const userController = {
       });
     }
   },
-  getAllUserByRole:async (req, res, next) => {
+  getAllUserByRole: async (req, res, next) => {
     try {
       const userRole = req.params.role;
 
@@ -127,8 +127,8 @@ const userController = {
       const users = await prisma.users.findMany({
         take,
         skip,
-        where:{
-          role:userRole
+        where: {
+          role: userRole,
         },
         include: {
           profile: {

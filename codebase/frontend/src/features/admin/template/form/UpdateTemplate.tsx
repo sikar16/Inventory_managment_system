@@ -1,31 +1,53 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import {
-  useAddNewTemplateMutation,
+  useUpdateTemplateMutation,
   useGetAllTemplatesQuery,
 } from "../../../../services/template_service";
 import { useToast } from "../../../../context/ToastContext"; // Import toast context
+import { TemplateAttributeType } from "../../../../_types/template_type";
 
-interface AddTemplateProps {
+interface UpdateTemplateProps {
   handleCloseDialog: () => void;
+  template: {
+    id: number;
+    name: string;
+    attributes: TemplateAttributeType[];
+  } | null; // Template to be updated
 }
 
 const dataTypeOptions = ["STRING", "DOUBLE", "INT", "DATE_TIME"];
 
-const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog }) => {
+const UpdateTemplate: React.FC<UpdateTemplateProps> = ({
+  handleCloseDialog,
+  template, // Template to be updated
+}) => {
   const { setToastData } = useToast(); // Using toast for success/error messages
   const [customTemplate, setCustomTemplate] = useState("");
   const [attributes, setAttributes] = useState<
     { name: string; dataType: string }[]
   >([]);
-  const [addTemplate, { isLoading, isError, error }] =
-    useAddNewTemplateMutation();
+  const [updateTemplate, { isLoading, isError, error }] =
+    useUpdateTemplateMutation();
 
   const { isError: isTemplateError, isLoading: isTemplateLoading } =
     useGetAllTemplatesQuery();
+
+  // Prepopulate form with existing template data
+  useEffect(() => {
+    if (template) {
+      setCustomTemplate(template.name);
+      setAttributes(
+        template.attributes.map((attr) => ({
+          name: attr.name,
+          dataType: attr.dataType,
+        }))
+      );
+    }
+  }, [template]);
 
   const handleAddAttribute = () => {
     setAttributes([...attributes, { name: "", dataType: "STRING" }]); // Default dataType is STRING
@@ -48,7 +70,7 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog }) => {
     setAttributes(updatedAttributes);
   };
 
-  const handleAddTemplate = async () => {
+  const handleUpdateTemplate = async () => {
     if (!customTemplate) {
       alert("Please enter a template name.");
       return;
@@ -61,22 +83,25 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog }) => {
     }
 
     const formData = {
+      id: template?.id, // Pass the template ID for update
       name: customTemplate,
       attributes: attributes,
     };
 
-    try {
-      await addTemplate(formData).unwrap(); // Unwrap to handle promise correctly
-      setToastData({
-        message: "Template added successfully",
-        success: true,
-      });
-      handleCloseDialog();
-    } catch (err: any) {
-      setToastData({
-        message: `${error?.toString()}`,
-        success: false,
-      });
+    if (template) {
+      try {
+        await updateTemplate({ data: formData, id: template?.id }).unwrap(); // Unwrap to handle promise correctly
+        setToastData({
+          message: "Template updated successfully",
+          success: true,
+        });
+        handleCloseDialog();
+      } catch (err: any) {
+        setToastData({
+          message: `${error?.toString()}`,
+          success: false,
+        });
+      }
     }
   };
 
@@ -149,9 +174,9 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog }) => {
               type="button" // Use button type instead of submit to manually handle submission
               disabled={isLoading}
               className="bg-[#002a47] py-1 px-3 text-white rounded-md"
-              onClick={handleAddTemplate}
+              onClick={handleUpdateTemplate}
             >
-              {isLoading ? "Adding..." : "Add Template"}
+              {isLoading ? "Updating..." : "Update Template"}
             </button>
           </div>
           {isError && <p className="text-red-500">{error.toString()}</p>}{" "}
@@ -162,4 +187,4 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog }) => {
   );
 };
 
-export default AddTemplate;
+export default UpdateTemplate;

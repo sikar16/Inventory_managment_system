@@ -83,6 +83,12 @@ export const templateApi = createApi({
         body: data,
       }),
       invalidatesTags: ["Template"], // Invalidates tags for refetching
+      transformResponse: (response: any) => {
+        const data = response;
+        console.log(data);
+
+        return data;
+      },
       transformErrorResponse: (response: any) => {
         console.log(response);
         return extractErrorMessage(response.data.message as string);
@@ -90,13 +96,7 @@ export const templateApi = createApi({
     }),
 
     updateTemplate: builder.mutation({
-      query: ({
-        id,
-        data,
-      }: {
-        id: number;
-        data: Partial<TemplateResponseType>;
-      }) => ({
+      query: ({ id, data }: { id: number; data: any }) => ({
         url: `/${id}`,
         method: "PUT",
         headers: {

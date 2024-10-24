@@ -23,6 +23,7 @@ const TemplateList = () => {
   const handleClickClose = () => {
     setOpen(false);
   };
+  console.log(templates);
 
   return (
     <div>

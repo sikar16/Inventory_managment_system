@@ -23,6 +23,7 @@ import {
   TemplateResponseType,
   useDeleteTemplateMutation,
 } from "../../../services/template_service";
+import UpdateTemplate from "./form/UpdateTemplate";
 
 export type TemplateListTableProps = {
   templateList: TemplateResponseType[] | undefined;
@@ -153,7 +154,7 @@ const TemplateListTable = ({
     enableRowSelection: true,
     initialState: {
       pagination: {
-        pageSize: 20,
+        pageSize: 5,
         pageIndex: 0,
       },
       showGlobalFilter: true, // This should be true
@@ -238,10 +239,10 @@ const TemplateListTable = ({
     <Box>
       <MaterialReactTable table={table} />
       <Dialog open={openEdit}>
-        {/* <UpdateProductCategory
+        <UpdateTemplate
           handleCloseDialog={handleCloseEdit}
-          selectedRowData={selectedRowData}
-        /> */}
+          template={selectedRowData}
+        />
       </Dialog>
       <Dialog open={openReset}></Dialog>
       <Dialog open={openDelete}>
