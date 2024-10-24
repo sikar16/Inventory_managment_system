@@ -120,7 +120,7 @@ const SupplierResponse: React.FC = () => {
     }));
 
     const totalPrice = items.reduce(
-      (acc, item, index) => acc + item.unitPrice * item.quantity,
+      (acc, item) => acc + item.unitPrice * item.quantity,
       0
     );
 

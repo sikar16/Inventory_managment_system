@@ -14,13 +14,7 @@ function Profile() {
     year: "numeric",
   });
 
-  const {
-    data: user,
-    isSuccess,
-    isError,
-    isLoading,
-    error,
-  } = useGetMyQuery("");
+  const { data: user, isSuccess, isError, isLoading, error } = useGetMyQuery();
 
   return (
     <>
@@ -182,13 +176,36 @@ function Profile() {
                   />
                 </div>
               </div>
-              <div className='flex mt-20 gap-2 px-10'>
-                <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24"><path fill="#002A47" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"></path></svg>
-                <p className='text-gray-400 text-sm'>{user.email}</p>
-                <svg xmlns="http://www.w3.org/2000/svg" width={15} height={15} viewBox="0 0 48 48">
-                  <g fill="none" stroke="black" strokeLinejoin="round" strokeWidth={2}>
+              <div className="flex mt-20 gap-2 px-10">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={24}
+                  height={24}
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="#002A47"
+                    d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"
+                  ></path>
+                </svg>
+                <p className="text-gray-400 text-sm">{user.email}</p>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={15}
+                  height={15}
+                  viewBox="0 0 48 48"
+                >
+                  <g
+                    fill="none"
+                    stroke="black"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                  >
                     <path strokeLinecap="round" d="M7 42H43"></path>
-                    <path fill="white" d="M11 26.7199V34H18.3172L39 13.3081L31.6951 6L11 26.7199Z"></path>
+                    <path
+                      fill="white"
+                      d="M11 26.7199V34H18.3172L39 13.3081L31.6951 6L11 26.7199Z"
+                    ></path>
                   </g>
                 </svg>
               </div>

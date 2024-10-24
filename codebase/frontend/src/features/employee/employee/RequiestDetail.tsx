@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { useGetSingleMaterialReqQuery } from "../../../services/materialReq_service";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Loader from "../../../component/Loading";
 import { useAuth } from "../../../context/AuthContext";
-import { Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
-import ApproveReq from "../../departmentHead/ApproveReq";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 
 // Sample data
 interface Column {
@@ -52,17 +56,12 @@ const RequestDetail: React.FC = () => {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDialog2, setOpenDialog2] = React.useState(false);
-  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [selectedProducts] = useState([]);
 
   const handleToggleDetails = (no: number) => {
     setExpandedRow(expandedRow === no ? null : no);
   };
 
-  const navigate = useNavigate();
-
-  const handleClose = () => {
-    navigate(-1); // This navigates back to the previous page
-  };
   const {
     data: materialReq,
     isError,
@@ -75,24 +74,22 @@ const RequestDetail: React.FC = () => {
 
   const rows = isSuccess
     ? materialReq.items.map((item, index) =>
-      createData(
-        index + 1,
-        item.product.name,
-        item.product.subcategory.name,
-        item.product.subcategory.category.name,
-        parseInt(item.quantityRequested),
-        item.remark
+        createData(
+          index + 1,
+          item.product.name,
+          item.product.subcategory.name,
+          item.product.subcategory.category.name,
+          parseInt(item.quantityRequested),
+          item.remark
+        )
       )
-    )
     : [];
 
   const handleConvertToPR = () => {
-    console.log("kkwww")
+    console.log("kkwww");
     setOpenDialog(true);
-    console.log("mmmmmm")
-  }
-
-
+    console.log("mmmmmm");
+  };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -102,17 +99,18 @@ const RequestDetail: React.FC = () => {
     setOpenDialog2(false);
   };
 
-  const handleCheckboxChange = (productName) => {
-    setSelectedProducts((prevSelected) =>
-      prevSelected.includes(productName)
-        ? prevSelected.filter((name) => name !== productName)
-        : [...prevSelected, productName]
-    );
+  const handleCheckboxChange = (productName: any) => {
+    console.log(productName);
+    // setSelectedProducts((prevSelected) =>
+    //   prevSelected.includes(productName)
+    //     ? prevSelected.filter((name) => name !== productName)
+    //     : [...prevSelected, productName]
+    // );
   };
 
   const handleConfirmToPR = () => {
-    setOpenDialog(false);  // Close the first dialog
-    setOpenDialog2(true);  // Open the second dialog
+    setOpenDialog(false); // Close the first dialog
+    setOpenDialog2(true); // Open the second dialog
   };
 
   if (isError) {
@@ -129,56 +127,54 @@ const RequestDetail: React.FC = () => {
           <header className="text-2xl py-1 px-2 rounded-e-full">
             {!isEmployee && <h2>Employee Information</h2>}
           </header>
-          {isDH &&
-            (!isEmployee && (
-              <div className="p-3 text-sm">
-                <p>
-                  <strong>Name: </strong>
-                  {materialReq.employee.profile.firstName}{" "}
-                  {materialReq.employee.profile.lastName}{" "}
-                  {materialReq.employee.profile.middleName}
-                </p>
-                <p>
-                  <strong>Role:</strong>
-                  {materialReq.employee.role}
-                </p>
-                <p>
-                  <strong> Department:</strong>
-                  {materialReq.employee.department.name}
-                </p>
-                <p>
-                  {" "}
-                  <strong>Email:</strong>
-                  {materialReq.employee.email}
-                </p>
-                <p>
-                  <strong>Phone:</strong>
-                  {materialReq.employee.profile.phone}
-                </p>
-              </div>
-            ))}
-          {isLS &&
-            (!isEmployee && (
-              <>
-                <p>
-                  <strong>Role:</strong>
-                  {materialReq.departmentHead?.role}
-                </p>
-                <p>
-                  <strong> Department:</strong>
-                  {materialReq.departmentHead?.department.name}
-                </p>
-                <p>
-                  {" "}
-                  <strong>Email:</strong>
-                  {materialReq.departmentHead?.email}
-                </p>
-                <p>
-                  <strong>Phone:</strong>
-                  {materialReq.departmentHead?.profile.phone}
-                </p>
-              </>
-            ))}
+          {isDH && !isEmployee && (
+            <div className="p-3 text-sm">
+              <p>
+                <strong>Name: </strong>
+                {materialReq.employee.profile.firstName}{" "}
+                {materialReq.employee.profile.lastName}{" "}
+                {materialReq.employee.profile.middleName}
+              </p>
+              <p>
+                <strong>Role:</strong>
+                {materialReq.employee.role}
+              </p>
+              <p>
+                <strong> Department:</strong>
+                {materialReq.employee.department.name}
+              </p>
+              <p>
+                {" "}
+                <strong>Email:</strong>
+                {materialReq.employee.email}
+              </p>
+              <p>
+                <strong>Phone:</strong>
+                {materialReq.employee.profile.phone}
+              </p>
+            </div>
+          )}
+          {isLS && !isEmployee && (
+            <>
+              <p>
+                <strong>Role:</strong>
+                {materialReq.departmentHead?.role}
+              </p>
+              <p>
+                <strong> Department:</strong>
+                {materialReq.departmentHead?.department.name}
+              </p>
+              <p>
+                {" "}
+                <strong>Email:</strong>
+                {materialReq.departmentHead?.email}
+              </p>
+              <p>
+                <strong>Phone:</strong>
+                {materialReq.departmentHead?.profile.phone}
+              </p>
+            </>
+          )}
           <h2 className=" px-2 rounded-e-full mb-5 text-2xl">
             Material Request Overview
           </h2>
@@ -362,10 +358,11 @@ const RequestDetail: React.FC = () => {
             {isDH && (
               <button
                 className={`px-4 py-2 text-white rounded-md transition duration-300 
-                ${materialReq.isApproviedByDH
+                ${
+                  materialReq.isApproviedByDH
                     ? "bg-red-600 hover:bg-red-500 dark:bg-red-800 hover:dark:bg-red-700"
                     : "bg-green-600 hover:bg-green-500 dark:bg-green-800 hover:dark:bg-green-700"
-                  }`}
+                }`}
               >
                 {materialReq.isApproviedByDH ? <p>Reject</p> : <p>Approve</p>}
               </button>
@@ -373,10 +370,14 @@ const RequestDetail: React.FC = () => {
           </div>
 
           <div>
-            {isLS &&
-              <button className="text-white bg-[#002a47] text-sm px-5 py-1 rounded-md mt-[5%]" onClick={handleConvertToPR}>
+            {isLS && (
+              <button
+                className="text-white bg-[#002a47] text-sm px-5 py-1 rounded-md mt-[5%]"
+                onClick={handleConvertToPR}
+              >
                 Convert to PR
-              </button>}
+              </button>
+            )}
           </div>
         </div>
         <div>
@@ -415,9 +416,14 @@ const RequestDetail: React.FC = () => {
                             <input
                               type="checkbox"
                               id={`checkbox-${index}`}
-                              onChange={() => handleCheckboxChange(i.product.name)}
+                              onChange={() =>
+                                handleCheckboxChange(i.product.name)
+                              }
                             />
-                            <label htmlFor={`checkbox-${index}`} className="ps-3">
+                            <label
+                              htmlFor={`checkbox-${index}`}
+                              className="ps-3"
+                            >
                               {i.product.name}
                             </label>
                           </li>
@@ -431,7 +437,8 @@ const RequestDetail: React.FC = () => {
               <DialogActions>
                 <button
                   onClick={handleConfirmToPR}
-                  className="border rounded-md border-blue-900 px-2 hover:bg-[#002a47] hover:text-white">
+                  className="border rounded-md border-blue-900 px-2 hover:bg-[#002a47] hover:text-white"
+                >
                   Confirm
                 </button>
               </DialogActions>
@@ -464,7 +471,6 @@ const RequestDetail: React.FC = () => {
 
             <DialogContent>
               <div>
-
                 <ul>
                   {selectedProducts.length > 0 ? (
                     selectedProducts.map((product, index) => (
@@ -473,10 +479,12 @@ const RequestDetail: React.FC = () => {
                           <th className="pe-3">{index + 1}.</th>
                           <td>{product}</td>
                           <td>
-                            <input type="number" className="border border-gray-200" />
+                            <input
+                              type="number"
+                              className="border border-gray-200"
+                            />
                           </td>
                         </tr>
-
                       </table>
                     ))
                   ) : (
@@ -489,7 +497,6 @@ const RequestDetail: React.FC = () => {
         </div>
       </>
     );
-
   }
 };
 

@@ -4,7 +4,6 @@ import { useToast } from "../../../../context/ToastContext";
 import { useUpdateDepartmentMutation } from "../../../../services/department_service";
 import { useAuth } from "../../../../context/AuthContext";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ErrorResponseType } from "../../../../_types/request_reponse_type";
 import { TextField } from "@mui/material";
 
 interface RegisterDepartmentFormType {
@@ -47,7 +46,6 @@ const EditDepartment: React.FC<EditDepartmentProps> = ({
         handleClickClose();
       } catch (error: any) {
         console.log(error.error);
-        const res: ErrorResponseType = error;
         setToastData({
           message: error.toString(),
           success: false,

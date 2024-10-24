@@ -4,7 +4,7 @@ import { useToast } from "../../../../context/ToastContext";
 import { useGetAllSupplierCategoryQuery } from "../../../../services/supplierCategoryService";
 import { useAddNewSupplierMutation } from "../../../../services/supplier_service";
 import { supplierCategoryType } from "../../../../_types/supplierCategory_type";
-import { TextField, MenuItem, Select, InputLabel, Button } from "@mui/material";
+import { TextField, MenuItem, Select } from "@mui/material";
 
 interface AddSuppliersProps {
   handleCloseDialog: () => void;

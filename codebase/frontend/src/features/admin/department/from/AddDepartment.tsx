@@ -3,7 +3,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useToast } from "../../../../context/ToastContext";
 import { useAuth } from "../../../../context/AuthContext";
 import { useAddNewDepartmentMutation } from "../../../../services/department_service";
-import { ErrorResponseType } from "../../../../_types/request_reponse_type";
 import { TextField } from "@mui/material";
 
 interface AddDepartmentProps {
@@ -37,7 +36,6 @@ const AddDepartment: React.FC<AddDepartmentProps> = ({ handleClickClose }) => {
       handleClickClose();
     } catch (error: any) {
       console.log(error.error);
-      const res: ErrorResponseType = error;
       setToastData({
         message: error.toString(),
         success: false,

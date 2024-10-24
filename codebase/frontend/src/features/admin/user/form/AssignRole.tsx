@@ -3,24 +3,6 @@ import { useAssignRoleMutation } from "../../../../services/user_service";
 import { useToast } from "../../../../context/ToastContext";
 import { UserType } from "../../../../_types/user_type";
 
-interface RowData {
-  no: number;
-  fullName: string;
-  department: string;
-  email: string;
-  phone: string;
-  role:
-    | "DEPARTMENT_HEAD"
-    | "EMPLOYEE"
-    | "ADMIN"
-    | "LOGESTIC_SUPERVISER"
-    | "FINANCE"
-    | "GENERAL_MANAGER"
-    | "STORE_KEEPER";
-  gender: string;
-  address: string;
-  actions: boolean;
-}
 interface AssignRoleProps {
   selectedRow: UserType | null;
   handleCloseDialog: () => void;

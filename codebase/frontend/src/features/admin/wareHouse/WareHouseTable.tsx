@@ -70,7 +70,7 @@ const WareHouseTable: React.FC<StoreProps> = ({ storeList }) => {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [openFaqIndex, setOpenFaqIndex] = React.useState<number | null>(null);
   const [openDialog, setOpenDialog] = React.useState(false);
-  const [storeProducts, setStoreProducts] = React.useState<{
+  const [storeProducts] = React.useState<{
     [key: string]: any[];
   }>({});
 
@@ -95,14 +95,6 @@ const WareHouseTable: React.FC<StoreProps> = ({ storeList }) => {
   ) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
-  };
-
-  const handleAddProduct = (product: any) => {
-    const storeName = storeList[openFaqIndex!].name;
-    setStoreProducts((prev) => ({
-      ...prev,
-      [storeName]: [...(prev[storeName] || []), product],
-    }));
   };
 
   return (

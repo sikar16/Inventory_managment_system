@@ -17,7 +17,6 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { DeleteForever } from "@mui/icons-material";
 import { useToast } from "../../../context/ToastContext";
 import Warning from "../../../component/Warning";
-import { ErrorResponseType } from "../../../_types/request_reponse_type";
 
 import {
   TemplateResponseType,
@@ -70,7 +69,6 @@ const TemplateListTable = ({
         handleCloseDelete();
       } catch (error: any) {
         handleCloseDelete();
-        const res: ErrorResponseType = error;
         setToastData({
           message: error.toString(),
           success: false,

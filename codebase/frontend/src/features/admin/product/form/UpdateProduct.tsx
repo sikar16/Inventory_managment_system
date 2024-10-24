@@ -9,7 +9,6 @@ import { useGetAllProductCategoryQuery } from "../../../../services/productCateg
 import { useGetAllProductSubCategoryQuery } from "../../../../services/productSubcategory_service";
 import { useToast } from "../../../../context/ToastContext";
 import { ProductSubCategoryType } from "../../../../_types/productSubcategory_type";
-import { ErrorResponseType } from "../../../../_types/request_reponse_type";
 import { ProductType } from "../../../../_types/product_type";
 
 interface UpdateProductProps {
@@ -74,7 +73,6 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
         handleCloseDialog();
       } catch (err: any) {
         console.log(err);
-        const res: ErrorResponseType = err;
         setToastData({
           message: err.toString(),
           success: false,

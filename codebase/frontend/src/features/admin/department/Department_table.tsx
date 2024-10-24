@@ -13,7 +13,6 @@ import {
   Autocomplete,
   TextField,
 } from "@mui/material";
-import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { DeleteForever } from "@mui/icons-material";
 import { useToast } from "../../../context/ToastContext";
@@ -35,7 +34,7 @@ const DepartmentListTable = ({ departmentList }: DepartmentListTableProps) => {
   const [deleteDepartment, { isLoading, isSuccess }] =
     useDeleteDepartmentMutation();
   const [openEdit, setOpenEdit] = useState(false);
-  const [openReset, setOpenReset] = useState(false);
+  const [openReset] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
 
   const handleClickOpenEdit = (row: DepartmentType) => {
@@ -45,11 +44,6 @@ const DepartmentListTable = ({ departmentList }: DepartmentListTableProps) => {
 
   const handleCloseEdit = () => {
     setOpenEdit(false);
-  };
-
-  const handleClickOpenReset = (row: DepartmentType) => {
-    setSelectedRowData(row);
-    setOpenReset(true);
   };
 
   const handleClickOpenDelete = (row: DepartmentType) => {

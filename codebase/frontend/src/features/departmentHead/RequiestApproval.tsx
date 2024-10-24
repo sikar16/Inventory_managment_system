@@ -3,9 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useGetSingleMaterialReqQuery } from "../../services/materialReq_service";
 import Loader from "../../component/Loading";
-import { MaterialRequest_type } from "../../_types/materialReq_type";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
-import ApproveReq from "./ApproveReq";
 
 // Sample data for table columns
 interface Column {
@@ -50,9 +48,7 @@ const RequestApproval: React.FC = () => {
   const location = useLocation();
   const { id } = location.state || {}; // Extract the ID from location state
   const { isEmployee, isLS, isDH } = useAuth(); // Auth context
-  const [selectedRow, setSelectedRow] = useState<MaterialRequest_type | null>(
-    null
-  );
+  // const [setSelectedRow] = useState<MaterialRequest_type | null>(null);
   const [openDialog, setOpenDialog] = useState(false); // Dialog state for approval
 
   const [expandedRow, setExpandedRow] = useState<number | null>(null); // State for expanding rows
@@ -74,20 +70,20 @@ const RequestApproval: React.FC = () => {
   // Create table rows based on the material request data
   const rows = isSuccess
     ? materialReq.items.map((item, index) =>
-      createData(
-        index + 1,
-        item.product.name,
-        item.product.subcategory.name,
-        item.product.subcategory.category.name,
-        parseInt(item.quantityRequested),
-        item.remark
+        createData(
+          index + 1,
+          item.product.name,
+          item.product.subcategory.name,
+          item.product.subcategory.category.name,
+          parseInt(item.quantityRequested),
+          item.remark
+        )
       )
-    )
     : [];
 
   const handleApprove = async () => {
     if (materialReq) {
-      setSelectedRow(materialReq);
+      // setSelectedRow(materialReq);
       setOpenDialog(true);
     }
   };
@@ -245,7 +241,7 @@ const RequestApproval: React.FC = () => {
                         </p>
                         <p className="text-gray-700">
                           <strong>Description: </strong>
-                          {materialReq.description}
+                          {materialReq.id}
                         </p>
                       </div>
                     </td>
@@ -259,8 +255,9 @@ const RequestApproval: React.FC = () => {
         {(isLS || isDH) && (
           <div className="p-6">
             <button
-              className={`${materialReq.isApproviedByDH ? "bg-red-600" : "bg-green-500"
-                } px-5 py-2 text-white rounded-lg`}
+              className={`${
+                materialReq.isApproviedByDH ? "bg-red-600" : "bg-green-500"
+              } px-5 py-2 text-white rounded-lg`}
               onClick={handleApprove}
             >
               {materialReq.isApproviedByDH ? "Reject" : "Approve"}
@@ -276,10 +273,10 @@ const RequestApproval: React.FC = () => {
         >
           <DialogTitle>Approve Request</DialogTitle>
           <DialogContent>
-            <ApproveReq
+            {/* <ApproveReq
               handleCloseDialog={handleCloseDialog}
               selectedRow={selectedRow}
-            />
+            /> */}
           </DialogContent>
         </Dialog>
       </div>

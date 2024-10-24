@@ -22,8 +22,7 @@ const AddStore: React.FC<AddStoreProps> = ({ handleCloseDialog }) => {
     wereda: "",
   });
 
-  const [addStore, { isError, isSuccess, isLoading, error }] =
-    useAddNewStoreMutation();
+  const [addStore, { isError, isLoading, error }] = useAddNewStoreMutation();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;

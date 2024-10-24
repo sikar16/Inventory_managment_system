@@ -32,8 +32,7 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
   const { data: categories = [] } = useGetAllProductCategoryQuery();
   const { data: allSubCategories = [] } = useGetAllProductSubCategoryQuery();
   const { data: allTemplates = [] } = useGetAllTemplatesQuery();
-  const [addProduct, { isError, isSuccess, isLoading, error }] =
-    useAddNewProductMutation();
+  const [addProduct, { isLoading }] = useAddNewProductMutation();
 
   const { setToastData } = useToast(); // Using toast to display success/error messages
 

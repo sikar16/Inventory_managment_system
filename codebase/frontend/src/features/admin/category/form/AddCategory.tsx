@@ -15,7 +15,7 @@ const AddProductCategory: React.FC<AddProductCategoryProps> = ({
 }) => {
   const { setToastData } = useToast(); // Using toast to display success/error messages
   const [customCategory, setCustomCategory] = useState("");
-  const [addProductCategory, { isError, isSuccess, isLoading, error }] =
+  const [addProductCategory, { isError, isLoading, error }] =
     useAddNewProductCategoryMutation();
 
   const handleCustomCategoryChange = (

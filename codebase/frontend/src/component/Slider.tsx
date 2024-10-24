@@ -16,7 +16,7 @@ const Slider: React.FC<SliderProps> = ({ usersByDepartment }) => {
     isLoading,
     isSuccess,
     data: departments,
-  } = useGetAllDepartmentQuery("all department");
+  } = useGetAllDepartmentQuery();
 
   return (
     <>

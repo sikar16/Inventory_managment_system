@@ -43,7 +43,7 @@ function createData(
 }
 
 const PurchasedRequestDetail: React.FC = () => {
-  const { isEmployee, isLS, isDH } = useAuth(); // Auth context
+  const { isLS, isDH } = useAuth(); // Auth context
   const location = useLocation();
   const { id } = location.state || {};
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
