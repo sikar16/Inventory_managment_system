@@ -9,6 +9,7 @@ import {
 } from "../../../../services/template_service";
 import { useToast } from "../../../../context/ToastContext"; // Import toast context
 import { TemplateAttributeType } from "../../../../_types/template_type";
+import { InputLabel } from "@mui/material";
 
 interface UpdateTemplateProps {
   handleCloseDialog: () => void;
@@ -114,6 +115,9 @@ const UpdateTemplate: React.FC<UpdateTemplateProps> = ({
 
   return (
     <div className="mx-10 mb-10">
+      <InputLabel id="category-label">
+        <p className="my-3 text-xl font-bold">Update template</p>
+      </InputLabel>
       <form className="space-y-2">
         <TextField
           label="Template Name"

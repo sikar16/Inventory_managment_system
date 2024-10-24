@@ -72,9 +72,10 @@ const UpdateStore: React.FC<UpdateStoreProps> = ({
   return (
     <div className="mx-10 mb-10 w-[400px]">
       <form className="space-y-2" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <InputLabel id="store-name-label">Store Name</InputLabel>
+        <InputLabel id="category-label">
+          <p className="my-3 text-xl font-bold">Update store</p>
+        </InputLabel>{" "}
         {errors.name && <p className="text-red-500">{errors.name.message}</p>}
-
         <TextField
           label="Store Name"
           variant="outlined"
@@ -85,12 +86,10 @@ const UpdateStore: React.FC<UpdateStoreProps> = ({
           helperText={errors.name ? errors.name.message : ""}
           disabled={isLoading} // Disable field while loading
         />
-
         <InputLabel id="country-label">Country</InputLabel>
         {errors.country && (
           <p className="text-red-500">{errors.country.message}</p>
         )}
-
         <TextField
           label="Country"
           variant="outlined"
@@ -101,10 +100,8 @@ const UpdateStore: React.FC<UpdateStoreProps> = ({
           helperText={errors.country ? errors.country.message : ""}
           disabled={isLoading}
         />
-
         <InputLabel id="city-label">City</InputLabel>
         {errors.city && <p className="text-red-500">{errors.city.message}</p>}
-
         <TextField
           label="City"
           variant="outlined"
@@ -115,12 +112,10 @@ const UpdateStore: React.FC<UpdateStoreProps> = ({
           helperText={errors.city ? errors.city.message : ""}
           disabled={isLoading}
         />
-
         <InputLabel id="subCity-label">Sub City</InputLabel>
         {errors.subCity && (
           <p className="text-red-500">{errors.subCity.message}</p>
         )}
-
         <TextField
           label="Sub City"
           variant="outlined"
@@ -131,12 +126,10 @@ const UpdateStore: React.FC<UpdateStoreProps> = ({
           helperText={errors.subCity ? errors.subCity.message : ""}
           disabled={isLoading}
         />
-
         <InputLabel id="wereda-label">Wereda</InputLabel>
         {errors.wereda && (
           <p className="text-red-500">{errors.wereda.message}</p>
         )}
-
         <TextField
           label="Wereda"
           variant="outlined"
@@ -147,7 +140,6 @@ const UpdateStore: React.FC<UpdateStoreProps> = ({
           helperText={errors.wereda ? errors.wereda.message : ""}
           disabled={isLoading}
         />
-
         <div className="pt-10">
           <div className="flex justify-between gap-5">
             <Button variant="outlined" color="error" onClick={handleDiscard}>

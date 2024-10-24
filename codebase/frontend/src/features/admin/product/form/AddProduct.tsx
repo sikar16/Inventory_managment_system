@@ -135,6 +135,9 @@ const AddProduct: React.FC<AddProductProps> = ({ handleCloseDialog }) => {
   console.log(attributes);
   return (
     <div className="mx-10 mb-10 w-[400px]">
+      <InputLabel id="category-label">
+        <p className="my-3 text-xl font-bold">Add product</p>
+      </InputLabel>
       <form className="space-y-2">
         <TextField
           autoFocus

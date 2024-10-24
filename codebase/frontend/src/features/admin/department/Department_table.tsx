@@ -95,8 +95,8 @@ const DepartmentListTable = ({ departmentList }: DepartmentListTableProps) => {
           {
             accessorFn: (row) => `${row.name}`,
             id: "name",
-            header: "Name",
-            size: 250,
+            header: "Department",
+            size: 150,
             Filter: ({ column }) => (
               <Autocomplete
                 options={nameSuggestions}
@@ -133,7 +133,7 @@ const DepartmentListTable = ({ departmentList }: DepartmentListTableProps) => {
         pageSize: 20,
         pageIndex: 0,
       },
-      showGlobalFilter: true, // This should be true
+      showGlobalFilter: true,
       columnPinning: {
         left: ["mrt-row-expand", "mrt-row-select"],
         right: ["mrt-row-actions"],
@@ -225,7 +225,7 @@ const DepartmentListTable = ({ departmentList }: DepartmentListTableProps) => {
         <Warning
           handleClose={handleCloseDelete}
           handleAction={handleDeleteDepartment}
-          message={`Are you sure you want to delete department ${selectedRowData?.id} :  ${selectedRowData?.name}?`}
+          message={`Are you sure you want to delete department:  ${selectedRowData?.name}?`}
           isLoading={isLoading}
           isSuccess={isSuccess}
         />

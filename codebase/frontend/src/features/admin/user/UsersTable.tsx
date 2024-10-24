@@ -376,7 +376,7 @@ const UsersListTable = ({ userList }: UsersListTableProps) => {
         <Warning
           handleClose={handleCloseDelete}
           handleAction={handleDeleteUser}
-          message={`Are you sure you want to delete product category ${selectedRowData?.id} :  ${selectedRowData?.profile.firstName}?`}
+          message={`Are you sure you want to delete user :  ${selectedRowData?.profile.firstName}?`}
           isLoading={isLoading}
           isSuccess={isSuccess}
         />

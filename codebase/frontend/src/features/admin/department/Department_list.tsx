@@ -18,26 +18,30 @@ const Department_list = () => {
   };
 
   return (
-    <div>
-      <Box sx={{ position: "relative" }}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: 1,
-            right: 1,
-            margin: 0,
-          }}
-        >
-          <RectangularButton type="primary" onClick={handleClickOpen}>
-            Add Department
-          </RectangularButton>
+    <>
+      <p className="text-2xl font-semibold mb-3">Department</p>
+      <div className="">
+        <Box sx={{ position: "relative" }}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: 1,
+              right: 1,
+              margin: 0,
+              padding: 2,
+            }}
+          >
+            <RectangularButton type="primary" onClick={handleClickOpen}>
+              <p className="px-5">Add Department</p>
+            </RectangularButton>
+          </Box>
         </Box>
-      </Box>
-      <DepartmentListTable departmentList={departments} />
-      <Dialog open={open} onClose={handleClickClose}>
-        <AddDepartment handleClickClose={handleClickClose} />
-      </Dialog>
-    </div>
+        <DepartmentListTable departmentList={departments} />
+        <Dialog open={open} onClose={handleClickClose}>
+          <AddDepartment handleClickClose={handleClickClose} />
+        </Dialog>
+      </div>
+    </>
   );
 };
 

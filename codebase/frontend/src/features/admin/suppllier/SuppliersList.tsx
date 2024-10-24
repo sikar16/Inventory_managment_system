@@ -19,26 +19,31 @@ const SuppliersList = () => {
   };
 
   return (
-    <div>
-      <Box sx={{ position: "relative" }}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: 1,
-            right: 1,
-            margin: 0,
-          }}
-        >
-          <RectangularButton type="primary" onClick={handleClickOpen}>
-            Add Supplayer
-          </RectangularButton>
+    <>
+      <p className="text-2xl font-semibold mb-3">Category</p>
+
+      <div>
+        <Box sx={{ position: "relative" }}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: 1,
+              right: 1,
+              margin: 0,
+              padding: 2,
+            }}
+          >
+            <RectangularButton type="primary" onClick={handleClickOpen}>
+              <p className="px-2">Add Supplayer</p>
+            </RectangularButton>
+          </Box>
         </Box>
-      </Box>
-      <SupplayerListTable supplayerList={suppliers} />
-      <Dialog open={open} onClose={handleClickClose}>
-        <AddSuppliers handleCloseDialog={handleClickClose} />
-      </Dialog>
-    </div>
+        <SupplayerListTable supplayerList={suppliers} />
+        <Dialog open={open} onClose={handleClickClose}>
+          <AddSuppliers handleCloseDialog={handleClickClose} />
+        </Dialog>
+      </div>
+    </>
   );
 };
 

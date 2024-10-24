@@ -56,26 +56,26 @@ const EditDepartment: React.FC<EditDepartmentProps> = ({
 
   return (
     <div className="w-full">
-      {/* Close icon to close the modal */}
-      <div
-        className="absolute top-1 left-0 right-0 m-2 p-2 cursor-pointer text-red-800"
-        onClick={handleClickClose}
-      >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M6 18L18 6M6 6l12 12"
-          ></path>
-        </svg>
+      <div className="flex justify-between mt-4 ">
+        <h3 className="text-xl ms-3">Edit Department</h3>
+        <div className=" p-2 cursor-pointer " onClick={handleClickClose}>
+          <svg
+            className="w-3 h-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </div>
       </div>
+
       <br />
       <div className="w-full max-w-md p-6 shadow-md rounded-lg text-center m-auto">
         <form onSubmit={handleSubmit(onSubmit)} noValidate>

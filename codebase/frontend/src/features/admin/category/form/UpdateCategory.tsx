@@ -72,8 +72,9 @@ const UpdateProductCategory: React.FC<UpdateProductCategoryProps> = ({
   return (
     <div className="mx-10 mb-10 w-[400px]">
       <form className="space-y-2" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <InputLabel id="category-label">Category</InputLabel>
-
+        <InputLabel id="category-label">
+          <p className="mt-3 text-xl font-bold">Category</p>
+        </InputLabel>
         {/* Display error message if request fails */}
         {errors.name && <p className="text-red-500">{errors.name.message}</p>}
 

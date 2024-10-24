@@ -112,6 +112,9 @@ const UpdateSuppliers: React.FC<UpdateSuppliersProps> = ({
   return (
     <div className="mx-10 mb-10 w-[400px]">
       <form className="space-y-2" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <InputLabel id="category-label">
+          <p className="m-3 text-xl font-bold">Supplier Category</p>
+        </InputLabel>
         <InputLabel id="fullName-label">Full Name</InputLabel>
         <TextField
           label="Full Name"

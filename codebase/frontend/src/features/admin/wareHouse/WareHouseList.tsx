@@ -43,53 +43,57 @@ export default function WareHouseList() {
     }) || [];
 
   return (
-    <div className="mt-10">
-      <Title
-        tableName={"Stock"}
-        action={"Add Stock"}
-        onClick={handleOpenDialog}
-      />
+    <>
+      <p className="text-2xl font-semibold mb-3">Warehouse</p>
 
-      <hr className="w-full text-black bg-black" />
-
-      <div className="my-4 justify-center flex">
-        <input
-          type="text"
-          placeholder="Search"
-          className="w-[90%] bg-white dark:bg-[#313131] rounded-md py-[5px] px-3 focus:outline-none"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+      <div className="mt-10">
+        <Title
+          tableName={"Stock"}
+          action={"Add Stock"}
+          onClick={handleOpenDialog}
         />
-      </div>
 
-      <WareHouseTable storeList={filteredData} />
+        <hr className="w-full text-black bg-black" />
 
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <div className="flex justify-between me-5">
-          <DialogTitle>Add New Warehouse</DialogTitle>
-          <DialogActions>
-            <svg
-              onClick={handleCloseDialog}
-              xmlns="http://www.w3.org/2000/svg"
-              width={25}
-              height={25}
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="none"
-                stroke="black"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"
-              ></path>
-            </svg>
-          </DialogActions>
+        <div className="my-4 justify-center flex">
+          <input
+            type="text"
+            placeholder="Search"
+            className="w-[90%] bg-white dark:bg-[#313131] rounded-md py-[5px] px-3 focus:outline-none"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
-        <DialogContent>
-          <AddWareHouse handleCloseDialog={handleCloseDialog} />
-        </DialogContent>
-      </Dialog>
-    </div>
+
+        <WareHouseTable storeList={filteredData} />
+
+        <Dialog open={openDialog} onClose={handleCloseDialog}>
+          <div className="flex justify-between me-5">
+            <DialogTitle>Add New Warehouse</DialogTitle>
+            <DialogActions>
+              <svg
+                onClick={handleCloseDialog}
+                xmlns="http://www.w3.org/2000/svg"
+                width={25}
+                height={25}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="none"
+                  stroke="black"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"
+                ></path>
+              </svg>
+            </DialogActions>
+          </div>
+          <DialogContent>
+            <AddWareHouse handleCloseDialog={handleCloseDialog} />
+          </DialogContent>
+        </Dialog>
+      </div>
+    </>
   );
 }

@@ -4,7 +4,7 @@ import { useToast } from "../../../../context/ToastContext";
 import { useGetAllSupplierCategoryQuery } from "../../../../services/supplierCategoryService";
 import { useAddNewSupplierMutation } from "../../../../services/supplier_service";
 import { supplierCategoryType } from "../../../../_types/supplierCategory_type";
-import { TextField, MenuItem, Select } from "@mui/material";
+import { TextField, MenuItem, Select, InputLabel } from "@mui/material";
 
 interface AddSuppliersProps {
   handleCloseDialog: () => void;
@@ -55,38 +55,21 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
   return (
     <div className="w-full">
       {/* Close icon to close the modal */}
-      <div
-        className="absolute top-1 left-0 right-0 m-2 p-2 cursor-pointer text-red-800"
-        onClick={handleCloseDialog}
-      >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M6 18L18 6M6 6l12 12"
-          ></path>
-        </svg>
-      </div>
-      <br />
-      <div className="w-full max-w-md p-6 shadow-md rounded-lg text-center m-auto">
+      <div className="w-full max-w-md px-6 shadow-md rounded-lg my-2 m-auto">
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          {" "}
+          <InputLabel id="category-label">
+            <p className="m-3 text-xl font-bold">Supplier </p>
+          </InputLabel>
           <TextField
             label="Full Name"
             variant="outlined"
             size="small"
-            className="w-full mt-2"
+            className="w-full mt-2 mb-5"
             {...register("fullName", { required: "Full name is required" })}
             error={!!errors.fullName}
             helperText={errors.fullName ? errors.fullName.message : ""}
           />
-
           <TextField
             label="Email"
             type="email"
@@ -97,7 +80,6 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
             error={!!errors.email}
             helperText={errors.email ? errors.email.message : ""}
           />
-
           <TextField
             label="Phone"
             type="tel"
@@ -108,13 +90,13 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
             error={!!errors.phone}
             helperText={errors.phone ? errors.phone.message : ""}
           />
-
           <p id="category-label" className="mt-2">
             Category
           </p>
           <Select
             labelId="category-label"
             variant="outlined"
+            placeholder="category type"
             size="small"
             className="w-full mt-2"
             {...register("categoryId", { required: "Category is required" })}
@@ -131,7 +113,6 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
               {errors.categoryId.message}
             </span>
           )}
-
           <TextField
             label="Country"
             variant="outlined"
@@ -141,7 +122,6 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
             error={!!errors.country}
             helperText={errors.country ? errors.country.message : ""}
           />
-
           <TextField
             label="City"
             variant="outlined"
@@ -151,7 +131,6 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
             error={!!errors.city}
             helperText={errors.city ? errors.city.message : ""}
           />
-
           <TextField
             label="Sub-city"
             variant="outlined"
@@ -161,7 +140,6 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
             error={!!errors.subCity}
             helperText={errors.subCity ? errors.subCity.message : ""}
           />
-
           <TextField
             label="Wereda"
             variant="outlined"
@@ -171,7 +149,6 @@ const AddSuppliers: React.FC<AddSuppliersProps> = ({ handleCloseDialog }) => {
             error={!!errors.wereda}
             helperText={errors.wereda ? errors.wereda.message : ""}
           />
-
           <button
             type="submit"
             disabled={isLoading}

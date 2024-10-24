@@ -19,26 +19,31 @@ const CategoryList = () => {
   };
 
   return (
-    <div>
-      <Box sx={{ position: "relative" }}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: 1,
-            right: 1,
-            margin: 0,
-          }}
-        >
-          <RectangularButton type="primary" onClick={handleClickOpen}>
-            Add Category
-          </RectangularButton>
+    <>
+      <p className="text-2xl font-semibold mb-3">Category</p>
+
+      <div>
+        <Box sx={{ position: "relative" }}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: 1,
+              right: 1,
+              margin: 0,
+              padding: 2,
+            }}
+          >
+            <RectangularButton type="primary" onClick={handleClickOpen}>
+              <p className="px-3">Add Category</p>
+            </RectangularButton>
+          </Box>
         </Box>
-      </Box>
-      <ProductCategoryListTable productCategoryList={productCategory} />
-      <Dialog open={open} onClose={handleClickClose}>
-        <AddProductCategory handleCloseDialog={handleClickClose} />
-      </Dialog>
-    </div>
+        <ProductCategoryListTable productCategoryList={productCategory} />
+        <Dialog open={open} onClose={handleClickClose}>
+          <AddProductCategory handleCloseDialog={handleClickClose} />
+        </Dialog>
+      </div>
+    </>
   );
 };
 

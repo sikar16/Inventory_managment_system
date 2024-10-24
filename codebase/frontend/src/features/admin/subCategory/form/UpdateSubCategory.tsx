@@ -83,9 +83,10 @@ const UpdateProductSubCategory: React.FC<UpdateProductSubCategoryProps> = ({
   return (
     <div className="mx-10 mb-10 w-[400px]">
       <form className="space-y-2" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <InputLabel id="subcategory-label">Subcategory</InputLabel>
+        <InputLabel id="category-label">
+          <p className="my-3 text-xl font-bold">Sub-category</p>
+        </InputLabel>{" "}
         {errors.name && <p className="text-red-500">{errors.name.message}</p>}
-
         <TextField
           label="New Subcategory"
           variant="outlined"
@@ -96,7 +97,6 @@ const UpdateProductSubCategory: React.FC<UpdateProductSubCategoryProps> = ({
           helperText={errors.name ? errors.name.message : ""}
           disabled={isLoading}
         />
-
         <InputLabel id="category-label">Category</InputLabel>
         <Select
           labelId="category-label"
@@ -117,7 +117,6 @@ const UpdateProductSubCategory: React.FC<UpdateProductSubCategoryProps> = ({
         {errors.categoryId && (
           <p className="text-red-500">{errors.categoryId.message}</p>
         )}
-
         <div className="pt-10">
           <div className="flex justify-between gap-5">
             <Button variant="outlined" color="error" onClick={handleDiscard}>

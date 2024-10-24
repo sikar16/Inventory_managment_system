@@ -26,28 +26,33 @@ const TemplateList = () => {
   console.log(templates);
 
   return (
-    <div>
-      <Box sx={{ position: "relative" }}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: 1,
-            right: 1,
-            margin: 0,
-          }}
-        >
-          <RectangularButton type="primary" onClick={handleClickOpen}>
-            Add Template
-          </RectangularButton>
+    <>
+      <p className="text-2xl font-semibold mb-3">Template</p>
+
+      <div>
+        <Box sx={{ position: "relative" }}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: 1,
+              right: 1,
+              margin: 0,
+              padding: 2,
+            }}
+          >
+            <RectangularButton type="primary" onClick={handleClickOpen}>
+              <p className="px-3">Add Template</p>
+            </RectangularButton>
+          </Box>
         </Box>
-      </Box>
-      <TemplateListTable templateList={templates} />
-      <Dialog open={open} onClose={handleClickClose}>
-        <div className="m-4 p-4">
-          <AddTemplate handleCloseDialog={handleClickClose} />
-        </div>
-      </Dialog>
-    </div>
+        <TemplateListTable templateList={templates} />
+        <Dialog open={open} onClose={handleClickClose}>
+          <div className="m-4 p-4">
+            <AddTemplate handleCloseDialog={handleClickClose} />
+          </div>
+        </Dialog>
+      </div>
+    </>
   );
 };
 

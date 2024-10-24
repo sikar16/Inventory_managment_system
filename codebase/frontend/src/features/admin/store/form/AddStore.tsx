@@ -58,9 +58,10 @@ const AddStore: React.FC<AddStoreProps> = ({ handleCloseDialog }) => {
   return (
     <div className="mx-10 mb-10 w-[400px]">
       <form className="space-y-2">
-        <InputLabel id="store-name-label">Store Name</InputLabel>
+        <InputLabel id="category-label">
+          <p className="mt-3 text-xl font-bold">Add Store</p>
+        </InputLabel>{" "}
         {isError && <p className="text-red-500">{error.toString()}</p>}
-
         <TextField
           label="Store Name"
           variant="outlined"
@@ -71,7 +72,6 @@ const AddStore: React.FC<AddStoreProps> = ({ handleCloseDialog }) => {
           onChange={handleInputChange}
           disabled={isLoading} // Disable field while loading
         />
-
         <TextField
           label="Country"
           variant="outlined"
@@ -82,7 +82,6 @@ const AddStore: React.FC<AddStoreProps> = ({ handleCloseDialog }) => {
           onChange={handleInputChange}
           disabled={isLoading}
         />
-
         <TextField
           label="City"
           variant="outlined"
@@ -93,7 +92,6 @@ const AddStore: React.FC<AddStoreProps> = ({ handleCloseDialog }) => {
           onChange={handleInputChange}
           disabled={isLoading}
         />
-
         <TextField
           label="Sub City"
           variant="outlined"
@@ -104,7 +102,6 @@ const AddStore: React.FC<AddStoreProps> = ({ handleCloseDialog }) => {
           onChange={handleInputChange}
           disabled={isLoading}
         />
-
         <TextField
           label="Wereda"
           variant="outlined"
@@ -115,7 +112,6 @@ const AddStore: React.FC<AddStoreProps> = ({ handleCloseDialog }) => {
           onChange={handleInputChange}
           disabled={isLoading}
         />
-
         <div className="pt-10">
           <div className="flex justify-between gap-5">
             <Button variant="outlined" color="error" onClick={handleDiscard}>

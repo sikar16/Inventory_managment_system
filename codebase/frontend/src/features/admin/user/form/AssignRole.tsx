@@ -52,12 +52,26 @@ const AssignRole: React.FC<AssignRoleProps> = ({
 
   return (
     <div>
-      <p
-        onClick={handleCloseDialog}
-        className="hover:underline font-bold size-10 text-sm text-slate-900"
-      >
-        X
-      </p>
+      <div className="flex justify-between mx3">
+        <p className="text-xl font-semibold mb-3">Assign role</p>
+
+        <div className=" cursor-pointer" onClick={handleCloseDialog}>
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </div>
+      </div>
       <div className="w-full md:w-[45%] p-5 ">
         <label htmlFor="role" className="block text-sm font-medium ">
           Role

@@ -19,26 +19,31 @@ const SubCategoryList = () => {
   };
 
   return (
-    <div>
-      <Box sx={{ position: "relative" }}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: 1,
-            right: 1,
-            margin: 0,
-          }}
-        >
-          <RectangularButton type="primary" onClick={handleClickOpen}>
-            Add Sub Category
-          </RectangularButton>
+    <>
+      <p className="text-2xl font-semibold mb-3">Sub category</p>
+
+      <div>
+        <Box sx={{ position: "relative" }}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: 1,
+              right: 1,
+              margin: 0,
+              padding: 2,
+            }}
+          >
+            <RectangularButton type="primary" onClick={handleClickOpen}>
+              <p className="px-3">Add Sub-Category</p>
+            </RectangularButton>
+          </Box>
         </Box>
-      </Box>
-      <ProductSubCategoryListTable productCategoryList={productSubCategory} />
-      <Dialog open={open} onClose={handleClickClose}>
-        <AddProductCategory handleCloseDialog={handleClickClose} />
-      </Dialog>
-    </div>
+        <ProductSubCategoryListTable productCategoryList={productSubCategory} />
+        <Dialog open={open} onClose={handleClickClose}>
+          <AddProductCategory handleCloseDialog={handleClickClose} />
+        </Dialog>
+      </div>
+    </>
   );
 };
 

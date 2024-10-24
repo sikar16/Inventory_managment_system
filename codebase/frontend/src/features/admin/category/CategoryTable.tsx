@@ -56,12 +56,12 @@ const ProductCategoryListTable = ({
     setOpenDelete(false);
   };
 
-  const handleDeleteDepartment = async () => {
+  const handleDeleteproductCategory = async () => {
     if (selectedRowData?.id != null) {
       try {
         await deleteProductCategory({ params: selectedRowData?.id }).unwrap();
         setToastData({
-          message: "Department deleted successfully",
+          message: "productCategory deleted successfully",
           success: true,
         });
         handleCloseDelete();
@@ -76,7 +76,7 @@ const ProductCategoryListTable = ({
     } else {
       handleCloseDelete();
       setToastData({
-        message: "Department not selected is missing",
+        message: "productCategory not selected is missing",
         success: false,
       });
     }
@@ -92,8 +92,8 @@ const ProductCategoryListTable = ({
   const columns = useMemo<MRT_ColumnDef<ProductCategoryType>[]>(
     () => [
       {
-        id: "department",
-        header: "department",
+        id: "productCategory",
+        header: "product category",
         columns: [
           {
             accessorFn: (row) => `${row.name}`,
@@ -227,8 +227,8 @@ const ProductCategoryListTable = ({
       <Dialog open={openDelete}>
         <Warning
           handleClose={handleCloseDelete}
-          handleAction={handleDeleteDepartment}
-          message={`Are you sure you want to delete product category ${selectedRowData?.id} :  ${selectedRowData?.name}?`}
+          handleAction={handleDeleteproductCategory}
+          message={`Are you sure you want to delete product category :  ${selectedRowData?.name}?`}
           isLoading={isLoading}
           isSuccess={isSuccess}
         />

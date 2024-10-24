@@ -40,7 +40,9 @@ const AddSupplierCategory: React.FC<AddSupplierProps> = ({
   return (
     <div className="mx-10 mb-10 w-[350px]">
       <form className="space-y-2" onSubmit={handleAddCategory}>
-        <InputLabel id="category-label">Category</InputLabel>
+        <InputLabel id="category-label">
+          <p className="mt-3 text-xl font-bold">Supplier Category</p>
+        </InputLabel>
         <TextField
           label="New Category"
           variant="outlined"

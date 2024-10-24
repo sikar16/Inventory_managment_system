@@ -45,34 +45,33 @@ const AddDepartment: React.FC<AddDepartmentProps> = ({ handleClickClose }) => {
 
   return (
     <div className="w-full">
-      {/* Close icon to close the modal */}
-      <div
-        className="absolute top-1 left-0 right-0 m-2 p-2 cursor-pointer text-red-800"
-        onClick={handleClickClose}
-      >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M6 18L18 6M6 6l12 12"
-          ></path>
-        </svg>
+      <div className="flex justify-between m-4 ">
+        <p className="text-xl font-medium">Add Department</p>
+        {/* Close icon to close the modal */}
+        <div className=" cursor-pointer" onClick={handleClickClose}>
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </div>
       </div>
-      <br />
-      <div className="w-full max-w-md p-6 shadow-md rounded-lg text-center m-auto">
+      <div className="w-full max-w-md px-6 shadow-md rounded-lg text-center m-auto ">
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <TextField
             label="New Department"
             variant="outlined"
             size="small"
-            className="w-full mt-2"
+            className="w-full "
             {...register("name", { required: "Department name is required" })}
             error={!!errors.name}
             helperText={errors.name ? errors.name.message : ""}
@@ -81,7 +80,7 @@ const AddDepartment: React.FC<AddDepartmentProps> = ({ handleClickClose }) => {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-[#002a47] py-1 px-3 text-white rounded-md mt-4"
+            className="bg-[#002a47] py-1 px-3 mb-4 text-white rounded-md mt-4"
           >
             {isLoading ? "Adding..." : "Add Department"}
           </button>

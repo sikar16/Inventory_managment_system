@@ -20,28 +20,33 @@ const ProductList = () => {
   };
 
   return (
-    <div>
-      <Box sx={{ position: "relative" }}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: 1,
-            right: 1,
-            margin: 0,
-          }}
-        >
-          <RectangularButton type="primary" onClick={handleClickOpen}>
-            Add Product
-          </RectangularButton>
+    <>
+      <p className="text-2xl font-semibold mb-3">Product</p>
+
+      <div>
+        <Box sx={{ position: "relative" }}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: 1,
+              right: 1,
+              margin: 0,
+              padding: 2,
+            }}
+          >
+            <RectangularButton type="primary" onClick={handleClickOpen}>
+              <p className="px-2">Add Product</p>
+            </RectangularButton>
+          </Box>
         </Box>
-      </Box>
-      <ProductListTable productList={products} />
-      <Dialog open={open} onClose={handleClickClose}>
-        <div className="m-4 p-4">
-          <AddProduct handleCloseDialog={handleClickClose} />
-        </div>
-      </Dialog>
-    </div>
+        <ProductListTable productList={products} />
+        <Dialog open={open} onClose={handleClickClose}>
+          <div className="m-4 p-4">
+            <AddProduct handleCloseDialog={handleClickClose} />
+          </div>
+        </Dialog>
+      </div>
+    </>
   );
 };
 

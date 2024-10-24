@@ -8,6 +8,7 @@ import {
   useGetAllTemplatesQuery,
 } from "../../../../services/template_service";
 import { useToast } from "../../../../context/ToastContext"; // Import toast context
+import { InputLabel } from "@mui/material";
 
 interface AddTemplateProps {
   handleCloseDialog: () => void;
@@ -88,7 +89,10 @@ const AddTemplate: React.FC<AddTemplateProps> = ({ handleCloseDialog }) => {
   if (isTemplateError) return <div>Error loading templates</div>;
 
   return (
-    <div className="mx-10 mb-10">
+    <div className="">
+      <InputLabel id="category-label">
+        <p className="my-3 text-xl font-bold">Template</p>
+      </InputLabel>
       <form className="space-y-2">
         <TextField
           label="Template Name"

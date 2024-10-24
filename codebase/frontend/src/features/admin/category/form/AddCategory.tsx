@@ -54,7 +54,9 @@ const AddProductCategory: React.FC<AddProductCategoryProps> = ({
   return (
     <div className="mx-10 mb-10 w-[400px]">
       <form className="space-y-2">
-        <InputLabel id="category-label">Category</InputLabel>
+        <InputLabel id="category-label">
+          <p className="mt-3 text-xl font-bold">Category</p>
+        </InputLabel>
 
         {/* Display error message if request fails */}
         {isError && <p className="text-red-500">{error.toString()}</p>}

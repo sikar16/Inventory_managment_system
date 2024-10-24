@@ -84,6 +84,9 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
   return (
     <div className="mx-10 mb-10 w-[400px]">
       <form className="space-y-2">
+        <InputLabel id="category-label">
+          <p className="my-3 text-xl font-bold">Update product</p>
+        </InputLabel>
         <TextField
           autoFocus
           margin="dense"

@@ -56,7 +56,9 @@ const UpdateSupplierCategory: React.FC<UpdateSupplierCategoryProps> = ({
   return (
     <div className="mx-10 mb-10 w-[350px]">
       <form className="space-y-2" onSubmit={(e) => e.preventDefault()}>
-        <InputLabel id="category-label">Category</InputLabel>
+        <InputLabel id="category-label">
+          <p className="mt-3 text-xl font-bold">Supplier Category</p>
+        </InputLabel>{" "}
         <TextField
           label="Update Category"
           variant="outlined"
@@ -65,7 +67,6 @@ const UpdateSupplierCategory: React.FC<UpdateSupplierCategoryProps> = ({
           value={customCategory}
           onChange={handleCustomCategoryChange}
         />
-
         <div className="pt-10">
           <div className="flex justify-between gap-5">
             <Button variant="outlined" color="error" onClick={handleDiscard}>

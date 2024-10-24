@@ -18,26 +18,31 @@ const SupplierCategoryList = () => {
   };
 
   return (
-    <div>
-      <Box sx={{ position: "relative" }}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: 1,
-            right: 1,
-            margin: 0,
-          }}
-        >
-          <RectangularButton type="primary" onClick={handleClickOpen}>
-            Add Category
-          </RectangularButton>
+    <>
+      <p className="text-2xl font-semibold mb-3">Supplier category</p>
+
+      <div>
+        <Box sx={{ position: "relative" }}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: 1,
+              right: 1,
+              margin: 0,
+              padding: 2,
+            }}
+          >
+            <RectangularButton type="primary" onClick={handleClickOpen}>
+              <p className="px-2">Add Category</p>
+            </RectangularButton>
+          </Box>
         </Box>
-      </Box>
-      <SupplierCategoryListTable supplierCategoryList={supplierCategory} />
-      <Dialog open={open} onClose={handleClickClose}>
-        <AddSupplierCategory handleCloseDialog={handleClickClose} />
-      </Dialog>
-    </div>
+        <SupplierCategoryListTable supplierCategoryList={supplierCategory} />
+        <Dialog open={open} onClose={handleClickClose}>
+          <AddSupplierCategory handleCloseDialog={handleClickClose} />
+        </Dialog>
+      </div>
+    </>
   );
 };
 
