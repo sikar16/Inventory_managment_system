@@ -6,7 +6,7 @@ import Loading from "../../../component/Loading";
 import AddUser from "./AddUser";
 import Slider from "../../../component/Slider";
 import { DepartmentType } from "../../../_types/department_type";
-import { useGetAlldepartmentQuery } from "../../../services/department_service";
+import { useGetAllDepartmentQuery } from "../../../services/department_service";
 
 interface AddUserProps {
   departments: DepartmentType[]; // Assuming departments should be an array of DepartmentType
@@ -14,11 +14,19 @@ interface AddUserProps {
 
 const UserList: React.FC<AddUserProps> = () => {
   const [isAddingUser, setIsAddingUser] = React.useState(false);
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [selectedDepartment, setSelectedDepartment] = React.useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [selectedDepartment, setSelectedDepartment] = React.useState<
+    number | null
+  >(null);
 
-  const { data: usersData, isLoading, isError, error } = useGetAllUsersQuery("user");
-  const { data: departmentsData = [], isLoading: isDepartmentsLoading } = useGetAlldepartmentQuery("department");
+  const {
+    data: usersData,
+    isLoading,
+    isError,
+    error,
+  } = useGetAllUsersQuery("user");
+  const { data: departmentsData = [], isLoading: isDepartmentsLoading } =
+    useGetAllDepartmentQuery("department");
 
   // Error and loading states for users
   if (isError) return <h1>Error: {error.toString()}</h1>;
@@ -28,13 +36,14 @@ const UserList: React.FC<AddUserProps> = () => {
   if (isDepartmentsLoading) return <Loading />;
 
   // Reduce users data to count by department
-  const usersByDepartment: Record<number, number> = usersData?.reduce<Record<number, number>>((acc, user) => {
-    const departmentId = user?.department?.id;
-    if (departmentId) {
-      acc[departmentId] = (acc[departmentId] || 0) + 1;
-    }
-    return acc;
-  }, {}) ?? {};
+  const usersByDepartment: Record<number, number> =
+    usersData?.reduce<Record<number, number>>((acc, user) => {
+      const departmentId = user?.department?.id;
+      if (departmentId) {
+        acc[departmentId] = (acc[departmentId] || 0) + 1;
+      }
+      return acc;
+    }, {}) ?? {};
 
   // Filter users based on search term and selected department
   const filteredUsers = usersData?.filter((user) => {
@@ -44,12 +53,17 @@ const UserList: React.FC<AddUserProps> = () => {
 
     const lowercasedSearchTerm = searchTerm.toLowerCase();
     const matchesSearch =
-      (user.profile.firstName && user.profile.firstName.toLowerCase().includes(lowercasedSearchTerm)) ||
-      (user.profile.lastName && user.profile.lastName.toLowerCase().includes(lowercasedSearchTerm)) ||
-      (user.profile.middleName && user.profile.middleName.toLowerCase().includes(lowercasedSearchTerm)) ||
+      (user.profile.firstName &&
+        user.profile.firstName.toLowerCase().includes(lowercasedSearchTerm)) ||
+      (user.profile.lastName &&
+        user.profile.lastName.toLowerCase().includes(lowercasedSearchTerm)) ||
+      (user.profile.middleName &&
+        user.profile.middleName.toLowerCase().includes(lowercasedSearchTerm)) ||
       (user.email && user.email.toLowerCase().includes(lowercasedSearchTerm)) ||
-      (user.profile.phone && user.profile.phone.toLowerCase().includes(lowercasedSearchTerm)) ||
-      (user.department.name && user.department.name.toLowerCase().includes(lowercasedSearchTerm));
+      (user.profile.phone &&
+        user.profile.phone.toLowerCase().includes(lowercasedSearchTerm)) ||
+      (user.department.name &&
+        user.department.name.toLowerCase().includes(lowercasedSearchTerm));
 
     const matchesDepartment =
       !selectedDepartment ||
@@ -71,23 +85,31 @@ const UserList: React.FC<AddUserProps> = () => {
     <div className="mt-5">
       {!isAddingUser ? (
         <>
-          <div className='flex justify-between mb-3 mx-4'>
-            <p className='text-[#002a47] dark:text-gray-200 text-4xl font-medium'>Users</p>
-            <Link to='/admin/add-user'>
-              <button onClick={handleAddUserClick} className='bg-[#002A47] dark:bg-[#313131] hover:dark:bg-[#5a5a5a] dark:text-gray-200 px-3 py-1 text-white rounded-md'>
+          <div className="flex justify-between mb-3 mx-4">
+            <p className="text-[#002a47] dark:text-gray-200 text-4xl font-medium">
+              Users
+            </p>
+            <Link to="/admin/add-user">
+              <button
+                onClick={handleAddUserClick}
+                className="bg-[#002A47] dark:bg-[#313131] hover:dark:bg-[#5a5a5a] dark:text-gray-200 px-3 py-1 text-white rounded-md"
+              >
                 Add user
               </button>
             </Link>
           </div>
-          <Slider usersByDepartment={usersByDepartment} /> {/* Pass usersByDepartment to Slider */}
+          <Slider usersByDepartment={usersByDepartment} />{" "}
+          {/* Pass usersByDepartment to Slider */}
           <div className="my-4 px-5">
             <div className="text-gray-500">
               <select
                 className="border border-gray-300 rounded-md p-2 outline-none bg-gray-100"
-                value={selectedDepartment || ''} // Set the value based on selectedDepartment
+                value={selectedDepartment || ""} // Set the value based on selectedDepartment
                 onChange={handleDepartmentChange} // Call the function on change
               >
-                <option value="" className="font-bold">All users</option>
+                <option value="" className="font-bold">
+                  All users
+                </option>
                 {departmentsData?.map((department) => (
                   <option key={department.id} value={department.id}>
                     {department.name}
@@ -113,6 +135,6 @@ const UserList: React.FC<AddUserProps> = () => {
       )}
     </div>
   );
-}
+};
 
 export default UserList;

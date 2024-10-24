@@ -35,13 +35,13 @@ import MaterialRequiest from "../features/logesticsSuperviser/MaterialRequiest";
 // import PurchasedRequiestDetail from "../features/logesticsSuperviser/PurchasedRequiestDetail";
 import PurchasedOrder from "../features/logesticsSuperviser/PurchasedOrder";
 import PurchasedRequiestDetail from "../features/logesticsSuperviser/PurchasedRequiestDetail";
-import SupplierOffer from "../features/logesticsSuperviser/SupplierOffer";
 import SupplierResponse from "../features/logesticsSuperviser/SupplierResponce";
 import PurchasedReqestF from "../features/finance/PurchasedReqestF";
 import PurchasedOrderF from "../features/finance/PurchasedOrderF";
 import PurchasedRequestDetail from "../features/finance/PurchasedRequiestDetail";
 import PurchasedRequestM from "../features/manager/PurchasedReqestM";
 import PurchasedRequestDetailM from "../features/manager/PurchasedRequiestDetailM";
+import Department_list from "../features/admin/department/Department_list";
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -64,7 +64,9 @@ export const router = createBrowserRouter(
           }
         />
         <Route path="/admin/user" element={<UserList departments={[]} />} />
-        <Route path="/admin/add-user" element={<AddUser />} />
+
+        <Route path="/admin/department-list" element={<Department_list />} />
+        <Route path="/admin/user" element={<UserList departments={[]} />} />
         <Route path="/admin/product" element={<ProductList />} />
         <Route path="/admin/category" element={<CategoryList />} />
         <Route path="/admin/sub-category" element={<SubCategoryList />} />
@@ -252,4 +254,3 @@ export const router = createBrowserRouter(
     </>
   )
 );
-
