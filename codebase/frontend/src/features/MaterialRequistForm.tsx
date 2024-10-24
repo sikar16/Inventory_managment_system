@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useGetAllproductSubCategoryQuery } from "../services/productSubcategory_service";
+import { useGetAllProductSubCategoryQuery } from "../services/productSubcategory_service";
 import { ProductCategoryType } from "../_types/productCategory_type";
 import { ProductSubCategoryType } from "../_types/productSubcategory_type";
 import { ProductType } from "../_types/product_type";
@@ -25,8 +25,7 @@ const MaterialRequestForm: React.FC = () => {
   const { toastData, setToastData } = useToast();
   const { isSuccess: isCategorySuccess, data: categoryList = [] } =
     useGetAllProductCategoryQuery();
-  const { data: subCategoriesList = [] } =
-    useGetAllproductSubCategoryQuery("subcategory");
+  const { data: subCategoriesList = [] } = useGetAllProductSubCategoryQuery();
   const { data: productList = [] } = useGetAllproductQuery("product");
 
   const [selectedProductAttributes, setSelectedProductAttributes] = useState<{

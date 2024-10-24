@@ -1,184 +1,258 @@
-import React from "react";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import { ProductSubCategoryType } from "../../../_types/productSubcategory_type";
+import { useMemo, useState } from "react";
+import {
+  MaterialReactTable,
+  useMaterialReactTable,
+  type MRT_ColumnDef,
+} from "material-react-table";
+import {
+  Box,
+  Dialog,
+  ListItemIcon,
+  MenuItem,
+  lighten,
+  Autocomplete,
+  TextField,
+} from "@mui/material";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { DeleteForever } from "@mui/icons-material";
+import { useToast } from "../../../context/ToastContext";
+import Warning from "../../../component/Warning";
+import { ErrorResponseType } from "../../../_types/request_reponse_type";
 import { useDeleteProductSubCategoryMutation } from "../../../services/productSubcategory_service";
-import { IconButton, Menu, MenuItem } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { ProductSubCategoryType } from "../../../_types/productSubcategory_type";
+import UpdateProductSubCategory from "./form/UpdateSubCategory";
 
-const columns: {
-  id: string;
-  label: string;
-  minWidth: number;
-  align?: "center" | "left" | "right" | "inherit" | "justify";
-}[] = [
-  { id: "no", label: "No", minWidth: 50 },
-  { id: "subcategoryId", label: "SubCategory Id", minWidth: 70 },
-  { id: "category", label: "Category", minWidth: 70, align: "left" },
-  { id: "subCategory", label: "SubCategory", minWidth: 70, align: "left" },
-];
+export type ProductSubCategoryListTableProps = {
+  productCategoryList: ProductSubCategoryType[] | undefined;
+};
 
-function createData(
-  no: number,
-  subcategoryId: string,
-  category: string,
-  subCategory: string
-) {
-  return { no, subcategoryId, category, subCategory };
-}
+const ProductSubCategoryListTable = ({
+  productCategoryList,
+}: ProductSubCategoryListTableProps) => {
+  const { setToastData } = useToast();
+  const [selectedRowData, setSelectedRowData] =
+    useState<ProductSubCategoryType | null>(null);
+  const [deleteProductCategory, { isLoading, isSuccess }] =
+    useDeleteProductSubCategoryMutation();
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openReset] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
-type RowData = ReturnType<typeof createData>;
-
-interface productSubcategoryprops {
-  subcategoryList: ProductSubCategoryType[];
-  anchorEl: null | HTMLElement;
-  setAnchorEl: (value: null | HTMLElement) => void;
-  setSelectedSubCategory: (product: ProductSubCategoryType) => void;
-  selectedSubCategory: ProductSubCategoryType | null;
-}
-
-const SubCategoryTable: React.FC<productSubcategoryprops> = ({
-  subcategoryList,
-  setSelectedSubCategory,
-  anchorEl,
-  setAnchorEl,
-  selectedSubCategory,
-}) => {
-  const rows: RowData[] = subcategoryList.map((i, index) =>
-    createData(index + 1, `${i.id}`, `${i.category.name}`, `${i.name}`)
-  );
-  console.log(selectedSubCategory?.id);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
-  const handleChangePage = (_event: unknown, newPage: number) => {
-    setPage(newPage);
+  const handleClickOpenEdit = (row: ProductSubCategoryType) => {
+    setSelectedRowData(row);
+    setOpenEdit(true);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
+  const handleCloseEdit = () => {
+    setOpenEdit(false);
   };
-  const handleClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    subCategory: ProductSubCategoryType
-  ) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedSubCategory(subCategory);
-  };
-  const [deleteProductSubCategory] = useDeleteProductSubCategoryMutation();
 
-  const handleDelete = async (id: number) => {
-    console.log("Deleting category with ID:", id); // Log to check if the correct id is passed
-    try {
-      await deleteProductSubCategory(id).unwrap(); // Ensure the correct ID is being used
-      console.log("Category deleted successfully");
-    } catch (error) {
-      console.error("Failed to delete category:", error);
+  const handleClickOpenDelete = (row: ProductSubCategoryType) => {
+    setSelectedRowData(row);
+    setOpenDelete(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+
+  const handleDeleteDepartment = async () => {
+    if (selectedRowData?.id != null) {
+      try {
+        await deleteProductCategory(selectedRowData.id).unwrap();
+        setToastData({
+          message: "Department deleted successfully",
+          success: true,
+        });
+        handleCloseDelete();
+      } catch (error: any) {
+        handleCloseDelete();
+        const res: ErrorResponseType = error;
+        setToastData({
+          message: res.data.message,
+          success: false,
+        });
+      }
+    } else {
+      handleCloseDelete();
+      setToastData({
+        message: "Department not selected is missing",
+        success: false,
+      });
     }
   };
 
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
-  return (
-    <>
-      <div className="flex mx-[7%]">
-        <Paper sx={{ overflow: "hidden", maxWidth: 800, width: "100%" }}>
-          <TableContainer sx={{ maxHeight: 440 }}>
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ minWidth: column.minWidth }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
-                  <TableCell align="center">Actions</TableCell>{" "}
-                  {/* Add Actions column */}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) => {
-                    const category = subcategoryList[index]; // Ensure the correct product is accessed for each row
+  const nameSuggestions =
+    productCategoryList == undefined
+      ? []
+      : productCategoryList.map((user) => user.name);
 
-                    return (
-                      <TableRow
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                        key={row.category}
-                      >
-                        {columns.map((column) => {
-                          const value = row[column.id as keyof RowData];
-                          return (
-                            <TableCell
-                              key={column.id}
-                              align={column.align || "left"}
-                            >
-                              {value}
-                            </TableCell>
-                          );
-                        })}
-                        <TableCell align="center">
-                          <IconButton
-                            aria-label="more"
-                            aria-controls="long-menu"
-                            aria-haspopup="true"
-                            onClick={(event) => handleClick(event, category)} // Pass the correct category object here
-                          >
-                            <MoreVertIcon />
-                          </IconButton>
-                          <Menu
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={handleCloseMenu}
-                          >
-                            <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
-                            <MenuItem
-                              onClick={() =>
-                                handleDelete(parseInt(row.subcategoryId))
-                              }
-                            >
-                              {" "}
-                              {/* Pass the correct id */}
-                              Delete
-                            </MenuItem>
-                          </Menu>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 15]}
-            component="div"
-            count={rows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Paper>
-      </div>
-    </>
+  const columns = useMemo<MRT_ColumnDef<ProductSubCategoryType>[]>(
+    () => [
+      {
+        id: "sub category",
+        header: "Sub Category",
+        columns: [
+          {
+            accessorFn: (row) => `${row.name}`,
+            id: "name",
+            header: "Name",
+            size: 250,
+            Filter: ({ column }) => (
+              <Autocomplete
+                options={nameSuggestions}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Filter by Name"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+                onChange={(_event, value) => column.setFilterValue(value)}
+              />
+            ),
+          },
+          {
+            accessorFn: (row) => `${row.category.name}`,
+            id: "category",
+            header: "Category",
+            size: 250,
+            Filter: ({ column }) => (
+              <Autocomplete
+                options={nameSuggestions}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Filter by Name"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+                onChange={(_event, value) => column.setFilterValue(value)}
+              />
+            ),
+          },
+        ],
+      },
+    ],
+    [nameSuggestions]
+  );
+
+  const table = useMaterialReactTable({
+    columns,
+    data: productCategoryList == undefined ? [] : productCategoryList,
+    enableColumnFilterModes: true,
+    enableColumnOrdering: true,
+    enableGrouping: true,
+    enableColumnPinning: true,
+    enableFacetedValues: true,
+    enableRowActions: true,
+    enableRowSelection: true,
+    initialState: {
+      pagination: {
+        pageSize: 5,
+        pageIndex: 0,
+      },
+      showGlobalFilter: true, // This should be true
+      columnPinning: {
+        left: ["mrt-row-expand", "mrt-row-select"],
+        right: ["mrt-row-actions"],
+      },
+    },
+    paginationDisplayMode: "pages",
+    positionToolbarAlertBanner: "bottom",
+    muiSearchTextFieldProps: {
+      size: "small",
+      variant: "outlined",
+    },
+    muiPaginationProps: {
+      color: "secondary",
+      rowsPerPageOptions: [5, 10, 20, 30],
+      shape: "rounded",
+      variant: "outlined",
+    },
+    renderRowActionMenuItems: ({ row, closeMenu }) => [
+      <MenuItem
+        key={`edit-${row.original.id}`}
+        onClick={() => {
+          handleClickOpenEdit(row.original);
+          closeMenu();
+        }}
+        sx={{ m: 0 }}
+      >
+        <ListItemIcon>
+          <PersonAddIcon />
+        </ListItemIcon>
+        Edit
+      </MenuItem>,
+
+      <MenuItem
+        key={`delete-${row.original.id}`}
+        onClick={() => {
+          handleClickOpenDelete(row.original);
+          closeMenu();
+        }}
+        sx={{ m: 0 }}
+      >
+        <ListItemIcon>
+          <DeleteForever />
+        </ListItemIcon>
+        Delete
+      </MenuItem>,
+    ],
+
+    renderTopToolbar: () => (
+      <Box
+        sx={(theme) => ({
+          backgroundColor: lighten(theme.palette.background.default, 0.05),
+          display: "flex",
+          gap: "0.5rem",
+          p: "8px",
+          justifyContent: "space-between",
+        })}
+      >
+        <Autocomplete
+          options={nameSuggestions}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Search..."
+              variant="outlined"
+              size="small"
+              sx={{ width: "300px" }} // Adjust the width as needed
+            />
+          )}
+          onChange={(_event, value) => {
+            // Set global filter based on the selected suggestion
+            table.setGlobalFilter(value);
+          }}
+        />
+      </Box>
+    ),
+  });
+
+  return (
+    <Box>
+      <MaterialReactTable table={table} />
+      <Dialog open={openEdit}>
+        <UpdateProductSubCategory
+          handleCloseDialog={handleCloseEdit}
+          selectedRowData={selectedRowData}
+        />
+      </Dialog>
+      <Dialog open={openReset}></Dialog>
+      <Dialog open={openDelete}>
+        <Warning
+          handleClose={handleCloseDelete}
+          handleAction={handleDeleteDepartment}
+          message={`Are you sure you want to delete product category ${selectedRowData?.id} :  ${selectedRowData?.name}?`}
+          isLoading={isLoading}
+          isSuccess={isSuccess}
+        />
+      </Dialog>
+    </Box>
   );
 };
 
-export default SubCategoryTable;
+export default ProductSubCategoryListTable;

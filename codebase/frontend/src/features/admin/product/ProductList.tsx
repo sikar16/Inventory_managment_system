@@ -10,7 +10,7 @@ import ProductTable from "./ProductTable";
 import { useGetAllproductQuery } from "../../../services/product_service";
 import Loader from "../../../component/Loading";
 import { useGetAllProductCategoryQuery } from "../../../services/productCategorySerivce";
-import { useGetAllproductSubCategoryQuery } from "../../../services/productSubcategory_service";
+import { useGetAllProductSubCategoryQuery } from "../../../services/productSubcategory_service";
 import { useGetAlltemplateQuery } from "../../../services/template_service";
 import { ProductType } from "../../../_types/product_type";
 import { ProductCategoryType } from "../../../_types/productCategory_type";
@@ -57,7 +57,7 @@ export default function ProductList() {
     isLoading: isSubCategoryLoading,
     data: productSubCategories,
     error: subCategoryError,
-  } = useGetAllproductSubCategoryQuery("product subcategory");
+  } = useGetAllProductSubCategoryQuery();
   const {
     isError: isTemplateError,
     isLoading: isTemplateLoading,

@@ -4,27 +4,31 @@ import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
 import Button from "@mui/material/Button";
-import { useGetAllProductCategoryQuery } from "../../../services/productCategorySerivce";
-import { ProductCategoryType } from "../../../_types/productCategory_type";
-import { useAddNewProductSubCategoryMutation } from "../../../services/productSubcategory_service";
+import { useGetAllProductCategoryQuery } from "../../../../services/productCategorySerivce";
+import { ProductCategoryType } from "../../../../_types/productCategory_type";
+import { useAddNewProductSubCategoryMutation } from "../../../../services/productSubcategory_service";
+import { useToast } from "../../../../context/ToastContext"; // Import toast context
 
 interface AddSubcategoryProps {
   handleCloseDialog: () => void;
 }
-const AddSubCategory: React.FC<AddSubcategoryProps> = ({
+
+const AddProductCategory: React.FC<AddSubcategoryProps> = ({
   handleCloseDialog,
 }) => {
+  const { setToastData } = useToast(); // Using toast for success/error messages
   const [selectedCategory, setSelectedCategory] = useState("");
   const [customSubCategory, setCustomSubCategory] = useState("");
   const { isSuccess, data } = useGetAllProductCategoryQuery();
-  const [addSubcategory] = useAddNewProductSubCategoryMutation();
+  const [addSubcategory, { isLoading, isError, error }] =
+    useAddNewProductSubCategoryMutation();
 
   const categories: ProductCategoryType[] = isSuccess ? data : [];
 
   const handleCategoryChange = (event: SelectChangeEvent<string>) => {
-    // Change to SelectChangeEvent
     setSelectedCategory(event.target.value);
   };
+
   const handleCustomSubCategoryChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -34,11 +38,22 @@ const AddSubCategory: React.FC<AddSubcategoryProps> = ({
   const handleAddSubCategory = async () => {
     const formData = {
       name: customSubCategory,
-      categoryId: selectedCategory,
+      categoryId: parseInt(selectedCategory),
     };
-    console.log(formData);
-    await addSubcategory(formData);
-    handleCloseDialog();
+
+    try {
+      await addSubcategory({ data: formData }).unwrap(); // Unwrap to handle promise correctly
+      setToastData({
+        message: "Subcategory added successfully",
+        success: true,
+      });
+      handleCloseDialog();
+    } catch (error: any) {
+      setToastData({
+        message: error?.data?.message || "Failed to add subcategory",
+        success: false,
+      });
+    }
   };
 
   const handleDiscard = () => {
@@ -83,17 +98,22 @@ const AddSubCategory: React.FC<AddSubcategoryProps> = ({
             <Button variant="outlined" color="error" onClick={handleDiscard}>
               Discard
             </Button>
+            {/* Submit button */}
             <button
-              className="bg-[#002a47] py-1 px-3 text-white rounded-md"
+              type="button" // Use button type instead of submit to manually handle submission
+              disabled={isLoading}
+              className="bg-[#002a47] py-1 px-3 text-white rounded-md mt-4"
               onClick={handleAddSubCategory}
             >
-              Add Sub Category
+              {isLoading ? "Adding..." : "Add Sub Category"}{" "}
             </button>
           </div>
+          {isError && <p className="text-red-500">{error.toString()}</p>}{" "}
+          {/* Error message */}
         </div>
       </form>
     </div>
   );
 };
 
-export default AddSubCategory;
+export default AddProductCategory;

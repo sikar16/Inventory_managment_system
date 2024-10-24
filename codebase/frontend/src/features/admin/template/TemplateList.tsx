@@ -9,7 +9,7 @@ import Title from "../../../component/TablesTitle";
 import Loader from "../../../component/Loading";
 import { useGetAlltemplateQuery } from "../../../services/template_service";
 import { useGetAllProductCategoryQuery } from "../../../services/productCategorySerivce";
-import { useGetAllproductSubCategoryQuery } from "../../../services/productSubcategory_service";
+import { useGetAllProductSubCategoryQuery } from "../../../services/productSubcategory_service";
 
 export default function TemplateList() {
   const [openDialog, setOpenDialog] = React.useState(false);
@@ -41,7 +41,7 @@ export default function TemplateList() {
     isLoading: isSubCategoryLoading,
     data: productSubCategories = [], // Default to an empty array
     error: subCategoryError,
-  } = useGetAllproductSubCategoryQuery("subcategory");
+  } = useGetAllProductSubCategoryQuery();
 
   const { isError, isLoading, data, error } =
     useGetAlltemplateQuery("template");
