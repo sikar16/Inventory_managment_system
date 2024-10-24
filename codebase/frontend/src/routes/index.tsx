@@ -42,6 +42,7 @@ import PurchasedRequestDetail from "../features/finance/PurchasedRequiestDetail"
 import PurchasedRequestM from "../features/manager/PurchasedReqestM";
 import PurchasedRequestDetailM from "../features/manager/PurchasedRequiestDetailM";
 import Department_list from "../features/admin/department/Department_list";
+import StoreList from "../features/admin/store/StoreList";
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -77,6 +78,7 @@ export const router = createBrowserRouter(
           element={<SupplierCategoryList />}
         />
         <Route path="/admin/warehouse" element={<WareHouseList />} />
+        <Route path="/admin/store" element={<StoreList />} />
         <Route
           path="/admin/report"
           element={
